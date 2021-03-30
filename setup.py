@@ -8,7 +8,3 @@ setup(name='pyutils',
       packages=find_packages(where="src"),
       package_dir={"": "src"},
       zip_safe=False)
-
-
-
-
