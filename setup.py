@@ -5,8 +5,8 @@ setup(name='pyutils',
       description='Basic utilities for data science',
       url='https://github.com/rfmanz/pyutils',
       license='MIT',
-      packages=['pyutils'],
-      # package_dir={"": "src"},
+      packages=find_packages(where="src"),
+      package_dir={"": "src"},
       zip_safe=False)
 
 
