@@ -76,4 +76,4 @@ def get_csv_names_from_list(paths):
             df_name = re.findall("\w+(?=\.)", i)[0]
             dfs.append(df_name)
     print(str(",".join(dfs)))
-
+    print(str(".shape,".join(keys)),".shape",sep='')
