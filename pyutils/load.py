@@ -6,9 +6,10 @@ import re
 
 def read_data(path_ending_with_filename=None, return_df=False, method=None):
     """
-    !!! If you don't want to load files twice(to get df names for instance) and you've got the paths in a list, then run get_csv_names_from_list() copy names and then assign with read_data()!!!
+    !!! If you don't want to load files twice(to get df names for instance) and you've got the paths in a list,
+    then run get_csv_names_from_list() copy names and then assign with read_data()!!!
 
-    Read single csv or list of csvs or csvs in zip.
+    Reads single csv or list of csvs or csvs in zip.
 
     Available methods:
         'dt' = Datatable fread
