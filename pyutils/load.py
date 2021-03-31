@@ -6,9 +6,13 @@ import re
 
 def read_data(path_ending_with_filename=None, return_df=False, method=None):
     """
-    Read single csv file or in zip.
+    !!! If you don't want to load files twice(to get df names for instance) and you've got the paths in a list, then run get_csv_names_from_list() copy names and then assign with read_data()!!!
+
+    Read single csv or list of csvs or csvs in zip.
+
     Available methods:
         'dt' = Datatable fread
+
     TODO: Add to read methods. i.e., parquet, pickle, arrow, etc.
     """
     dt.options.progress.enabled = True
@@ -56,7 +60,19 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
             return dfs.values()
         else:
             for i in enumerate(dfs):
-                print(i[1], " ","="," " ,"(",f"{values[i[0]].shape[0]:,}",":",f"{values[i[0]].shape[1]:,}",")" ,sep="")
-
+                print(i[1], " ", "=", " ", "(", f"{values[i[0]].shape[0]:,}", ":", f"{values[i[0]].shape[1]:,}", ")",
+                      sep="")
 
             print(str(",".join(keys)))
+
+
+def get_csv_names_from_list(paths):
+    if not isinstance(paths, list):
+        raise TypeError('We need a list of csv file paths here')
+    dfs = []
+    for i in paths:
+        if i.endswith('.csv'):
+            df_name = re.findall("\w+(?=\.)", i)[0]
+            dfs.append(df_name)
+    print(str(",".join(dfs)))
+
