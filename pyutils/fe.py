@@ -1,5 +1,7 @@
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
+
+
 # import miceforest
 # https://github.com/AnotherSamWilson/miceforest #The-MICE-Algorithm
 #
@@ -23,9 +25,9 @@ def identify_missing(df, missing_threshold, drop=False):
 
     # Find the columns with a missing percentage above the threshold
     record_missing = pd.DataFrame(
-        missing_series[missing_series > missing_threshold])\
-        .reset_index()\
-        .rename(columns= {'index': 'feature',0: 'missing_fraction'})
+        missing_series[missing_series > missing_threshold]) \
+        .reset_index() \
+        .rename(columns={'index': 'feature', 0: 'missing_fraction'})
 
     to_drop = list(record_missing['feature'])
 
@@ -66,9 +68,7 @@ def correlated(df, threshold, drop_columns=False, encode_type='dumy'):
         df = encode(df, encode_type)
         df_corr = df.corr()
 
-
     else:
-
         df_corr = df.corr()
 
     triangle = df_corr.where(np.triu(np.ones(df_corr.shape), k=1).astype(bool))
@@ -79,9 +79,7 @@ def correlated(df, threshold, drop_columns=False, encode_type='dumy'):
     if drop_columns:
         df.drop(labels=to_drop, axis=1, inplace=True)
         return df
-        # print("Columns dropped:")
-        # print(to_drop)
-        # print(df.shape)
+
 
     else:
 
@@ -102,7 +100,6 @@ def correlated(df, threshold, drop_columns=False, encode_type='dumy'):
                                               'corr_value': corr_values})
             # Add to dataframe
             collinear = collinear.append(temp_df, ignore_index=True)
-
 
 
         else:
