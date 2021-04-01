@@ -3,15 +3,29 @@ import numpy as np
 import sys
 from tabulate import tabulate
 
+# eda :
+# import dtale
+# dtale.show(train)
+#
+
+# plotting:
+# from plotnine import ggplot, geom_point, aes, stat_smooth, facet_wrap
+# from plotnine.data import mtcars
+#
+# (ggplot(mtcars, aes('wt', 'mpg', color='factor(gear)'))
+#  + geom_point()
+#  + stat_smooth(method='lm')
+# + facet_wrap('~gear'))
+
+
 def describe_df(df):
-#Numerical
+    # Numerical
     print("--" * 20)
     print('Columns:', df.shape[1])
     print('Rows:', df.shape[0])
     print("Memory usage:", (f"({(sys.getsizeof(df) / 1024 ** 2):.2f} Mb)"))
 
-
-    print("--"*20)
+    print("--" * 20)
     print('NUMERICAL VARIABLES:')
 
     numerical = df.select_dtypes(include=np.number)
@@ -22,7 +36,9 @@ def describe_df(df):
         numerical.min(),
         numerical.mean(),
         numerical.max()
-    ], axis=1, keys=["%NULLS", "COUNT_NULLS", "NOT_NULL", 'MIN', 'MEAN', 'MAX'], sort=False).sort_values('COUNT_NULLS', ascending=False).reset_index().rename(columns={'index': ''})
+    ], axis=1, keys=["%NULLS", "COUNT_NULLS", "NOT_NULL", 'MIN', 'MEAN', 'MAX'], sort=False).sort_values('COUNT_NULLS',
+                                                                                                         ascending=False).reset_index().rename(
+        columns={'index': ''})
 
     t = numerical.mode().T
     t.rename(columns={0: 'MODE'}, inplace=True)
@@ -42,9 +58,9 @@ def describe_df(df):
 
     ], tablefmt="presto", colalign=("right"), floatfmt='.3f'))
 
-# Categorical
+    # Categorical
 
-    print('-----'*20)
+    print('-----' * 20)
     print()
     print('CATEGORICAL VARIABLES:')
     categorical = df.select_dtypes('object')
@@ -54,16 +70,13 @@ def describe_df(df):
         concatenated_categorical = pd.concat([
 
             round(categorical.isnull().sum() / df.shape[0] * 100, 2).astype(str) + "%",
-
             categorical.isnull().sum(),
             categorical.count()
         ],
 
             keys=["%NULLS",
                   "COUNT_NULLS",
-                  "NOT_NULL"
-
-                  ], axis=1, sort=False).sort_values('%NULLS', ascending=False).reset_index().rename(
+                  "NOT_NULL"], axis=1, sort=False).sort_values('%NULLS', ascending=False).reset_index().rename(
             columns={'index': ''})
 
         max_unique = 5
@@ -90,9 +103,4 @@ def describe_df(df):
             "NOT_NULL",
             "Unique_Values"
 
-        ], tablefmt="presto",colalign=("left")))
-
-
-
-
-
+        ], tablefmt="presto", colalign=("left")))
