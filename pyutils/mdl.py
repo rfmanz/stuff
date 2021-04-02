@@ -2,9 +2,23 @@ from time import time
 import datetime
 from sklearn import metrics
 
+params = {'boosting_type': 'gbdt',
+    'objective': "regression",
+    'metric': 'rmse',
+    'max_bin': 300,
+    'max_depth': 5,
+    'num_leaves': 200,
+    'learning_rate': 0.01,
+    'feature_fraction': 0.7,
+    'bagging_fraction': 0.7,
+    'bagging_freq': 10,
+    'verbose': 0,
+    'num_threads': 1,
+    'lambda_l2': 3,
+    'min_gain_to_split': 0,
+}
 
-
-def lgb_regression(x_train, x_test, y_train,params, n_folds=5,plot_feature_importance=False, verbose=100, early_stopping_rounds=100,num_boost_round=100):
+def train_lgbm(x_train, x_test, y_train,params, n_folds=5,early_stopping_rounds=100,num_boost_round=100, verbose=-1):
 
     training_start_time = time()
 
@@ -25,6 +39,7 @@ def lgb_regression(x_train, x_test, y_train,params, n_folds=5,plot_feature_impor
                           valid_sets= [train_set, val_set],
                           num_boost_round=num_boost_round,
                           early_stopping_rounds=early_stopping_rounds,
+                          verbose= verbose
                           )
 
         oof[val_idx] = lgb_model.predict(x_train.iloc[val_idx][features],
