@@ -19,7 +19,7 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
     dt.options.progress.enabled = True
     if isinstance(path_ending_with_filename, str):
         if path_ending_with_filename.endswith('.zip'):
-            zf = zipfile.ZipFile(zip_path)
+            zf = zipfile.ZipFile(path_ending_with_filename)
             files = zf.namelist()
             dfs = {}
             for x in files:
@@ -33,6 +33,7 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
                 for i in enumerate(dfs):
                     print(i[1], ":", values[i[0]].shape)
                 print(str(",".join(keys)))
+                print(str(".shape,".join(keys)), ".shape", sep='')
         else:
             # SINGLE FILE
             df_name = re.findall("\w+(?=\.)", path_ending_with_filename)[0]
