@@ -3,6 +3,9 @@ import numpy as np
 import sys
 from tabulate import tabulate
 
+
+# TODO: Plotting. You need to be able to visualize distributions for features. Numerical | Categorical
+
 # eda :
 # import dtale
 # dtale.show(train)
