@@ -41,7 +41,7 @@ def train_lgbm(x_train, x_test, y_train, params, n_folds=5, early_stopping_round
     training_start_time = time()
 
     features = list(x_train.columns)
-    oof = np.zeros(len(X_train))
+    oof = np.zeros(len(x_train))
     predictions = np.zeros(len(y_train))
     skf = StratifiedKFold(n_splits=n_folds, shuffle=True)
 
@@ -68,3 +68,5 @@ def train_lgbm(x_train, x_test, y_train, params, n_folds=5, early_stopping_round
     print(f"Total training time: {str(datetime.timedelta(seconds=time() - training_start_time)).split('.')[0]}")
     print(f'RMSE: is {oof_rmse}')
     return lgb_model
+
+
