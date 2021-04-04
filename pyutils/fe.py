@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
 
 
 
@@ -114,3 +115,7 @@ def correlated(df, threshold, drop_columns=False, encode_type='dumy'):
                 "Note_to_self...drop_feature may be duplicated due to multiple, stronger than threshold, correlated pairs:")
             print()
             print(collinear)
+
+
+def standard_scaler(df):
+    return pd.DataFrame(StandardScaler().fit_transform(df), columns=df.columns, index=df.index)
