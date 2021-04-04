@@ -2,7 +2,13 @@ import pandas as pd
 import datatable as dt
 import zipfile
 import re
+import os
 
+def directory(directory_path):
+    global csv_files
+    os.chdir(directory_path)
+    csv_files = os.listdir(directory_path)
+    return csv_files
 
 def read_data(path_ending_with_filename=None, return_df=False, method=None):
     """
