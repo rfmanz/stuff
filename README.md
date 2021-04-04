@@ -1,4 +1,4 @@
 # pyutils
 
-#### Automate what can be automated
+Automate what can be automated
 

@@ -3,6 +3,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedKFold
 import lightgbm as lgb
 
+from scipy.stats import skew, norm
+from scipy.special import boxcox1p
+from scipy.stats import boxcox_normmax
+
+
+
 # Load
 
 # read_data("/home/r/Downloads/house-prices-advanced-regression-techniques.zip")
@@ -17,6 +23,7 @@ sample_submission, test, train = read_data("/home/r/Downloads/house-prices-advan
 y = train.SalePrice
 y = np.log(y)
 full_df = pd.concat([train.drop(columns='SalePrice'), test])
+full_df.drop('Id', axis=1, inplace=True)
 
 
 # identify_missing(full_df,0.8,True)
@@ -65,10 +72,16 @@ def handle_missing(features):
 
 
 handle_missing(full_df)
+
+skew_features = full_df[full_df.select_dtypes(['int64', 'float64']).columns].apply(lambda x: skew(x)).sort_values(
+    ascending=False)
+high_skew = skew_features[skew_features > 0.5]
+skew_index = high_skew.index
+print("There are {} numerical features with Skew > 0.5 :".format(high_skew.shape[0]))
+for i in skew_index:
+    full_df[i] = boxcox1p(full_df[i], boxcox_normmax(full_df[i] + 1))
+
 full_df = correlated(full_df, 0.8, True)
-
-
-full_df.drop('Id', axis=1, inplace=True)
 
 # CV
 num_bins = int(np.floor(1 + np.log2(len(y))))
@@ -78,31 +91,30 @@ x_train, x_test, y_train, y_test = train_test_split(
     full_df.iloc[:1460],
     y,
     random_state=12,
-    stratify=sale_price_bins
+    stratify=sale_price_bins)
 
-)
+# LGBM
 
 params = {'boosting_type': 'gbdt',
           'objective': "regression",
           'metric': 'rmse',
-          'max_bin': 300,
+          'max_bin': 200,
           'max_depth': 5,
           'num_leaves': 200,
           'learning_rate': 0.01,
           'feature_fraction': 0.7,
-          'bagging_fraction': 0.7,
-          'bagging_freq': 10,
-          'verbose': 0,
+          'bagging_fraction': 0.8,
+          'bagging_freq': 4,
+          'verbose': 1,
           'num_threads': 1,
           'lambda_l2': 3,
           'min_gain_to_split': 0,
+          'min_sum_hessian_in_leaf': 11
           }
-
-y_train.iloc[sale_price_bins]
-sale_price_bins.iloc[y_train.index]
-
-
-def train_lgbm(x_train, x_test, y_train, params, n_folds=5, early_stopping_rounds=100, num_boost_round=1500):
+#sale_price_bins.iloc[y_train.index]
+num_bins = 12
+def train_lgbm(x_train, x_test, y_train, params, n_folds=12, early_stopping_rounds=100, num_boost_round=7000):
+    global lgb_model
     training_start_time = time()
 
     features = list(x_train.columns)
@@ -136,3 +148,47 @@ def train_lgbm(x_train, x_test, y_train, params, n_folds=5, early_stopping_round
 
 
 train_lgbm(x_train, x_test, y_train, params)
+train_lgbm(full_df.iloc[:1460], full_df.iloc[1461:,], y, params)
+
+#-------------------------------------------------
+def cv_rmse(model, X=X):
+    rmse = np.sqrt(-cross_val_score(model, X, train_labels, scoring="neg_mean_squared_error", cv=kf))
+    return (rmse)
+
+ X = full_df.iloc[:1460]
+def cv_rmse(model, X=X):
+    rmse = np.sqrt(-cross_val_score(model, X, train_labels, scoring="neg_mean_squared_error", cv=kf))
+    return (rmse)
+
+from sklearn.model_selection import KFold
+kf = KFold(n_splits=12, random_state=42, shuffle=True)
+train_labels = y
+from sklearn.model_selection import cross_val_score
+
+from lightgbm import LGBMRegressor
+lightgbm = LGBMRegressor(objective='regression',
+                       num_leaves=6,
+                       learning_rate=0.01,
+                       n_estimators=7000,
+                       max_bin=200,
+                       bagging_fraction=0.8,
+                       bagging_freq=4,
+                       bagging_seed=8,
+                       feature_fraction=0.2,
+                       feature_fraction_seed=8,
+                       min_sum_hessian_in_leaf = 11,
+                       verbose=-1,
+                       random_state=42)
+
+cv_rmse(lightgbm)
+
+score = cv_rmse(lightgbm)
+print("lightgbm: {:.4f} ({:.4f})".format(score.mean(), score.std()))
+
+lgb_model_full_data = lightgbm.fit(X, train_labels)
+
+predictions = lgb_model_full_data.predict(full_df.iloc[1460:,],num_iteration=lightgbm.best_iteration_)
+
+#0.12107 - When submitted
+sample_submission.iloc[:,1] = np.floor(np.expm1(predictions))
+sample_submission.to_csv("~/Downloads/sample_submission3.csv",index=False)
