@@ -5,9 +5,8 @@ import re
 import os
 
 def directory(directory_path):
-    """Puts you in the right directory"""
-    global csv_files
-    os.chdir(directory_path)
+    """Puts you in the right directory. Gives you list of files in path"""
+    os.chdir(re.findall("^(.*[\\\/])", directory_path)[0])
     csv_files = os.listdir(directory_path)
     return csv_files
 
