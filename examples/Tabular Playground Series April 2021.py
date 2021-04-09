@@ -43,12 +43,58 @@ fig, ax = plt.subplots(figsize=(12,6))
 sns.countplot(data=train, x='Embarked', hue='Survived', ax=ax)
 
 train.loc[:,['Embarked','Survived']].value_counts().sort_index().unstack().plot.bar(figsize=(12,6),rot=0)
+train.loc[:,['Embarked','Survived']].value_counts().sort_index().unstack(1)
 
 sns.scatterplot(data=train, x="Age", y="Fare",hue='Embarked')
-
+#Fare embarked
 train.loc[:,['Embarked','Fare']].groupby('Embarked')
 
 train.loc[:,['Embarked','Fare']].groupby('Embarked').describe().unstack(1)
+train.loc[:,['Embarked','Survived']].value_counts(train.Survived)
+
+train.Embarked.value_counts(normalize=True)*100
+train.Embarked.value_counts()
+
+describe_df(train)
+train.Cabin
+#FE
+
+train_dropped = train.drop(columns= ['Cabin','Ticket','PassengerId'],axis=1)
+
+#Any colmns with nas
+train_dropped[train_dropped.columns[train_dropped.isna().any()]]
+
+import miceforest as mf
+# Create kernel.
+kds = mf.KernelDataSet(
+  train_dropped,
+  save_all_iterations=True,
+  random_state=1991
+)
+
+# Run the MICE algorithm for 3 iterations
+kds.mice(3)
+
+# Return the completed kernel data
+completed_data = kds.complete_data()
+
+
+from missingpy import MissForest
+imputer = MissForest()
+X_imputed = imputer.fit_transform(X)
+
+# Run the MICE algorithm for 3 iterations
+kds.mice(3)
+
+# Return the completed kernel data
+completed_data = kds.complete_data()
+
+
+
+
+
+
+
 
 
 # sibsp = # of siblings / spouses aboard the Titanic
