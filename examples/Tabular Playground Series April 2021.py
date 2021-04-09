@@ -1,3 +1,5 @@
+import numpy as np
+
 from pyutils import *
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -58,16 +60,28 @@ train.Embarked.value_counts()
 describe_df(train)
 train.Cabin
 #FE
+y= train.Survived
 
-train_dropped = train.drop(columns= ['Cabin','Ticket','PassengerId'],axis=1)
+train_dropped = train.drop(columns= ['Cabin','Ticket','PassengerId','Survived','Name'],axis=1)
+
+
+train_dropped_encoded= pd.concat([train_dropped.drop(['Embarked','Sex'], axis=1), encode(pd.DataFrame(train_dropped.loc[:,['Embarked','Sex']]),method='lbl')],axis=1)
+
+train_dropped_encoded.loc[train_dropped_encoded.Embarked==3,'Embarked'] = np.NAN
+
+describe_df(train_dropped_encoded)
 
 #Any colmns with nas
-train_dropped[train_dropped.columns[train_dropped.isna().any()]]
+na_cols = train_dropped_encoded[train_dropped_encoded.columns[train_dropped_encoded.isna().any()]]
+
+describe_df(train_dropped_encoded)
+
+
 
 import miceforest as mf
 # Create kernel.
 kds = mf.KernelDataSet(
-  train_dropped,
+  na_cols,
   save_all_iterations=True,
   random_state=1991
 )
@@ -91,8 +105,8 @@ completed_data = kds.complete_data()
 
 
 
-
-
+describe_df(completed_data)
+train
 
 
 
