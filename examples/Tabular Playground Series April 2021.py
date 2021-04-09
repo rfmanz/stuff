@@ -44,13 +44,11 @@ sns.countplot(data=train, x='Embarked', hue='Survived', ax=ax)
 
 train.loc[:,['Embarked','Survived']].value_counts().sort_index().unstack().plot.bar(figsize=(12,6),rot=0)
 
+sns.scatterplot(data=train, x="Age", y="Fare",hue='Embarked')
 
+train.loc[:,['Embarked','Fare']].groupby('Embarked')
 
-
-
-
-
-
+train.loc[:,['Embarked','Fare']].groupby('Embarked').describe().unstack(1)
 
 
 # sibsp = # of siblings / spouses aboard the Titanic
