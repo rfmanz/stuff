@@ -85,29 +85,16 @@ kds = mf.KernelDataSet(
   save_all_iterations=True,
   random_state=1991
 )
-
 # Run the MICE algorithm for 3 iterations
 kds.mice(3)
 
 # Return the completed kernel data
 completed_data = kds.complete_data()
-
-
-from missingpy import MissForest
-imputer = MissForest()
-X_imputed = imputer.fit_transform(X)
-
-# Run the MICE algorithm for 3 iterations
-kds.mice(3)
-
-# Return the completed kernel data
-completed_data = kds.complete_data()
-
-
 
 describe_df(completed_data)
-train
+describe_df(na_cols)
 
+train_dropped_encoded_nonulls = pd.concat([completed_data,train_dropped_encoded.drop(list(completed_data.columns.values),axis=1)],axis=1)
 
 
 
