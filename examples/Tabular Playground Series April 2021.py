@@ -1,5 +1,7 @@
 from pyutils import *
-from plotnine import *
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 # import pandas as pd
 # import numpy as np
 # from sklearn.preprocessing import *
@@ -36,13 +38,20 @@ train.loc[(train.Age < 1) & (train.Survived ==0 )].value_counts(train.Pclass).su
 train[train.Survived==0].value_counts(train.Pclass,normalize=True).sort_index()*100
 #we got a 30& reduction in mortality by not being in the lowest class.
 #Mortlity by embarked
-import seaborn as sns
-import matplotlib.pyplot as plt
-
+#Plots
 fig, ax = plt.subplots(figsize=(12,6))
 sns.countplot(data=train, x='Embarked', hue='Survived', ax=ax)
 
-train.loc[:,['Embarked','Survived']].value_counts().unstack().plot.bar(figsize=(12,6),rot=0)
+train.loc[:,['Embarked','Survived']].value_counts().sort_index().unstack().plot.bar(figsize=(12,6),rot=0)
+
+
+
+
+
+
+
+
+
 
 # sibsp = # of siblings / spouses aboard the Titanic
 # parch =  # of parents / children aboard the Titanic
