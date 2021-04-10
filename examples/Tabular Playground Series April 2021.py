@@ -5,6 +5,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import miceforest as mf
 from sklearn.model_selection import *
+import scipy.stats as stats
 
 
 # import pandas as pd
@@ -24,8 +25,6 @@ sample_submission, test, train = read_data('/home/r/Downloads/tabular-playground
 sample_submission.shape, test.shape, train.shape
 
 # EDA
-dtale.show(train)
-train
 train.Survived.value_counts(normalize=True) * 100
 describe_df(train)
 (train.Age < 1).value_counts()
@@ -102,44 +101,6 @@ describe_df(train_dropped_encoded_nonulls)
 describe_df(test_dropped_encoded_nonulls)
 
 
-sns.kdeplot(data=tips, x="total_bill", hue="time", multiple="stack")
-
-datas = [train.Age, test.Age]
-datas = [train[train["age"].isna() == False], test[test["age"].isna() == False]]
-
-
-
-sns.distplot(train.Age, hist=True,label="Train", color='olive',kde=True)
-sns.distplot(test.Age, hist=True,label="Test",color = 'blue',kde=True)
-plt.legend()
-plt.show()
-
-ax = sns.distplot(train.Age, hist=False,label="Train", color='olive',kde=True)
-ax = sns.distplot(test.Age, hist=False,label="Test",color = 'blue',kde=True)
-plt.legend()
-plt.show()
-
-sns.displot(train.Age, kind="kde", label="Train", fill=True)
-sns.displot(test.Age, kind="kde", label="Train")
-plt.show()
-
-import scipy.stats as stats
-
-ax = sns.distplot(train.Age, fit_kws={"color":"red"}, kde=False,
-        fit=stats.gamma, hist=None, label="label 1");
-ax = sns.distplot(test.Age, fit_kws={"color":"blue"}, kde=False,
-        fit=stats.gamma, hist=None, label="label 2");
-
-ax = sns.distplot(train.Age, fit_kws={"color":"red"}, kde=False,
-        fit=stats.gamma, hist=None, label="label 1");
-ax = sns.distplot(test.Age, fit_kws={"color":"blue"}, kde=False,
-        fit=stats.gamma, hist=None, label="label 2");
-
-
-#sns
-
-icecream = ["#CCD4BF", "#E7CBA9", "#EEBAB2", "#F5F3E7", "#F5E2E4"]
-sns.palplot(sns.color_palette(icecream))
 #Age -testvstrain
 ax = sns.distplot(train.Age, hist=False,label="Train", color='olive',kde=True)
 ax = sns.distplot(test.Age, hist=False,label="Test",color = 'blue',kde=True)
