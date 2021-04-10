@@ -3,6 +3,9 @@ import numpy as np
 from pyutils import *
 import seaborn as sns
 import matplotlib.pyplot as plt
+import miceforest as mf
+from sklearn.model_selection import *
+
 
 # import pandas as pd
 # import numpy as np
@@ -13,7 +16,7 @@ import matplotlib.pyplot as plt
 desired_width = 150
 pd.set_option('display.width', desired_width)
 pd.set_option('max.columns', 12)
-import dtale
+
 
 # Load
 read_data('/home/r/Downloads/tabular-playground-series-apr-2021.zip')
@@ -63,39 +66,89 @@ train.Cabin
 y= train.Survived
 
 train_dropped = train.drop(columns= ['Cabin','Ticket','PassengerId','Survived','Name'],axis=1)
-
+test_dropped = test.drop(columns= ['Cabin','Ticket','PassengerId','Name'],axis=1)
 
 train_dropped_encoded= pd.concat([train_dropped.drop(['Embarked','Sex'], axis=1), encode(pd.DataFrame(train_dropped.loc[:,['Embarked','Sex']]),method='lbl')],axis=1)
 
-train_dropped_encoded.loc[train_dropped_encoded.Embarked==3,'Embarked'] = np.NAN
+test_dropped_encoded= pd.concat([test_dropped.drop(['Embarked','Sex'], axis=1), encode(pd.DataFrame(test_dropped.loc[:,['Embarked','Sex']]),method='lbl')],axis=1)
 
-describe_df(train_dropped_encoded)
+train_dropped_encoded.loc[train_dropped_encoded.Embarked==3,'Embarked'] = np.NAN
+test_dropped_encoded.loc[test_dropped_encoded.Embarked==3,'Embarked'] = np.NAN
+
+describe_df(test_dropped_encoded)
 
 #Any colmns with nas
-na_cols = train_dropped_encoded[train_dropped_encoded.columns[train_dropped_encoded.isna().any()]]
+results = []
+for i in train_dropped_encoded,test_dropped_encoded:
+    na_cols = i[i.columns[i.isna().any()]]
 
-describe_df(train_dropped_encoded)
+    # Create kernel.
+    kds = mf.KernelDataSet(
+        na_cols,
+        save_all_iterations=True,
+        random_state=1991
+    )
+    # Run the MICE algorithm for 3 iterations
+    kds.mice(3)
+
+    # Return the completed kernel data
+    completed_data = kds.complete_data()
+
+    t = pd.concat([completed_data,i.drop(list(completed_data.columns.values),axis=1)],axis=1)
+    results.append(t)
+train_dropped_encoded_nonulls = results[0]
+test_dropped_encoded_nonulls = results[1]
+describe_df(train_dropped_encoded_nonulls)
+describe_df(test_dropped_encoded_nonulls)
+
+dropped_columns = list( set(train)-set(train_dropped_encoded_nonulls))
+len(dropped_columns)
+
+describe_df(train_dropped_encoded_nonulls)
+train_dropped_encoded_nonulls.iloc[:5].T
 
 
 
-import miceforest as mf
-# Create kernel.
-kds = mf.KernelDataSet(
-  na_cols,
-  save_all_iterations=True,
-  random_state=1991
-)
-# Run the MICE algorithm for 3 iterations
-kds.mice(3)
 
-# Return the completed kernel data
-completed_data = kds.complete_data()
+RobustScalar
 
-describe_df(completed_data)
-describe_df(na_cols)
+test
 
-train_dropped_encoded_nonulls = pd.concat([completed_data,train_dropped_encoded.drop(list(completed_data.columns.values),axis=1)],axis=1)
+list(train.drop('PassengerId', axis=1).select_dtypes('number').columns)]
 
+
+cont_cols = list(train.drop(['PassengerId','Survived'], axis=1).select_dtypes('number').columns)
+
+test[cont_cols]
+
+
+del i
+i = 1
+plt.figure()
+fig, ax = plt.subplots(4, 2,figsize=(20, 24))
+for feature in cont_cols:
+    plt.subplot(4, 2,i)
+    sns.histplot(train[feature],color="blue", kde=True,bins=100, label='train')
+    sns.histplot(test[feature],color="olive", kde=True,bins=100, label='test')
+    plt.xlabel(feature, fontsize=9); plt.legend()
+    i += 1
+plt.show()
+
+for i in continous_cols:
+    plt.subplot(6, 2,i)
+    sns.histplot(train[feature],color="blue", kde=True,bins=100, label='train')
+    sns.histplot(test[feature],color="olive", kde=True,bins=100, label='test')
+    plt.xlabel(feature, fontsize=9); plt.legend()
+    i += 1
+plt.show()
+
+
+
+sns.kdeplot(data=tips, x="total_bill", hue="time", multiple="stack")
+
+
+
+train_test_split = train_test_split()
 
 
 # sibsp = # of siblings / spouses aboard the Titanic
