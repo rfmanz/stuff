@@ -108,26 +108,73 @@ datas = [train.Age, test.Age]
 datas = [train[train["age"].isna() == False], test[test["age"].isna() == False]]
 
 
-displot_features(data=datas, feature="age", categorical=False)
-
-displot(data=datas, feature="age", categorical=False,fill=True)
-
-fig = sns.distplot(values[0], hist=False, color = icecream[0], kde_kws = {'lw':4}, label="Train")
-
 
 sns.distplot(train.Age, hist=True,label="Train", color='olive',kde=True)
 sns.distplot(test.Age, hist=True,label="Test",color = 'blue',kde=True)
 plt.legend()
 plt.show()
 
-sns.distplot(train.Age, hist=False,label="Train", color='olive',kde=True)
-sns.distplot(test.Age, hist=False,label="Test",color = 'blue',kde=True)
+ax = sns.distplot(train.Age, hist=False,label="Train", color='olive',kde=True)
+ax = sns.distplot(test.Age, hist=False,label="Test",color = 'blue',kde=True)
 plt.legend()
 plt.show()
 
 sns.displot(train.Age, kind="kde", label="Train", fill=True)
 sns.displot(test.Age, kind="kde", label="Train")
 plt.show()
+
+import scipy.stats as stats
+
+ax = sns.distplot(train.Age, fit_kws={"color":"red"}, kde=False,
+        fit=stats.gamma, hist=None, label="label 1");
+ax = sns.distplot(test.Age, fit_kws={"color":"blue"}, kde=False,
+        fit=stats.gamma, hist=None, label="label 2");
+
+ax = sns.distplot(train.Age, fit_kws={"color":"red"}, kde=False,
+        fit=stats.gamma, hist=None, label="label 1");
+ax = sns.distplot(test.Age, fit_kws={"color":"blue"}, kde=False,
+        fit=stats.gamma, hist=None, label="label 2");
+
+
+#sns
+
+icecream = ["#CCD4BF", "#E7CBA9", "#EEBAB2", "#F5F3E7", "#F5E2E4"]
+sns.palplot(sns.color_palette(icecream))
+#Age -testvstrain
+ax = sns.distplot(train.Age, hist=False,label="Train", color='olive',kde=True)
+ax = sns.distplot(test.Age, hist=False,label="Test",color = 'blue',kde=True)
+
+l1 = ax.lines[0]
+l2 = ax.lines[1]
+
+
+x1 = l1.get_xydata()[:,0]
+y1 = l1.get_xydata()[:,1]
+x2 = l2.get_xydata()[:,0]
+y2 = l2.get_xydata()[:,1]
+ax.fill_between(x1,y1, color='olive', alpha=0.3)
+ax.fill_between(x2,y2, color="blue", alpha=0.3)
+plt.legend()
+plt.show(block=False)
+
+#FAre tst/trn
+ax = sns.distplot(train.Fare, hist=False,label="Train", color='olive',kde=True)
+ax = sns.distplot(test.Fare, hist=False,label="Test",color = 'blue',kde=True)
+
+l1 = ax.lines[0]
+l2 = ax.lines[1]
+
+
+x1 = l1.get_xydata()[:,0]
+y1 = l1.get_xydata()[:,1]
+x2 = l2.get_xydata()[:,0]
+y2 = l2.get_xydata()[:,1]
+ax.fill_between(x1,y1, color='olive', alpha=0.3)
+ax.fill_between(x2,y2, color="blue", alpha=0.3)
+plt.legend()
+plt.show(block=False)
+
+
 
 
 
