@@ -101,8 +101,6 @@ test_dropped_encoded_nonulls = results[1]
 describe_df(train_dropped_encoded_nonulls)
 describe_df(test_dropped_encoded_nonulls)
 
-train_dropped_encoded_nonulls[['Age','Fare']]
-test_dropped_encoded_nonulls[['Age','Fare']]
 
 sns.kdeplot(data=tips, x="total_bill", hue="time", multiple="stack")
 
@@ -119,6 +117,11 @@ fig = sns.distplot(values[0], hist=False, color = icecream[0], kde_kws = {'lw':4
 
 sns.distplot(train.Age, hist=True,label="Train", color='olive',kde=True)
 sns.distplot(test.Age, hist=True,label="Test",color = 'blue',kde=True)
+plt.legend()
+plt.show()
+
+sns.distplot(train.Age, hist=False,label="Train", color='olive',kde=True)
+sns.distplot(test.Age, hist=False,label="Test",color = 'blue',kde=True)
 plt.legend()
 plt.show()
 
