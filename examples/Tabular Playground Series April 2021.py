@@ -77,7 +77,7 @@ test_dropped_encoded.loc[test_dropped_encoded.Embarked==3,'Embarked'] = np.NAN
 
 describe_df(test_dropped_encoded)
 
-#Any colmns with nas
+#Any columns with nas
 results = []
 for i in train_dropped_encoded,test_dropped_encoded:
     na_cols = i[i.columns[i.isna().any()]]
@@ -101,12 +101,30 @@ test_dropped_encoded_nonulls = results[1]
 describe_df(train_dropped_encoded_nonulls)
 describe_df(test_dropped_encoded_nonulls)
 
-dropped_columns = list( set(train)-set(train_dropped_encoded_nonulls))
-len(dropped_columns)
+train_dropped_encoded_nonulls[['Age','Fare']]
+test_dropped_encoded_nonulls[['Age','Fare']]
 
-describe_df(train_dropped_encoded_nonulls)
-train_dropped_encoded_nonulls.iloc[:5].T
+sns.kdeplot(data=tips, x="total_bill", hue="time", multiple="stack")
 
+datas = [train.Age, test.Age]
+datas = [train[train["age"].isna() == False], test[test["age"].isna() == False]]
+
+
+displot_features(data=datas, feature="age", categorical=False)
+
+displot(data=datas, feature="age", categorical=False,fill=True)
+
+fig = sns.distplot(values[0], hist=False, color = icecream[0], kde_kws = {'lw':4}, label="Train")
+
+
+sns.distplot(train.Age, hist=True,label="Train", color='olive',kde=True)
+sns.distplot(test.Age, hist=True,label="Test",color = 'blue',kde=True)
+plt.legend()
+plt.show()
+
+sns.displot(train.Age, kind="kde", label="Train", fill=True)
+sns.displot(test.Age, kind="kde", label="Train")
+plt.show()
 
 
 
@@ -144,7 +162,6 @@ plt.show()
 
 
 
-sns.kdeplot(data=tips, x="total_bill", hue="time", multiple="stack")
 
 
 
