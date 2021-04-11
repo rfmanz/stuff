@@ -59,8 +59,47 @@ train.loc[:,['Embarked','Survived']].value_counts(train.Survived)
 train.Embarked.value_counts(normalize=True)*100
 train.Embarked.value_counts()
 
-describe_df(train)
-train.Cabin
+# Comparing train & test
+#Age -testvstrain
+ax = sns.distplot(train.Age, hist=False,label="Train", color='olive',kde=True)
+ax = sns.distplot(test.Age, hist=False,label="Test",color = 'blue',kde=True)
+
+l1 = ax.lines[0]
+l2 = ax.lines[1]
+
+
+x1 = l1.get_xydata()[:,0]
+y1 = l1.get_xydata()[:,1]
+x2 = l2.get_xydata()[:,0]
+y2 = l2.get_xydata()[:,1]
+ax.fill_between(x1,y1, color='olive', alpha=0.3)
+ax.fill_between(x2,y2, color="blue", alpha=0.3)
+plt.legend()
+plt.show(block=False)
+#FAre tst/trn
+ax = sns.distplot(train.Fare, hist=False,label="Train", color='olive',kde=True)
+ax = sns.distplot(test.Fare, hist=False,label="Test",color = 'blue',kde=True)
+
+l1 = ax.lines[0]
+l2 = ax.lines[1]
+
+
+x1 = l1.get_xydata()[:,0]
+y1 = l1.get_xydata()[:,1]
+x2 = l2.get_xydata()[:,0]
+y2 = l2.get_xydata()[:,1]
+ax.fill_between(x1,y1, color='olive', alpha=0.3)
+ax.fill_between(x2,y2, color="blue", alpha=0.3)
+plt.legend()
+plt.show(block=False)
+# Scatterplot to visualize outliers
+train.Age.plot(style='.')
+sns.scatterplot(train.loc[(train.Age>80),'Age'],train[(train.Age>80)].index ,marker= 'x',s=20)
+sns.scatterplot(train.loc[(train.Age>80),'Age'],train[(train.Age>80)].index)
+
+sns.distplot(train.Age,hist=True,color='black')
+sns.kdeplot(train.Age,color='black',shade=True)
+
 #FE
 y= train.Survived
 
@@ -74,7 +113,7 @@ test_dropped_encoded= pd.concat([test_dropped.drop(['Embarked','Sex'], axis=1), 
 train_dropped_encoded.loc[train_dropped_encoded.Embarked==3,'Embarked'] = np.NAN
 test_dropped_encoded.loc[test_dropped_encoded.Embarked==3,'Embarked'] = np.NAN
 
-describe_df(test_dropped_encoded)
+#describe_df(test_dropped_encoded)
 
 #Any columns with nas
 results = []
@@ -101,39 +140,16 @@ describe_df(train_dropped_encoded_nonulls)
 describe_df(test_dropped_encoded_nonulls)
 
 
-#Age -testvstrain
-ax = sns.distplot(train.Age, hist=False,label="Train", color='olive',kde=True)
-ax = sns.distplot(test.Age, hist=False,label="Test",color = 'blue',kde=True)
-
-l1 = ax.lines[0]
-l2 = ax.lines[1]
 
 
-x1 = l1.get_xydata()[:,0]
-y1 = l1.get_xydata()[:,1]
-x2 = l2.get_xydata()[:,0]
-y2 = l2.get_xydata()[:,1]
-ax.fill_between(x1,y1, color='olive', alpha=0.3)
-ax.fill_between(x2,y2, color="blue", alpha=0.3)
-plt.legend()
-plt.show(block=False)
-
-#FAre tst/trn
-ax = sns.distplot(train.Fare, hist=False,label="Train", color='olive',kde=True)
-ax = sns.distplot(test.Fare, hist=False,label="Test",color = 'blue',kde=True)
-
-l1 = ax.lines[0]
-l2 = ax.lines[1]
 
 
-x1 = l1.get_xydata()[:,0]
-y1 = l1.get_xydata()[:,1]
-x2 = l2.get_xydata()[:,0]
-y2 = l2.get_xydata()[:,1]
-ax.fill_between(x1,y1, color='olive', alpha=0.3)
-ax.fill_between(x2,y2, color="blue", alpha=0.3)
-plt.legend()
-plt.show(block=False)
+
+
+
+
+
+
 
 
 
@@ -141,43 +157,13 @@ plt.show(block=False)
 
 RobustScalar
 
-test
-
-list(train.drop('PassengerId', axis=1).select_dtypes('number').columns)]
-
-
-cont_cols = list(train.drop(['PassengerId','Survived'], axis=1).select_dtypes('number').columns)
-
-test[cont_cols]
-
-
-del i
-i = 1
-plt.figure()
-fig, ax = plt.subplots(4, 2,figsize=(20, 24))
-for feature in cont_cols:
-    plt.subplot(4, 2,i)
-    sns.histplot(train[feature],color="blue", kde=True,bins=100, label='train')
-    sns.histplot(test[feature],color="olive", kde=True,bins=100, label='test')
-    plt.xlabel(feature, fontsize=9); plt.legend()
-    i += 1
-plt.show()
-
-for i in continous_cols:
-    plt.subplot(6, 2,i)
-    sns.histplot(train[feature],color="blue", kde=True,bins=100, label='train')
-    sns.histplot(test[feature],color="olive", kde=True,bins=100, label='test')
-    plt.xlabel(feature, fontsize=9); plt.legend()
-    i += 1
-plt.show()
-
-
-
-
 
 
 train_test_split = train_test_split()
 
+
+
+# INFO ON THE DATA
 
 # sibsp = # of siblings / spouses aboard the Titanic
 # parch =  # of parents / children aboard the Titanic
