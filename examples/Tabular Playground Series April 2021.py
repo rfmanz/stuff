@@ -180,7 +180,7 @@ test_dropped_encoded_nonulls = results[1]
 describe_df(train_dropped_encoded_nonulls)
 describe_df(test_dropped_encoded_nonulls)
 
-
+asdsd
 
 #CV
 
@@ -256,7 +256,7 @@ optuna.visualization.plot_param_importances(study)
 
 
 paramsLGBM = study.best_trial.params
-paramsLGBM = tuner.best_params
+#paramsLGBM = tuner.best_params
 paramsLGBM['boosting_type'] = 'gbdt'
 paramsLGBM['metric'] = 'AUC'
 paramsLGBM['random_state'] = 42
