@@ -5,12 +5,21 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import miceforest as mf
 from sklearn.model_selection import *
-import scipy.stats as stats
+import warnings
+
+from lightgbm import LGBMClassifier
+from sklearn.metrics import accuracy_score, roc_auc_score
+import plotly
+import optuna
+from sklearn.model_selection import KFold
+
 
 # pd.options
 desired_width = 150
 pd.set_option('display.width', desired_width)
 pd.set_option('max.columns', 20)
+
+warnings.filterwarnings('ignore')
 
 # Load
 read_data('/home/r/Downloads/tabular-playground-series-apr-2021.zip')
@@ -18,79 +27,79 @@ sample_submission, test, train = read_data('/home/r/Downloads/tabular-playground
 sample_submission.shape, test.shape, train.shape
 
 # EDA
-train.Survived.value_counts(normalize=True) * 100
-sns.countplot()
-describe_df(train)
-(train.Age < 1).value_counts()
-train[(train.Age < 1)].value_counts('Survived', normalize=True)
-# Babies under the age of 1
-pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts(normalize=True).sort_index() * 100
-pd.cut(train.loc[train.Age < 1, 'Age'], bins=5, right=True).value_counts().sort_index()
-pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts().sort_index()
-train[train.Age.between(0.92, 1, inclusive=False)]
-# Babies under the age of 1 who died
-train.loc[(train.Age < 1) & (train.Survived == 0)]
-# Babies under the age of 1 who died by class
-train.loc[(train.Age < 1) & (train.Survived == 0)].value_counts(train.Pclass).sum()
-# Dead by class global
-train[train.Survived == 0].value_counts(train.Pclass, normalize=True).sort_index() * 100
-# we got a 30& reduction in mortality by not being in the lowest class.
-# Mortlity by embarked
-# Plots
-fig, ax = plt.subplots(figsize=(12, 6))
-sns.countplot(data=train, x='Embarked', hue='Survived', ax=ax)
-
-train.loc[:, ['Embarked', 'Survived']].value_counts().sort_index().unstack().plot.bar(figsize=(12, 6), rot=0)
-train.loc[:, ['Embarked', 'Survived']].value_counts().sort_index().unstack(1)
-
-sns.scatterplot(data=train, x="Age", y="Fare", hue='Embarked')
-# Fare embarked
-train.loc[:, ['Embarked', 'Fare']].groupby('Embarked')
-
-train.loc[:, ['Embarked', 'Fare']].groupby('Embarked').describe().unstack(1)
-train.loc[:, ['Embarked', 'Survived']].value_counts(train.Survived)
-
-train.Embarked.value_counts(normalize=True) * 100
-train.Embarked.value_counts()
-
-# Comparing train & test
-# Age -testvstrain
-ax = sns.distplot(train.Age, hist=False, label="Train", color='olive', kde=True)
-ax = sns.distplot(test.Age, hist=False, label="Test", color='blue', kde=True)
-
-l1 = ax.lines[0]
-l2 = ax.lines[1]
-
-x1 = l1.get_xydata()[:, 0]
-y1 = l1.get_xydata()[:, 1]
-x2 = l2.get_xydata()[:, 0]
-y2 = l2.get_xydata()[:, 1]
-ax.fill_between(x1, y1, color='olive', alpha=0.3)
-ax.fill_between(x2, y2, color="blue", alpha=0.3)
-plt.legend()
-plt.show(block=False)
-# FAre tst/trn
-ax = sns.distplot(train.Fare, hist=False, label="Train", color='olive', kde=True)
-ax = sns.distplot(test.Fare, hist=False, label="Test", color='blue', kde=True)
-
-l1 = ax.lines[0]
-l2 = ax.lines[1]
-
-x1 = l1.get_xydata()[:, 0]
-y1 = l1.get_xydata()[:, 1]
-x2 = l2.get_xydata()[:, 0]
-y2 = l2.get_xydata()[:, 1]
-ax.fill_between(x1, y1, color='olive', alpha=0.3)
-ax.fill_between(x2, y2, color="blue", alpha=0.3)
-plt.legend()
-plt.show(block=False)
-# Scatterplot to visualize outliers
-train.Age.plot(style='.')
-sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index, marker='x', s=20)
-sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index)
-
-sns.distplot(train.Age, hist=True, color='black')
-sns.kdeplot(train.Age, color='black', shade=True)
+# train.Survived.value_counts(normalize=True) * 100
+# sns.countplot()
+# describe_df(train)
+# (train.Age < 1).value_counts()
+# train[(train.Age < 1)].value_counts('Survived', normalize=True)
+# # Babies under the age of 1
+# pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts(normalize=True).sort_index() * 100
+# pd.cut(train.loc[train.Age < 1, 'Age'], bins=5, right=True).value_counts().sort_index()
+# pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts().sort_index()
+# train[train.Age.between(0.92, 1, inclusive=False)]
+# # Babies under the age of 1 who died
+# train.loc[(train.Age < 1) & (train.Survived == 0)]
+# # Babies under the age of 1 who died by class
+# train.loc[(train.Age < 1) & (train.Survived == 0)].value_counts(train.Pclass).sum()
+# # Dead by class global
+# train[train.Survived == 0].value_counts(train.Pclass, normalize=True).sort_index() * 100
+# # we got a 30& reduction in mortality by not being in the lowest class.
+# # Mortlity by embarked
+# # Plots
+# fig, ax = plt.subplots(figsize=(12, 6))
+# sns.countplot(data=train, x='Embarked', hue='Survived', ax=ax)
+#
+# train.loc[:, ['Embarked', 'Survived']].value_counts().sort_index().unstack().plot.bar(figsize=(12, 6), rot=0)
+# train.loc[:, ['Embarked', 'Survived']].value_counts().sort_index().unstack(1)
+#
+# sns.scatterplot(data=train, x="Age", y="Fare", hue='Embarked')
+# # Fare embarked
+# train.loc[:, ['Embarked', 'Fare']].groupby('Embarked')
+#
+# train.loc[:, ['Embarked', 'Fare']].groupby('Embarked').describe().unstack(1)
+# train.loc[:, ['Embarked', 'Survived']].value_counts(train.Survived)
+#
+# train.Embarked.value_counts(normalize=True) * 100
+# train.Embarked.value_counts()
+#
+# # Comparing train & test
+# # Age -testvstrain
+# ax = sns.distplot(train.Age, hist=False, label="Train", color='olive', kde=True)
+# ax = sns.distplot(test.Age, hist=False, label="Test", color='blue', kde=True)
+#
+# l1 = ax.lines[0]
+# l2 = ax.lines[1]
+#
+# x1 = l1.get_xydata()[:, 0]
+# y1 = l1.get_xydata()[:, 1]
+# x2 = l2.get_xydata()[:, 0]
+# y2 = l2.get_xydata()[:, 1]
+# ax.fill_between(x1, y1, color='olive', alpha=0.3)
+# ax.fill_between(x2, y2, color="blue", alpha=0.3)
+# plt.legend()
+# plt.show(block=False)
+# # FAre tst/trn
+# ax = sns.distplot(train.Fare, hist=False, label="Train", color='olive', kde=True)
+# ax = sns.distplot(test.Fare, hist=False, label="Test", color='blue', kde=True)
+#
+# l1 = ax.lines[0]
+# l2 = ax.lines[1]
+#
+# x1 = l1.get_xydata()[:, 0]
+# y1 = l1.get_xydata()[:, 1]
+# x2 = l2.get_xydata()[:, 0]
+# y2 = l2.get_xydata()[:, 1]
+# ax.fill_between(x1, y1, color='olive', alpha=0.3)
+# ax.fill_between(x2, y2, color="blue", alpha=0.3)
+# plt.legend()
+# plt.show(block=False)
+# # Scatterplot to visualize outliers
+# train.Age.plot(style='.')
+# sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index, marker='x', s=20)
+# sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index)
+#
+# sns.distplot(train.Age, hist=True, color='black')
+# sns.kdeplot(train.Age, color='black', shade=True)
 
 # FE
 
@@ -99,15 +108,16 @@ y = train.Survived
 
 def converter(x):
     c, n = '', ''
-    x = str(x).replace('.', '').replace('/','').replace(' ', '')
+    x = str(x).replace('.', '').replace('/', '').replace(' ', '')
     for i in x:
         if i.isnumeric():
             n += i
-        else :
+        else:
             c += i
     if n != '':
         return c, int(n)
     return c, np.nan
+
 
 def create_extra_features(data):
     data['Ticket_type'] = data['Ticket'].map(lambda x: converter(x)[0])
@@ -116,25 +126,31 @@ def create_extra_features(data):
     data['isAlone'] = data['FamilySize'].apply(lambda x: 1 if x == 0 else 0)
     data['age*fare'] = data.Age * data.Fare
     return data
+
+
 train = create_extra_features(train)
 test = create_extra_features(test)
-
 
 train_dropped = train.drop(columns=['Cabin', 'Ticket', 'PassengerId', 'Survived', 'Name'], axis=1)
 test_dropped = test.drop(columns=['Cabin', 'Ticket', 'PassengerId', 'Name'], axis=1)
 
-train_dropped.iloc[:5].T
 cat = train_dropped.select_dtypes('object').columns
 cont = train_dropped.select_dtypes('number').columns
-def encodethis(data):
-    data = pd.concat([data[cont],encode(data[cat],method='lbl')],axis=1)
-    return data
-train_dropped.Cabin_type.value_counts()
-train_dropped.Ticket_type.value_counts()
-train_dropped = encodethis(train_dropped)
-train_dropped.iloc[:5]
-describe_df(train_dropped)
 
+
+def encodethis(data):
+    data = pd.concat([data[cont], encode(data[cat], method='lbl')], axis=1)
+    return data
+
+
+train_dropped_encoded = encodethis(train_dropped)
+test_dropped_encoded = encodethis(test_dropped)
+
+
+train_dropped_encoded.iloc[:5]
+test_dropped_encoded.iloc[:5]
+describe_df(test_dropped_encoded)
+describe_df(train_dropped_encoded)
 
 train_dropped_encoded.loc[train_dropped_encoded.Embarked == 3, 'Embarked'] = np.NAN
 test_dropped_encoded.loc[test_dropped_encoded.Embarked == 3, 'Embarked'] = np.NAN
@@ -161,7 +177,6 @@ for i in train_dropped_encoded, test_dropped_encoded:
     t = pd.concat([completed_data, i.drop(list(completed_data.columns.values), axis=1)], axis=1)
     results.append(t)
 
-
 train_dropped_encoded_nonulls = results[0]
 test_dropped_encoded_nonulls = results[1]
 describe_df(train_dropped_encoded_nonulls)
@@ -172,13 +187,7 @@ describe_df(test_dropped_encoded_nonulls)
 
 x_train, x_test, y_train, y_test = train_test_split(train_dropped_encoded_nonulls, y, test_size=0.2, train_size=.8)
 
-
 # MDL
-
-from lightgbm import LGBMClassifier
-from sklearn.metrics import accuracy_score, roc_auc_score
-import optuna
-from sklearn.model_selection import KFold
 
 
 def objective(trial):
@@ -214,6 +223,7 @@ print('Best value:', study.best_value)
 optuna.visualization.plot_optimization_history(study)
 optuna.visualization.plot_param_importances(study)
 
+
 paramsLGBM = study.best_trial.params
 paramsLGBM['boosting_type'] = 'gbdt'
 paramsLGBM['metric'] = 'AUC'
@@ -221,26 +231,27 @@ paramsLGBM['random_state'] = 42
 paramsLGBM['objective'] = 'binary'
 paramsLGBM['n_estimators'] = 1500
 
-paramsLGBM = {
-    'reg_alpha': 0.00388218567052311,
-    'reg_lambda': 8.972335390951376e-05,
-    'colsample_bytree': 0.18375780999902297,
-    'subsample': 0.013352256062576087,
-    'learning_rate': 0.002597839272059483,
-    'max_depth': 44,
-    'num_leaves': 15,
-    'min_child_samples': 89,
-    'cat_smooth': 56,
-    'cat_l2': 22.375773634793603,
-    'max_bin': 33,
-    'min_data_per_group': 89
-}
+# paramsLGBM = {
+#     'reg_alpha': 0.00388218567052311,
+#     'reg_lambda': 8.972335390951376e-05,
+#     'colsample_bytree': 0.18375780999902297,
+#     'subsample': 0.013352256062576087,
+#     'learning_rate': 0.002597839272059483,
+#     'max_depth': 44,
+#     'num_leaves': 15,
+#     'min_child_samples': 89,
+#     'cat_smooth': 56,
+#     'cat_l2': 22.375773634793603,
+#     'max_bin': 33,
+#     'min_data_per_group': 89
+# }
 
 folds = KFold(n_splits=10, shuffle=True, random_state=42)
 
 predictions = np.zeros(len(test))
 
 x = train_dropped_encoded_nonulls
+
 for fold, (trn_idx, val_idx) in enumerate(folds.split(x, y)):
     x_train, x_val = x.iloc[trn_idx], x.iloc[val_idx]
     y_train, y_val = y.iloc[trn_idx], y.iloc[val_idx]
@@ -249,22 +260,22 @@ for fold, (trn_idx, val_idx) in enumerate(folds.split(x, y)):
 
     model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=False, early_stopping_rounds=222)
 
-    #predictions += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / folds.n_splits
+    # predictions += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / folds.n_splits
 
     roc_auc_score(y_test, model.predict_proba(x_test, num_iteration=model.best_iteration_)[:, 1])
 
     accuracy_score(y_test, (model.predict_proba(x_test)[:, 1] > 0.5).astype(int))
 plt.rcParams["figure.figsize"] = (6, 5)
 import lightgbm
-lightgbm.plot_importance(model,max_num_features = 16,height=.9)
 
+lightgbm.plot_importance(model, max_num_features=16, height=.9)
 
 roc_auc_score(y_test, model.predict(x_test, num_iteration=model.best_iteration_))
 
 predictions = model.predict(test_dropped_encoded_nonulls, num_iteration=model.best_iteration_)
 
 sample_submission.iloc[:, 1] = predictions
-sample_submission.to_csv('~/Downloads/tabular_playground_april_3.csv', index=False)
+sample_submission.to_csv('~/Downloads/tabular_playground_april_4.csv', index=False)
 
 y_pred = lgb_model.predict(test_dropped_encoded_nonulls, num_iteration=lgb_model.best_iteration)
 y_pred.shape
