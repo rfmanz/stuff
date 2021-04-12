@@ -291,40 +291,6 @@ sample_submission.to_csv('~/Downloads/tabular_playground_april_7.csv', index=Fal
 predictions = model.predict(test_dropped_encoded_nonulls,num_iteration=model.best_iteration_)
 
 
-####lgbm example 1
-
-
-preds = 0
-
-skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=2021)
-
-for fold, (train_idx, valid_idx) in enumerate(skf.split(X, y)):
-    print(f"===== FOLD {fold} =====")
-
-    X_train, y_train = X.iloc[train_idx], y.iloc[train_idx]
-    X_valid, y_valid = X.iloc[valid_idx], y.iloc[valid_idx]
-
-    model = lgb.LGBMRegressor(**params)
-    model.fit(
-        X_train, y_train,
-        eval_set=[(X_train, y_train), (X_valid, y_valid)],
-        early_stopping_rounds=100,
-        verbose=500
-    )
-
-    oof[valid_idx] = model.predict(X_valid)
-    preds += model.predict(X_test, num_iteration=model.best_iteration_) / skf.n_splits
-
-    acc_score = accuracy_score(y_valid, np.where(oof[valid_idx] > 0.5, 1, 0))
-    print(f"===== ACCURACY SCORE {acc_score} =====\n")
-
-acc_score = accuracy_score(y, np.where(oof > 0.5, 1, 0))
-print(f"===== ACCURACY SCORE {acc_score} =====")
-
-
-
-
-####lgbm example 2
 
 
 plt.rcParams["figure.figsize"] = (6, 5)
