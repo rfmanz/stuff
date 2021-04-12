@@ -221,7 +221,7 @@ paramsLGBM['boosting_type'] = 'gbdt'
 paramsLGBM['metric'] = 'AUC'
 paramsLGBM['random_state'] = 42
 paramsLGBM['objective'] = 'binary'
-paramsLGBM['n_estimators'] = 1500
+
 
 # MDL
 
@@ -237,13 +237,18 @@ for fold, (trn_idx, val_idx) in enumerate(folds.split(x, y)):
 
     model = LGBMClassifier(**paramsLGBM)
 
-    model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=False, early_stopping_rounds=222)
+    model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=-1, early_stopping_rounds=500)
 
-    # predictions += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / folds.n_splits
+    predictions += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / folds.n_splits
 
     roc_auc_score(y_test, model.predict_proba(x_test, num_iteration=model.best_iteration_)[:, 1])
 
-    accuracy_score(y_test, (model.predict_proba(x_test)[:, 1] > 0.5).astype(int))
+
+
+predictions.shape
+
+
+
 plt.rcParams["figure.figsize"] = (6, 5)
 import lightgbm
 
@@ -254,7 +259,7 @@ roc_auc_score(y_test, model.predict(x_test, num_iteration=model.best_iteration_)
 predictions = model.predict(test_dropped_encoded_nonulls, num_iteration=model.best_iteration_)
 
 sample_submission.iloc[:, 1] = predictions
-sample_submission.to_csv('~/Downloads/tabular_playground_april_4.csv', index=False)
+sample_submission.to_csv('~/Downloads/tabular_playground_april_5.csv', index=False)
 
 y_pred = lgb_model.predict(test_dropped_encoded_nonulls, num_iteration=lgb_model.best_iteration)
 y_pred.shape
