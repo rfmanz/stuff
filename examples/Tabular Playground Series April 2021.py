@@ -2,13 +2,16 @@ from pyutils import *
 import seaborn as sns
 import matplotlib.pyplot as plt
 import miceforest as mf
+
 from sklearn.model_selection import *
-import warnings
+from sklearn.model_selection import KFold
+from sklearn.metrics import accuracy_score, roc_auc_score
 
 from lightgbm import LGBMClassifier
-from sklearn.metrics import accuracy_score, roc_auc_score
 import optuna
-from sklearn.model_selection import KFold
+import optuna.integration.lightgbm as lgb
+
+import warnings
 
 
 # pd.options
@@ -183,6 +186,41 @@ describe_df(test_dropped_encoded_nonulls)
 
 x_train, x_test, y_train, y_test = train_test_split(train_dropped_encoded_nonulls, y, test_size=0.2, train_size=.8)
 
+
+#OPT .5
+
+kf = KFold(n_splits=5)
+
+params = {
+        "objective": "binary",
+        "metric": "auc",
+        "verbosity": -1,
+        "boosting_type": "gbdt",
+    }
+
+study_tuner = optuna.create_study(direction='maximize')
+dtrain = lgb.Dataset(x, label=y)
+
+# Run optuna LightGBMTunerCV tuning of LightGBM with cross-validation
+#pruning_callback = optuna.integration.LightGBMPruningCallback(study_tuner, "auc")
+
+tuner = lgb.LightGBMTunerCV(params,
+                            dtrain,
+                            study=study_tuner,                                            early_stopping_rounds=250,
+                            folds=kf,
+                            num_boost_round=1500)
+                            #callbacks=pruning_callback
+
+tuner.run()
+print(tuner.best_params)
+# Classification error
+print(tuner.best_score)
+
+# {'objective': 'binary', 'metric': 'auc', 'verbosity': -1, 'boosting_type': 'gbdt', 'feature_pre_filter': False, 'lambda_l1': 0.4671905793010018, 'lambda_l2': 7.704412324807049, 'num_leaves': 43, 'feature_fraction': 0.5, 'bagging_fraction': 1.0, 'bagging_freq': 0, 'min_child_samples': 10}
+# 0.856562735362302
+
+
+
 # OPT
 def objective(trial):
     params = {
@@ -218,6 +256,7 @@ optuna.visualization.plot_param_importances(study)
 
 
 paramsLGBM = study.best_trial.params
+paramsLGBM = tuner.best_params
 paramsLGBM['boosting_type'] = 'gbdt'
 paramsLGBM['metric'] = 'AUC'
 paramsLGBM['random_state'] = 42
@@ -228,26 +267,33 @@ paramsLGBM['objective'] = 'binary'
 
 folds = KFold(n_splits=10, shuffle=True, random_state=42)
 
-predictions = np.zeros(len(test))
-
 x = train_dropped_encoded_nonulls
-
+oof = np.zeros(x.shape[0])
+preds = np.zeros(len(y))
 for fold, (trn_idx, val_idx) in enumerate(folds.split(x, y)):
+    print(f"===== FOLD {fold} =====")
     x_train, x_val = x.iloc[trn_idx], x.iloc[val_idx]
     y_train, y_val = y.iloc[trn_idx], y.iloc[val_idx]
 
-    model = LGBMClassifier(**paramsLGBM)
+    model = LGBMClassifier(**paramsLGBM,n_estimators=1500)
 
-    model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=-1, early_stopping_rounds=500)
+    model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=-1,early_stopping_rounds=500)
 
-    predictions += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / folds.n_splits
+    oof[val_idx] = model.predict(x_val,num_iteration=model.best_iteration_)
+    preds += model.predict(test_dropped_encoded_nonulls, num_iteration=model.best_iteration_) / folds.n_splits
+    roc_auc_score(y_val, oof[val_idx])
+    print(roc_auc_score)
 
-    roc_auc_score(y_test, model.predict_proba(x_test, num_iteration=model.best_iteration_)[:, 1])
+sample_submission.iloc[:, 1] = predictions
+sample_submission.to_csv('~/Downloads/tabular_playground_april_7.csv', index=False)
+
+
+predictions = model.predict(test_dropped_encoded_nonulls,num_iteration=model.best_iteration_)
 
 
 ####lgbm example 1
 
-oof = np.zeros(X.shape[0])
+
 preds = 0
 
 skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=2021)
