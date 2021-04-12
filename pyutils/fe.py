@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
+import miceforest as mf
 
 
 def identify_missing(df, missing_threshold, drop=False):
@@ -136,5 +137,4 @@ def mice_imputer(data):
     # Return the completed kernel data
     completed_data = kds.complete_data()
 
-    t = pd.concat([completed_data, i.drop(list(completed_data.columns.values), axis=1)], axis=1)
-    results.append(t)
+    return completed_data
