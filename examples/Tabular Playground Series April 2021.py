@@ -234,7 +234,7 @@ def objective(trial):
         'n_estimators': trial.suggest_int('n_estimators', 50, 3000),
         'random_state': 42,
         'boosting_type': 'gbdt',
-        'metric': 'AUC',
+        'metric': 'binary_logloss',
         'device': 'cpu'
     }
 
