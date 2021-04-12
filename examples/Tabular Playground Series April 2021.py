@@ -1,5 +1,3 @@
-import numpy as np
-
 from pyutils import *
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -9,7 +7,6 @@ import warnings
 
 from lightgbm import LGBMClassifier
 from sklearn.metrics import accuracy_score, roc_auc_score
-import plotly
 import optuna
 from sklearn.model_selection import KFold
 
@@ -102,7 +99,6 @@ sample_submission.shape, test.shape, train.shape
 # sns.kdeplot(train.Age, color='black', shade=True)
 
 # FE
-
 y = train.Survived
 
 
@@ -155,9 +151,7 @@ describe_df(train_dropped_encoded)
 train_dropped_encoded.loc[train_dropped_encoded.Embarked == 3, 'Embarked'] = np.NAN
 test_dropped_encoded.loc[test_dropped_encoded.Embarked == 3, 'Embarked'] = np.NAN
 
-# describe_df(test_dropped_encoded)
 
-# Any columns with nas
 results = []
 for i in train_dropped_encoded, test_dropped_encoded:
     na_cols = i[i.columns[i.isna().any()]]
@@ -182,14 +176,13 @@ test_dropped_encoded_nonulls = results[1]
 describe_df(train_dropped_encoded_nonulls)
 describe_df(test_dropped_encoded_nonulls)
 
-# CV
 
+
+#CV
 
 x_train, x_test, y_train, y_test = train_test_split(train_dropped_encoded_nonulls, y, test_size=0.2, train_size=.8)
 
-# MDL
-
-
+# OPT
 def objective(trial):
     params = {
         'reg_alpha': trial.suggest_float('reg_alpha', 0.001, 10.0),
@@ -213,7 +206,6 @@ def objective(trial):
 
     return roc_auc
 
-
 study = optuna.create_study(direction='maximize')
 study.optimize(objective, n_trials=30)
 print('Number of finished trials:', len(study.trials))
@@ -231,20 +223,7 @@ paramsLGBM['random_state'] = 42
 paramsLGBM['objective'] = 'binary'
 paramsLGBM['n_estimators'] = 1500
 
-# paramsLGBM = {
-#     'reg_alpha': 0.00388218567052311,
-#     'reg_lambda': 8.972335390951376e-05,
-#     'colsample_bytree': 0.18375780999902297,
-#     'subsample': 0.013352256062576087,
-#     'learning_rate': 0.002597839272059483,
-#     'max_depth': 44,
-#     'num_leaves': 15,
-#     'min_child_samples': 89,
-#     'cat_smooth': 56,
-#     'cat_l2': 22.375773634793603,
-#     'max_bin': 33,
-#     'min_data_per_group': 89
-# }
+# MDL
 
 folds = KFold(n_splits=10, shuffle=True, random_state=42)
 
