@@ -10,7 +10,7 @@ fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  
 fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  train.csv')[2,'Name']
 fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  train.csv')[3,'Name']
 
-
+asdsd
 eval(parse(text=paste(set[[i]],"$",var1,sep="")))
 
 
