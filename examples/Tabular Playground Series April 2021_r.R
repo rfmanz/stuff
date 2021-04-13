@@ -2,29 +2,24 @@ library(data.table)
 library(DataExplorer)
 library(readr)
 library(easycsv)
-
-path  = '~/Downloads/tabular-playground-series-apr-2021.zip'
-paste0('unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  train.csv'))
-
-fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  train.csv')[1,'Name']
-fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  train.csv')[2,'Name']
-fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  train.csv')[3,'Name']
-
-asdsd
-eval(parse(text=paste(set[[i]],"$",var1,sep="")))
+library(scales)
 
 
-DT = do.call(rbind, lapply(files, fread))
-# The same using `rbindlist`
-DT = rbindlist(lapply(files, fread))
+unzip('~/Downloads/tabular-playground-series-apr-2021.zip',list = TRUE)
 
-DataExplorer::profile_missing(na.omit(train))
+train  = fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  train.csv')
+test = fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  test.csv')
+sample_submission = fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  sample_submission.csv')
 
-ggplot(na.omit(train), aes(x=train$Embarked, fill = train$Survived)) + 
-  geom_bar(stat="count", position=position_dodge())
+dim(train)
+dim(test)
+dim(sample_submission)
+
+DataExplorer::plot_missing(train)
+train[,.N,Sex]
+train[,percent(.N/nrow(train)),.(Survived,Sex)][order(Survived)]
+na.omit(train[Sex=='male',.N,.(Hmisc::cut2(Age,c(18,25,50,75)),Survived)])[order(-N), c(.SD,.(N = percent(N/nrow(na.omit(train)))))]
 
 
-ls()
 
-train[,.(),Survived]
 
