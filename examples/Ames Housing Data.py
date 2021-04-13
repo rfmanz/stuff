@@ -187,7 +187,7 @@ gbr = GradientBoostingRegressor(n_estimators=6000,
                                 max_features='sqrt',
                                 min_samples_leaf=15,
                                 min_samples_split=10,
-                                loss='huber',
+                                loss='huber',plt.rcParams["figure.figsize"] = (6, 5)
                                 random_state=42)
 
 # Random Forest Regressor

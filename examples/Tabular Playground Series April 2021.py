@@ -198,7 +198,9 @@ test_dropped_encoded_nonulls = pd.DataFrame(MinMaxScaler().fit_transform(test_dr
 #describe_df(train_dropped_encoded_nonulls)
 # describe_df(test_dropped_encoded_nonulls)
 correlated(train_dropped_encoded_nonulls,0.8)
-train_dropped_encoded_nonulls = correlated(train_dropped_encoded_nonulls,0.8,True)
+# train_dropped_encoded_nonulls = correlated(train_dropped_encoded_nonulls,0.8,True)
+# test_dropped_encoded_nonulls = correlated(test_dropped_encoded_nonulls,0.8,True)
+
 #CV
 
 x_train, x_test, y_train, y_test = train_test_split(train_dropped_encoded_nonulls, y, test_size=.2)
@@ -324,6 +326,7 @@ def objective(trial):
     roc_auc = roc_auc_score(y_test, y_pred)
 
     return roc_auc
+from optuna.pruners import SuccessiveHalvingPruner
 
 study = optuna.create_study(direction='maximize',pruner=SuccessiveHalvingPruner())
 study.enqueue_trial(tmp_best_params)
@@ -337,11 +340,24 @@ optuna.visualization.plot_param_importances(study)
 
 
 paramsLGBM = study.best_trial.params
-paramsLGBM = tuner.best_params
+#paramsLGBM = tuner.best_params
 paramsLGBM['boosting_type'] = 'gbdt'
 paramsLGBM['metric'] = 'AUC'
 paramsLGBM['random_state'] = 42
 paramsLGBM['objective'] = 'binary'
+
+{'reg_alpha': 1.7756323120719368,
+ 'reg_lambda': 1.1329669604585568,
+ 'num_leaves': 32,
+ 'min_child_samples': 74,
+ 'lambda_l1': 0.10778419855175325,
+ 'feature_fraction': 0.4199498862570688,
+ 'bagging_fraction': 0.9192428145485326,
+ 'bagging_freq': 1,
+ 'max_depth': 16,
+ 'learning_rate': 0.02,
+ 'colsample_bytree': 0.25638115462185734,
+ 'n_estimators': 731}
 
 
 # MDL
@@ -349,7 +365,7 @@ paramsLGBM['objective'] = 'binary'
 kf = KFold(n_splits=10, shuffle=True, random_state=42)
 
 x = train_dropped_encoded_nonulls
-
+y = train.Survived
 auc = []
 preds = np.zeros(test_dropped_encoded_nonulls.shape[0])
 n=0   
@@ -364,7 +380,7 @@ for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
 
     model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=-1,early_stopping_rounds=500)
 
-    preds += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / kf.n_splits
+     preds += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / kf.n_splits
 
     auc.append(roc_auc_score(y_val, model.predict_proba(x_val)[:, 1]))
     
@@ -376,7 +392,7 @@ np.mean(auc)
 sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
 sample_submission
 
-sample_submission.to_csv('~/Downloads/tabular_playground_april_8.csv', index=False)
+sample_submission.to_csv('~/Downloads/tabular_playground_april_9.csv', index=False)
 
 
 predictions = model.predict(test_dropped_encoded_nonulls,num_iteration=model.best_iteration_)
@@ -421,5 +437,12 @@ RobustScalar
 
 # ticket	Ticket number
 # fare	Passenger fare
+
+#catboost
+#xgboost
+#rf
+#SVM
+#ridge
+#neural net
 
 http://rasbt.github.io/mlxtend/user_guide/classifier/StackingCVClassifier/
