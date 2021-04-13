@@ -1,5 +1,3 @@
-import pandas as pd
-
 from pyutils import *
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -8,6 +6,7 @@ import miceforest as mf
 from sklearn.model_selection import *
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.preprocessing import MinMaxScaler
 
 from lightgbm import LGBMClassifier
 import optuna
@@ -104,6 +103,7 @@ sample_submission.shape, test.shape, train.shape
 # sns.distplot(train.Age, hist=True, color='black')
 # sns.kdeplot(train.Age, color='black', shade=True)
 
+
 # FE
 y = train.Survived
 
@@ -180,27 +180,34 @@ for i in train_dropped_encoded, test_dropped_encoded:
 train_dropped_encoded_nonulls = results[0]
 test_dropped_encoded_nonulls = results[1]
 
-train_dropped_encoded_nonulls = standard_scaler(train_dropped_encoded_nonulls)
-test_dropped_encoded_nonulls = standard_scaler(test_dropped_encoded_nonulls)
+
 
 train_dropped_encoded_nonulls = pd.concat([train_dropped_encoded_nonulls.drop(['Ticket_type','Cabin_type'],axis=1),encode(train_dropped_encoded_nonulls[['Ticket_type','Cabin_type']].astype('object'))],axis=1)
 test_dropped_encoded_nonulls = pd.concat([test_dropped_encoded_nonulls.drop(['Ticket_type','Cabin_type'],axis=1),encode(test_dropped_encoded_nonulls[['Ticket_type','Cabin_type']].astype('object'))],axis=1)
 
+train_dropped_encoded_nonulls = pd.DataFrame(MinMaxScaler().fit_transform(train_dropped_encoded_nonulls),columns= train_dropped_encoded_nonulls.columns, index= train_dropped_encoded_nonulls.index)
+
+test_dropped_encoded_nonulls = pd.DataFrame(MinMaxScaler().fit_transform(test_dropped_encoded_nonulls),columns= test_dropped_encoded_nonulls.columns, index= test_dropped_encoded_nonulls.index)
 
 
-train_dropped_encoded_nonulls.iloc[:5].T
-describe_df(train_dropped_encoded_nonulls)
-describe_df(test_dropped_encoded_nonulls)
+# train_dropped_encoded_nonulls = standard_scaler(train_dropped_encoded_nonulls)
+# test_dropped_encoded_nonulls = standard_scaler(test_dropped_encoded_nonulls)
 
 
-
+ train_dropped_encoded_nonulls.iloc[:5].T
+#describe_df(train_dropped_encoded_nonulls)
+# describe_df(test_dropped_encoded_nonulls)
+correlated(train_dropped_encoded_nonulls,0.8)
+train_dropped_encoded_nonulls = correlated(train_dropped_encoded_nonulls,0.8,True)
 #CV
 
-x_train, x_test, y_train, y_test = train_test_split(train_dropped_encoded_nonulls, y, test_size=0.2, train_size=.8)
+x_train, x_test, y_train, y_test = train_test_split(train_dropped_encoded_nonulls, y, test_size=.2)
 
 
 #OPT .5
-kf = KFold(n_splits=5)
+#kf = KFold(n_splits=5)
+kf = StratifiedKFold(n_splits=10, shuffle=True)
+
 
 params = {
         "objective": "binary",
@@ -209,7 +216,10 @@ params = {
         "boosting_type": "gbdt",
     }
 
+
 study_tuner = optuna.create_study(direction='maximize')
+#x = train_dropped_encoded_nonulls
+
 dtrain = lgb.Dataset(x, label=y)
 
 # Run optuna LightGBMTunerCV tuning of LightGBM with cross-validation
@@ -240,41 +250,50 @@ if tmp_best_params['bagging_fraction']==0:
     tmp_best_params['bagging_fraction']=1e-9
 
 
-import lightgbm as lgb
-dtrain = lgb.Dataset(x, label=y)
-def objective(trial):
-    params = {
-        'reg_alpha': trial.suggest_float('reg_alpha', 0.001, 10.0),
-        'reg_lambda': trial.suggest_float('reg_lambda', 0.001, 10.0),
-        'num_leaves': trial.suggest_int('num_leaves', 11, 333),
-        'min_child_samples': trial.suggest_int('min_child_samples', 5, 100),
-        'max_depth': trial.suggest_int('max_depth', 5, 20),
-        'learning_rate': trial.suggest_categorical('learning_rate', [0.01, 0.02, 0.05, 0.005, 0.1]),
-        'colsample_bytree': trial.suggest_float('colsample_bytree', 0.1, 0.5),
-        'n_estimators': trial.suggest_int('n_estimators', 50, 3000),
-        'random_state': 42,
-        'boosting_type': 'gbdt',
-        'metric': 'AUC',
-        'device': 'cpu',
-        'feature_pre_filter' : 'false'
+# import lightgbm as lgb
+# dtrain = lgb.Dataset(x, label=y)
+# def objective(trial):
+#     params = {
+#         'reg_alpha': trial.suggest_float('reg_alpha', 0.001, 10.0),
+#         'reg_lambda': trial.suggest_float('reg_lambda', 0.001, 10.0),
+#         'num_leaves': trial.suggest_int('num_leaves', 11, 333),
+#         'min_child_samples': trial.suggest_int('min_child_samples', 5, 100),
+#         'max_depth': trial.suggest_int('max_depth', 5, 20),
+#         'learning_rate': trial.suggest_categorical('learning_rate', [0.01, 0.02, 0.05, 0.005, 0.1]),
+#         'colsample_bytree': trial.suggest_float('colsample_bytree', 0.1, 0.5),
+#         'n_estimators': trial.suggest_int('n_estimators', 50, 3000),
+#         'random_state': 42,
+#         'boosting_type': 'gbdt',
+#         'metric': 'AUC',
+#         'device': 'cpu',
+#         'feature_pre_filter' : 'false'
+#
+#     }
+#
+# lgbcv = lgb.cv(tmp_best_params,
+#                dtrain,
+#                folds=kf,
+#                verbose_eval=False,
+#                early_stopping_rounds=250,
+#                num_boost_round=1500)
+#
+# # Run LightGBM for the hyperparameter values
+# #pruning_callback = optuna.integration.LightGBMPruningCallback(trial, "auc")
+#     lgbcv = lgb.cv(params,
+#                    dtrain,
+#                    folds=kf,
+#                    verbose_eval=False,
+#                    early_stopping_rounds=250,
+#                    num_boost_round=1500)
+#                    #callbacks= pruning_callback)
 
-    }
-# Run LightGBM for the hyperparameter values
-pruning_callback = optuna.integration.LightGBMPruningCallback(trial, "auc")
-    lgbcv = lgb.cv(params,
-                   dtrain,
-                   folds=kf,
-                   verbose_eval=False,
-                   early_stopping_rounds=250,
-                   num_boost_round=10000,
-                   callbacks= pruning_callback)
-
-optuna.logging.set_verbosity(optuna.logging.WARNING)
-study = optuna.create_study(direction='maximize')
-study.enqueue_trial(tmp_best_params)
-study.optimize(objective, n_trials=30)
-print('Best trial:', study.best_trial.params)
-print('Best value:', study.best_value)
+#
+# optuna.logging.set_verbosity(optuna.logging.WARNING)
+# study = optuna.create_study(direction='maximize')
+# study.enqueue_trial(tmp_best_params)
+# study.optimize(objective, n_trials=30)
+# print('Best trial:', study.best_trial.params)
+# print('Best value:', study.best_value)
 
 
 # OPT
@@ -284,6 +303,11 @@ def objective(trial):
         'reg_lambda': trial.suggest_float('reg_lambda', 0.001, 10.0),
         'num_leaves': trial.suggest_int('num_leaves', 11, 333),
         'min_child_samples': trial.suggest_int('min_child_samples', 5, 100),
+        "lambda_l1": trial.suggest_loguniform("lambda_l1", 1e-8, 10.0),
+        "lambda_l2": trial.suggest_loguniform("lambda_l1", 1e-8, 10.0),
+        "feature_fraction": trial.suggest_uniform("feature_fraction", 0.4, 1.0),
+        "bagging_fraction": trial.suggest_uniform("bagging_fraction", 0.4, 1.0),
+        "bagging_freq": trial.suggest_int("bagging_freq", 1, 7),
         'max_depth': trial.suggest_int('max_depth', 5, 20),
         'learning_rate': trial.suggest_categorical('learning_rate', [0.01, 0.02, 0.05, 0.005, 0.1]),
         'colsample_bytree': trial.suggest_float('colsample_bytree', 0.1, 0.5),
@@ -301,8 +325,9 @@ def objective(trial):
 
     return roc_auc
 
-study = optuna.create_study(direction='maximize')
-study.optimize(objective, n_trials=30)
+study = optuna.create_study(direction='maximize',pruner=SuccessiveHalvingPruner())
+study.enqueue_trial(tmp_best_params)
+study.optimize(objective, n_trials=100)
 print('Number of finished trials:', len(study.trials))
 print('Best trial:', study.best_trial.params)
 print('Best value:', study.best_value)
@@ -346,6 +371,8 @@ for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
 np.mean(auc)
 #roc mena
 #0.859017
+
+
 sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
 sample_submission
 
@@ -357,66 +384,15 @@ predictions = model.predict(test_dropped_encoded_nonulls,num_iteration=model.bes
 
 
 
-plt.rcParams["figure.figsize"] = (6, 5)
-import lightgbm
 
+import lightgbm
+plt.rcParams["figure.figsize"] = (6, 5)
 lightgbm.plot_importance(model, max_num_features=16, height=.9)
 
-roc_auc_score(y_test, model.predict(x_test, num_iteration=model.best_iteration_))
-
-predictions = model.predict(test_dropped_encoded_nonulls, num_iteration=model.best_iteration_)
-
-sample_submission.iloc[:, 1] = predictions
-sample_submission.to_csv('~/Downloads/tabular_playground_april_5.csv', index=False)
-
-y_pred = lgb_model.predict(test_dropped_encoded_nonulls, num_iteration=lgb_model.best_iteration)
-y_pred.shape
-roc_auc = roc_auc_score(y_test, y_pred)
-roc_auc
 
 
-def train_lgbm(x_train, y_train, params, n_folds=5, early_stopping_rounds=100, num_boost_round=100):
-    training_start_time = time()
-    global lgb_model
-    features = list(x_train.columns)
-    oof = np.zeros(len(x_train))
-    predictions = np.zeros(len(y_train))
-    skf = StratifiedKFold(n_splits=n_folds, shuffle=True)
-
-    for fold, (trn_idx, val_idx) in enumerate(skf.split(x_train, y_train)):
-        print(f'Training fold {fold + 1}')
-
-        train_set = lgb.Dataset(x_train.iloc[trn_idx], label=y_train.iloc[trn_idx])
-        val_set = lgb.Dataset(x_train.iloc[val_idx], label=y_train.iloc[val_idx])
-
-        lgb_model = lgb.train(params,
-                              train_set=train_set,
-                              valid_sets=[train_set, val_set],
-                              num_boost_round=num_boost_round,
-                              early_stopping_rounds=early_stopping_rounds)
-
-        oof[val_idx] = lgb_model.predict(x_train.iloc[val_idx][features],
-                                         num_iteration=lgb_model.best_iteration)
-
-        # predictions += lgb_model.predict(x_test[features])/n_folds
-        print('-' * 50)
-        print('\n')
-
-    oof_rmse = np.sqrt(metrics.mean_squared_error(y_train, oof))
-    print(f"Total training time: {str(datetime.timedelta(seconds=time() - training_start_time)).split('.')[0]}")
-    print(f'RMSE: is {oof_rmse}')
-    return lgb_model
 
 
-train_lgbm(x_train, y_train=y_train, params=paramsLGBM)
-
-# correlation between features
-
-trheat = train.drop('id', axis=1)
-matrix = np.triu(trheat.corr())
-plt.figure(figsize=(15, 10))
-sns.heatmap(trheat.corr(), annot=True, cmap='YlGn', fmt=".2f", mask=matrix, vmin=-1, vmax=1, linewidths=0.1,
-            linecolor='white')
 
 RobustScalar
 
@@ -445,3 +421,5 @@ RobustScalar
 
 # ticket	Ticket number
 # fare	Passenger fare
+
+http://rasbt.github.io/mlxtend/user_guide/classifier/StackingCVClassifier/
