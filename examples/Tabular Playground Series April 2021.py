@@ -1,3 +1,5 @@
+import pandas as pd
+
 from pyutils import *
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -177,6 +179,16 @@ for i in train_dropped_encoded, test_dropped_encoded:
 
 train_dropped_encoded_nonulls = results[0]
 test_dropped_encoded_nonulls = results[1]
+
+train_dropped_encoded_nonulls = standard_scaler(train_dropped_encoded_nonulls)
+test_dropped_encoded_nonulls = standard_scaler(test_dropped_encoded_nonulls)
+
+train_dropped_encoded_nonulls = pd.concat([train_dropped_encoded_nonulls.drop(['Ticket_type','Cabin_type'],axis=1),encode(train_dropped_encoded_nonulls[['Ticket_type','Cabin_type']].astype('object'))],axis=1)
+test_dropped_encoded_nonulls = pd.concat([test_dropped_encoded_nonulls.drop(['Ticket_type','Cabin_type'],axis=1),encode(test_dropped_encoded_nonulls[['Ticket_type','Cabin_type']].astype('object'))],axis=1)
+
+
+
+train_dropped_encoded_nonulls.iloc[:5].T
 describe_df(train_dropped_encoded_nonulls)
 describe_df(test_dropped_encoded_nonulls)
 
@@ -188,7 +200,6 @@ x_train, x_test, y_train, y_test = train_test_split(train_dropped_encoded_nonull
 
 
 #OPT .5
-
 kf = KFold(n_splits=5)
 
 params = {
@@ -206,7 +217,8 @@ dtrain = lgb.Dataset(x, label=y)
 
 tuner = lgb.LightGBMTunerCV(params,
                             dtrain,
-                            study=study_tuner,                                            early_stopping_rounds=250,
+                            study=study_tuner,
+                            early_stopping_rounds=250,
                             folds=kf,
                             num_boost_round=1500)
                             #callbacks=pruning_callback
@@ -216,9 +228,53 @@ print(tuner.best_params)
 # Classification error
 print(tuner.best_score)
 
-# {'objective': 'binary', 'metric': 'auc', 'verbosity': -1, 'boosting_type': 'gbdt', 'feature_pre_filter': False, 'lambda_l1': 0.4671905793010018, 'lambda_l2': 7.704412324807049, 'num_leaves': 43, 'feature_fraction': 0.5, 'bagging_fraction': 1.0, 'bagging_freq': 0, 'min_child_samples': 10}
-# 0.856562735362302
 
+tmp_best_params = tuner.best_params
+if tmp_best_params['feature_fraction']==1:
+    tmp_best_params['feature_fraction']=1.0-1e-9
+if tmp_best_params['feature_fraction']==0:
+    tmp_best_params['feature_fraction']=1e-9
+if tmp_best_params['bagging_fraction']==1:
+    tmp_best_params['bagging_fraction']=1.0-1e-9
+if tmp_best_params['bagging_fraction']==0:
+    tmp_best_params['bagging_fraction']=1e-9
+
+
+import lightgbm as lgb
+dtrain = lgb.Dataset(x, label=y)
+def objective(trial):
+    params = {
+        'reg_alpha': trial.suggest_float('reg_alpha', 0.001, 10.0),
+        'reg_lambda': trial.suggest_float('reg_lambda', 0.001, 10.0),
+        'num_leaves': trial.suggest_int('num_leaves', 11, 333),
+        'min_child_samples': trial.suggest_int('min_child_samples', 5, 100),
+        'max_depth': trial.suggest_int('max_depth', 5, 20),
+        'learning_rate': trial.suggest_categorical('learning_rate', [0.01, 0.02, 0.05, 0.005, 0.1]),
+        'colsample_bytree': trial.suggest_float('colsample_bytree', 0.1, 0.5),
+        'n_estimators': trial.suggest_int('n_estimators', 50, 3000),
+        'random_state': 42,
+        'boosting_type': 'gbdt',
+        'metric': 'AUC',
+        'device': 'cpu',
+        'feature_pre_filter' : 'false'
+
+    }
+# Run LightGBM for the hyperparameter values
+pruning_callback = optuna.integration.LightGBMPruningCallback(trial, "auc")
+    lgbcv = lgb.cv(params,
+                   dtrain,
+                   folds=kf,
+                   verbose_eval=False,
+                   early_stopping_rounds=250,
+                   num_boost_round=10000,
+                   callbacks= pruning_callback)
+
+optuna.logging.set_verbosity(optuna.logging.WARNING)
+study = optuna.create_study(direction='maximize')
+study.enqueue_trial(tmp_best_params)
+study.optimize(objective, n_trials=30)
+print('Best trial:', study.best_trial.params)
+print('Best value:', study.best_value)
 
 
 # OPT
@@ -265,27 +321,35 @@ paramsLGBM['objective'] = 'binary'
 
 # MDL
 
-folds = KFold(n_splits=10, shuffle=True, random_state=42)
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
 
 x = train_dropped_encoded_nonulls
-oof = np.zeros(x.shape[0])
-preds = np.zeros(len(y))
-for fold, (trn_idx, val_idx) in enumerate(folds.split(x, y)):
-    print(f"===== FOLD {fold} =====")
+
+auc = []
+preds = np.zeros(test_dropped_encoded_nonulls.shape[0])
+n=0   
+
+
+for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
+    print(f"===== FOLD {fold+1} =====")
     x_train, x_val = x.iloc[trn_idx], x.iloc[val_idx]
     y_train, y_val = y.iloc[trn_idx], y.iloc[val_idx]
 
-    model = LGBMClassifier(**paramsLGBM,n_estimators=1500)
+    model = LGBMClassifier(**paramsLGBM)
 
     model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=-1,early_stopping_rounds=500)
 
-    oof[val_idx] = model.predict(x_val,num_iteration=model.best_iteration_)
-    preds += model.predict(test_dropped_encoded_nonulls, num_iteration=model.best_iteration_) / folds.n_splits
-    roc_auc_score(y_val, oof[val_idx])
-    print(roc_auc_score)
+    preds += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / kf.n_splits
 
-sample_submission.iloc[:, 1] = predictions
-sample_submission.to_csv('~/Downloads/tabular_playground_april_7.csv', index=False)
+    auc.append(roc_auc_score(y_val, model.predict_proba(x_val)[:, 1]))
+    
+np.mean(auc)
+#roc mena
+#0.859017
+sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
+sample_submission
+
+sample_submission.to_csv('~/Downloads/tabular_playground_april_8.csv', index=False)
 
 
 predictions = model.predict(test_dropped_encoded_nonulls,num_iteration=model.best_iteration_)
