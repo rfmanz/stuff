@@ -149,11 +149,6 @@ train_dropped_encoded = encodethis(train_dropped)
 test_dropped_encoded = encodethis(test_dropped)
 
 
-train_dropped_encoded.iloc[:5]
-test_dropped_encoded.iloc[:5]
-describe_df(test_dropped_encoded)
-describe_df(train_dropped_encoded)
-
 train_dropped_encoded.loc[train_dropped_encoded.Embarked == 3, 'Embarked'] = np.NAN
 test_dropped_encoded.loc[test_dropped_encoded.Embarked == 3, 'Embarked'] = np.NAN
 
