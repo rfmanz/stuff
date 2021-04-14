@@ -53,12 +53,16 @@ na.omit(train[,.N,Sex])
 na.omit(train[Sex=='male' & Survived ==1 , .N, Hmisc::cut2(Age,c(18,25,50,75))])[order(-N)]
 
 
+# survived by sex ---- 
+# use this for proportions of any category
+prop.table(table(train[,.(Survived,Sex)]))*100
 # pct distribution of nas  ---- 
 train[,prop.table(table(is.na(Age)))]
 
-# nas by columns ----
+# Find zeroes and nas by column----
 print(train[,.(names = names(train), p = lapply(.SD, function(x) sum(x==0)), t= lapply(.SD, function(x) scales::percent(sum(x==0)/nrow(t))))][order(as.numeric(p)),],topn=150) 
 
+train[,.(names = names(train), p = lapply(.SD, function(x) sum(is.na(x))), t= lapply(.SD, function(x) scales::percent(sum(is.na(x))/nrow(train))))][order(as.numeric(p)),]
 
 
 
