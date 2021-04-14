@@ -4,7 +4,7 @@ library(readr)
 library(easycsv)
 library(scales)
 
-
+# load ---- 
 unzip('~/Downloads/tabular-playground-series-apr-2021.zip',list = TRUE)
 
 train  = fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  train.csv')
@@ -14,23 +14,20 @@ sample_submission = fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-s
 dim(train)
 dim(test)
 dim(sample_submission)
+ 
 
-DataExplorer::plot_missing(train)
-train[,.N,Sex]
-train[,percent(.N/nrow(train)),.(Survived,Sex)][order(Survived)]
-
-#age range men 
+# age range men  ---- 
 na.omit(train[Sex=='male', .N,.(Hmisc::cut2(Age,c(18,25,50,75)),Sex)])[order(-N), c(.SD, .(Pct =percent(N/na.omit(train[,.N]))))][,c(2,1,3,4)]
 
 
-#Distribution of survived vs not survived of men by age ranges | total percent 
+# Distribution of survived vs not survived of men by age ranges | ----
 na.omit(train[Sex=='male',.N,.(Age=Hmisc::cut2(Age,c(18,25,50,75)),Survived)])[order(-N), c(.SD,.(age_group_pct = percent(N/nrow(na.omit(train)))))][order(Age)]
 
-#Distribution of survived vs not survived of men by age ranges | age group percent  
+
+# Distribution of survived vs not survived of men by age ranges | age group percent  ----
 na.omit(train[Sex=='male',
               {GRP = .GRP-1
               .SD[,.(.N,GRP),Survived]},.(Age=Hmisc::cut2(Age,c(18,25,50,75)))][,c(.SD, .(pct = percent(N/sum(N)), Sex = "Male")),GRP][,-"GRP"][,c(5,seq(1,4))][order(Age,Survived)])
-
 
 
 na.omit(train[Sex=='female',
@@ -41,16 +38,14 @@ plot_density(train[Sex=='male',Age])
 hist(train[Sex=='male',Age])
 DataExplorer::plot_histogram(train[Sex=='male',Age],geom_histogram_args = list('fill'= 'blue',"color" = 'black' ))
 
-#25 to 50 age range survival rate
+#25 to 50 age range survival rate ----
 
 na.omit(train[Sex=='male',.N,.(Hmisc::cut2(Age,c(25,50),minmax = FALSE),Survived)])[order(-N), c(.SD,.(N = percent(N/na.omit(train[Sex=='male' & between(Age,25,50),.N]))))]
 
 na.omit(train[Sex=='male',.N,.(Hmisc::cut2(Age,c(25,50),minmax = FALSE),Survived)])[order(-N), c(.SD,.(N = percent(N/na.omit(train[,.N]))))]
 
 
-
-
-#Survival by age men 
+#Survival by age men ----
 na.omit(train[Sex=='male' & Survived==1,.N,.(Hmisc::cut2(Age,c(18,25,50,75)))])[order(-N), c(.SD,.(N = percent(N/nrow(na.omit(train)))))]
 
 na.omit(train[Sex=='male', .(.N,percent(.N/na.omit(train[,.N]))),Survived])
@@ -58,9 +53,21 @@ na.omit(train[,.N,Sex])
 na.omit(train[Sex=='male' & Survived ==1 , .N, Hmisc::cut2(Age,c(18,25,50,75))])[order(-N)]
 
 
+# pct distribution of nas  ---- 
+train[,prop.table(table(is.na(Age)))]
 
-na.omit(train[,.N,.(Sex, Survived)])
+# nas by columns ----
+print(train[,.(names = names(train), p = lapply(.SD, function(x) sum(x==0)), t= lapply(.SD, function(x) scales::percent(sum(x==0)/nrow(t))))][order(as.numeric(p)),],topn=150) 
 
-Base_pol[,prop.table(table(is.na(FECANUL)))]
 
-print(t[,.(names = names(t), p = lapply(.SD, function(x) sum(x==0)), t= lapply(.SD, function(x) scales::percent(sum(x==0)/nrow(t))))][order(as.numeric(p)),],topn=150) 
+
+
+
+
+
+
+
+
+
+
+
