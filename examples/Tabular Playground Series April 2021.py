@@ -28,13 +28,6 @@ read_data('/home/r/Downloads/tabular-playground-series-apr-2021.zip')
 sample_submission, test, train = read_data('/home/r/Downloads/tabular-playground-series-apr-2021.zip', True)
 sample_submission.shape, test.shape, train.shape
 
-#0.5 eda
-
-train.Name.nunique()
-train.iloc[:4].T
-describe_df(train)
-train[].value_counts(train.Survived)
-
 
 # EDA {
 # train.Survived.value_counts(normalize=True) * 100
