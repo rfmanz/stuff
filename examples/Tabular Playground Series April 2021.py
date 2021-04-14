@@ -36,7 +36,7 @@ describe_df(train)
 train[].value_counts(train.Survived)
 
 
-# EDA
+# EDA {
 # train.Survived.value_counts(normalize=True) * 100
 # sns.countplot()
 # describe_df(train)
@@ -110,7 +110,7 @@ train[].value_counts(train.Survived)
 #
 # sns.distplot(train.Age, hist=True, color='black')
 # sns.kdeplot(train.Age, color='black', shade=True)
-
+#}
 
 # FE
 y = train.Survived
