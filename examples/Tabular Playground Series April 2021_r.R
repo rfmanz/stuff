@@ -31,19 +31,24 @@ na.omit(train[Sex=='male',
               {GRP = .GRP-1
               .SD[,.(.N,GRP),Survived]},.(Age=Hmisc::cut2(Age,c(18,25,50,75)))][,c(.SD, .(pct = percent(N/sum(N)), Sex = "Male")),GRP][,-"GRP"][,c(5,seq(1,4))][order(Age,Survived)])
 
-hist(train[Sex=='male',.N])
+
 
 na.omit(train[Sex=='female',
               {GRP = .GRP-1
               .SD[,.(.N,GRP),Survived]},.(Age=Hmisc::cut2(Age,c(18,25,50,75)))][,c(.SD, .(pct = percent(N/sum(N)), Sex = "female")),GRP][,-"GRP"][,c(5,seq(1,4))][order(Age,Survived)])
 
-
+plot_density(train[Sex=='male',Age])
+hist(train[Sex=='male',Age])
+DataExplorer::plot_histogram(train[Sex=='male',Age],geom_histogram_args = list('fill'= 'blue',"color" = 'black' ))
 
 #25 to 50 age range survival rate
 
 na.omit(train[Sex=='male',.N,.(Hmisc::cut2(Age,c(25,50),minmax = FALSE),Survived)])[order(-N), c(.SD,.(N = percent(N/na.omit(train[Sex=='male' & between(Age,25,50),.N]))))]
 
 na.omit(train[Sex=='male',.N,.(Hmisc::cut2(Age,c(25,50),minmax = FALSE),Survived)])[order(-N), c(.SD,.(N = percent(N/na.omit(train[,.N]))))]
+
+
+
 
 #Survival by age men 
 na.omit(train[Sex=='male' & Survived==1,.N,.(Hmisc::cut2(Age,c(18,25,50,75)))])[order(-N), c(.SD,.(N = percent(N/nrow(na.omit(train)))))]
