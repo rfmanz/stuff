@@ -12,6 +12,11 @@ from lightgbm import LGBMClassifier
 import optuna
 import optuna.integration.lightgbm as lgb
 
+from catboost import CatBoostClassifier
+
+from mlxtend.classifier import StackingCVClassifier
+
+
 import warnings
 
 
@@ -192,8 +197,24 @@ for i in train_dropped_encoded, test_dropped_encoded:
 train_dropped_encoded_nonulls = results[0]
 test_dropped_encoded_nonulls = results[1]
 
+data = pd.concat([train_dropped_encoded_nonulls, test_dropped_encoded_nonulls], axis=0)
+
+conditions = [
+  (data['Fare'] <= 7.91),
+  ((data['Fare'] > 7.91) & (data['Fare'] <= 14.454)),
+  ((data['Fare'] > 14.454) & (data['Fare'] <= 31)),
+  (data['Fare'] > 31)
+]
+
+choices = [0, 1, 2, 3]
+data["Fare"] = np.select(conditions, choices)
+data['Fare'] = data['Fare'].astype(int)
+
+train_dropped_encoded_nonulls = data.iloc[:train.shape[0]]
+test_dropped_encoded_nonulls = data.iloc[train.shape[0]:]
 
 
+# Dummies of cabin and ticket:
 # train_dropped_encoded_nonulls = pd.concat([train_dropped_encoded_nonulls.drop(['Ticket_type','Cabin_type'],axis=1),encode(train_dropped_encoded_nonulls[['Ticket_type','Cabin_type']].astype('object'))],axis=1)
 # test_dropped_encoded_nonulls = pd.concat([test_dropped_encoded_nonulls.drop(['Ticket_type','Cabin_type'],axis=1),encode(test_dropped_encoded_nonulls[['Ticket_type','Cabin_type']].astype('object'))],axis=1)
 
@@ -206,7 +227,7 @@ test_dropped_encoded_nonulls = pd.DataFrame(MinMaxScaler().fit_transform(test_dr
 # test_dropped_encoded_nonulls = standard_scaler(test_dropped_encoded_nonulls)
 
 
- train_dropped_encoded_nonulls.iloc[:5].T
+train_dropped_encoded_nonulls.iloc[:5].T
 #describe_df(train_dropped_encoded_nonulls)
 # describe_df(test_dropped_encoded_nonulls)
 correlated(train_dropped_encoded_nonulls,0.8)
@@ -312,7 +333,7 @@ paramsLGBM['metric'] = 'AUC'
 paramsLGBM['random_state'] = 42
 paramsLGBM['objective'] = 'binary'
 
-{'reg_alpha': 1.7756323120719368,
+paramsLGBM = {'reg_alpha': 1.7756323120719368,
  'reg_lambda': 1.1329669604585568,
  'num_leaves': 32,
  'min_child_samples': 74,
@@ -347,13 +368,22 @@ for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
 
     model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=-1,early_stopping_rounds=500)
 
-     preds += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / kf.n_splits
+    preds += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / kf.n_splits
 
     auc.append(roc_auc_score(y_val, model.predict_proba(x_val)[:, 1]))
     
 np.mean(auc)
 #roc mena
 #0.859017
+
+
+lgbm_predictions =  np.where(preds > 0.5, 1, 0) 
+
+
+global_predictions = pd.concat([pd.Series(lgbm_predictions),pd.Series(catboost_predicitions)],axis=1,keys=['LGBM','CAT'])
+global_predictions.value_counts()
+
+
 
 # CATBOOST 
 
@@ -362,7 +392,7 @@ params = {'iterations': 10000,
                   'eval_metric': 'AUC', # 'Accuracy'
                   'loss_function':'Logloss',
                   'od_type':'Iter',
-                  'od_wait':od_wait,
+           #       'od_wait':od_wait,
                   'depth': 6, # [4, 10]
                   'l2_leaf_reg': 3,
                   # random_strength ??
@@ -370,15 +400,15 @@ params = {'iterations': 10000,
                   'bagging_temperature': 2,
                   'max_bin': 254,
                   'grow_policy': 'SymmetricTree',
-                  'cat_features': lab_cols,
-                  'verbose': od_wait,
+            #      'cat_features': lab_cols,
+             #     'verbose': od_wait,
                   'random_seed': 314
          }
          
 kf = KFold(n_splits=10, shuffle=True, random_state=42)
 
 x = train_dropped_encoded_nonulls
-y = train.Survived
+y = y
 auc = []
 preds = np.zeros(test_dropped_encoded_nonulls.shape[0])
 n=0   
@@ -391,23 +421,30 @@ for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
 
     model = CatBoostClassifier(**params)
 
-    model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=-1,early_stopping_rounds=500)
-
-     preds += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / kf.n_splits
-
-    auc.append(roc_auc_score(y_val, model.predict_proba(x_val)[:, 1]))
+    model_fit= model.fit(x_train, y_train, eval_set=[(x_val, y_val)], use_best_model=True,
+                            plot=False)
     
+    # yp_val = model_fit.predict_proba(x_val)[:, 1]
+    # acc = accuracy_score(y_val, np.where(yp_val>0.5, 1, 0))
+    # print(f"- Accuracy before : {acc} ...")
+    
+    auc.append(roc_auc_score(y_val, model.predict_proba(x_val)[:, 1]))
+    preds += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / kf.n_splits
+    
+    
+      
 np.mean(auc)
 
+catboost_predicitions =  np.where(preds > 0.5, 1, 0) 
 
+
+#Submission
 
 sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
 sample_submission
 
-sample_submission.to_csv('~/Downloads/tabular_playground_april_9.csv', index=False)
+sample_submission.to_csv('~/Downloads/tabular_playground_april_10.csv', index=False)
 
-
-predictions = model.predict(test_dropped_encoded_nonulls,num_iteration=model.best_iteration_)
 
 
 
