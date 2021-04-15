@@ -16,7 +16,7 @@ import warnings
 
 
 # pd.options
-desired_width = 150
+desired_width = 100
 pd.set_option('display.width', desired_width)
 pd.set_option('max.columns', 20)
 
@@ -29,94 +29,96 @@ sample_submission, test, train = read_data('/home/r/Downloads/tabular-playground
 sample_submission.shape, test.shape, train.shape
 
 
-EDA {
-train.Survived.value_counts(normalize=True) * 100
-
-describe_df(train)
-(train.Age < 1).value_counts()
-train[(train.Age < 1)].value_counts('Survived', normalize=True)
-# Babies under the age of 1
-pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts(normalize=True).sort_index() * 100
-pd.cut(train.loc[train.Age < 1, 'Age'], bins=5, right=True).value_counts().sort_index()
-pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts().sort_index()
-train[train.Age.between(0.92, 1, inclusive=False)]
-# Babies under the age of 1 who died
-train.loc[(train.Age < 1) & (train.Survived == 0)]
-# Babies under the age of 1 who died by class
-train.loc[(train.Age < 1) & (train.Survived == 0)].value_counts(train.Pclass).sum()
-# Dead by class global
-train[train.Survived == 0].value_counts(train.Pclass, normalize=True).sort_index() * 100
-# we got a 30& reduction in mortality by not being in the lowest class.
-# Mortlity by embarked
-# Plots
-plt.figure()
-fig, ax = plt.subplots(figsize=(12, 6))
-sns.countplot(data=train, x='Embarked', hue='Survived', ax=ax)
-plt.show()
-train.loc[:, ['Embarked', 'Survived']].value_counts().sort_index().unstack().plot.bar(figsize=(12, 6), rot=0)
-train.loc[:, ['Embarked', 'Survived']].value_counts().sort_index().unstack(1)
-
-sns.scatterplot(data=train, x="Age", y="Fare", hue='Embarked')
-plt.show()
-# Fare embarked
-plt.figure()
-train.loc[:, ['Embarked', 'Fare']].groupby('Embarked')
-
-train.loc[:, ['Embarked', 'Fare']].groupby('Embarked').describe().unstack(1)
-train.loc[:, ['Embarked', 'Survived']].value_counts(train.Survived)
-
-train.Embarked.value_counts(normalize=True) * 100
-train.Embarked.value_counts()
-
-# Comparing train & test
-# Age -testvstrain
-ax = sns.distplot(train.Age, hist=False, label="Train", color='olive', kde=True)
-ax = sns.distplot(test.Age, hist=False, label="Test", color='blue', kde=True)
-
-l1 = ax.lines[0]
-l2 = ax.lines[1]
-
-x1 = l1.get_xydata()[:, 0]
-y1 = l1.get_xydata()[:, 1]
-x2 = l2.get_xydata()[:, 0]
-y2 = l2.get_xydata()[:, 1]
-ax.fill_between(x1, y1, color='olive', alpha=0.3)
-ax.fill_between(x2, y2, color="blue", alpha=0.3)
-plt.legend()
-plt.show()
-
-del ax
-# FAre tst/trn
-plt.figure()
-ax = sns.distplot(train.Fare, hist=False, label="Train", color='olive', kde=True)
-
-l1 = ax.lines[0]
-l2 = ax.lines[1]
-
-x1 = l1.get_xydata()[:, 0]
-y1 = l1.get_xydata()[:, 1]
-x2 = l2.get_xydata()[:, 0]
-y2 = l2.get_xydata()[:, 1]
-ax.fill_between(x1, y1, color='olive', alpha=0.3)
-ax.fill_between(x2, y2, color="blue", alpha=0.3)
-plt.legend()
-plt.show(block=False)
-# Scatterplot to visualize outliers
-train.Age.plot(style='.')
-plt.figure()
-sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index, marker='x', s=20)
-plt.show()
-plt.figure()
-sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index)
-plt.show()
-plt.figure()
-sns.distplot(train.Age, hist=True, color='black')
-plt.show()
-plt.figure()
-sns.kdeplot(train.Age, color='black', shade=True)
-plt.show()
-
-}
+# EDA {
+# train.Survived.value_counts(normalize=True) * 100
+# train.loc[train.Sex == 'male'].value_counts(train.Pclass, train.Survived)
+# train.loc[(train.Sex == 'male')& (train.Survived== 0)].value_counts(train.Pclass)
+# 
+# describe_df(train)
+# (train.Age < 1).value_counts()
+# train[(train.Age < 1)].value_counts('Survived', normalize=True)
+# # Babies under the age of 1
+# pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts(normalize=True).sort_index() * 100
+# pd.cut(train.loc[train.Age < 1, 'Age'], bins=5, right=True).value_counts().sort_index()
+# pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts().sort_index()
+# train[train.Age.between(0.92, 1, inclusive=False)]
+# # Babies under the age of 1 who died
+# train.loc[(train.Age < 1) & (train.Survived == 0)]
+# # Babies under the age of 1 who died by class
+# train.loc[(train.Age < 1) & (train.Survived == 0)].value_counts(train.Pclass).sum()
+# # Dead by class global
+# train[train.Survived == 0].value_counts(train.Pclass, normalize=True).sort_index() * 100
+# # we got a 30& reduction in mortality by not being in the lowest class.
+# # Mortlity by embarked
+# # Plots
+# plt.figure()
+# fig, ax = plt.subplots(figsize=(12, 6))
+# sns.countplot(data=train, x='Embarked', hue='Survived', ax=ax)
+# plt.show()
+# train.loc[:, ['Embarked', 'Survived']].value_counts().sort_index().unstack().plot.bar(figsize=(12, 6), rot=0)
+# train.loc[:, ['Embarked', 'Survived']].value_counts().sort_index().unstack(1)
+# 
+# sns.scatterplot(data=train, x="Age", y="Fare", hue='Embarked')
+# plt.show()
+# # Fare embarked
+# plt.figure()
+# train.loc[:, ['Embarked', 'Fare']].groupby('Embarked')
+# 
+# train.loc[:, ['Embarked', 'Fare']].groupby('Embarked').describe().unstack(1)
+# train.loc[:, ['Embarked', 'Survived']].value_counts(train.Survived)
+# 
+# train.Embarked.value_counts(normalize=True) * 100
+# train.Embarked.value_counts()
+# 
+# # Comparing train & test
+# # Age -testvstrain
+# ax = sns.distplot(train.Age, hist=False, label="Train", color='olive', kde=True)
+# ax = sns.distplot(test.Age, hist=False, label="Test", color='blue', kde=True)
+# 
+# l1 = ax.lines[0]
+# l2 = ax.lines[1]
+# 
+# x1 = l1.get_xydata()[:, 0]
+# y1 = l1.get_xydata()[:, 1]
+# x2 = l2.get_xydata()[:, 0]
+# y2 = l2.get_xydata()[:, 1]
+# ax.fill_between(x1, y1, color='olive', alpha=0.3)
+# ax.fill_between(x2, y2, color="blue", alpha=0.3)
+# plt.legend()
+# plt.show()
+# 
+# del ax
+# # FAre tst/trn
+# plt.figure()
+# ax = sns.distplot(train.Fare, hist=False, label="Train", color='olive', kde=True)
+# 
+# l1 = ax.lines[0]
+# l2 = ax.lines[1]
+# 
+# x1 = l1.get_xydata()[:, 0]
+# y1 = l1.get_xydata()[:, 1]
+# x2 = l2.get_xydata()[:, 0]
+# y2 = l2.get_xydata()[:, 1]
+# ax.fill_between(x1, y1, color='olive', alpha=0.3)
+# ax.fill_between(x2, y2, color="blue", alpha=0.3)
+# plt.legend()
+# plt.show(block=False)
+# # Scatterplot to visualize outliers
+# train.Age.plot(style='.')
+# plt.figure()
+# sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index, marker='x', s=20)
+# plt.show()
+# plt.figure()
+# sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index)
+# plt.show()
+# plt.figure()
+# sns.distplot(train.Age, hist=True, color='black')
+# plt.show()
+# plt.figure()
+# sns.kdeplot(train.Age, color='black', shade=True)
+# plt.show()
+# 
+# }
 
 
 # FE
@@ -192,8 +194,8 @@ test_dropped_encoded_nonulls = results[1]
 
 
 
-train_dropped_encoded_nonulls = pd.concat([train_dropped_encoded_nonulls.drop(['Ticket_type','Cabin_type'],axis=1),encode(train_dropped_encoded_nonulls[['Ticket_type','Cabin_type']].astype('object'))],axis=1)
-test_dropped_encoded_nonulls = pd.concat([test_dropped_encoded_nonulls.drop(['Ticket_type','Cabin_type'],axis=1),encode(test_dropped_encoded_nonulls[['Ticket_type','Cabin_type']].astype('object'))],axis=1)
+# train_dropped_encoded_nonulls = pd.concat([train_dropped_encoded_nonulls.drop(['Ticket_type','Cabin_type'],axis=1),encode(train_dropped_encoded_nonulls[['Ticket_type','Cabin_type']].astype('object'))],axis=1)
+# test_dropped_encoded_nonulls = pd.concat([test_dropped_encoded_nonulls.drop(['Ticket_type','Cabin_type'],axis=1),encode(test_dropped_encoded_nonulls[['Ticket_type','Cabin_type']].astype('object'))],axis=1)
 
 train_dropped_encoded_nonulls = pd.DataFrame(MinMaxScaler().fit_transform(train_dropped_encoded_nonulls),columns= train_dropped_encoded_nonulls.columns, index= train_dropped_encoded_nonulls.index)
 
@@ -230,7 +232,7 @@ params = {
 
 
 study_tuner = optuna.create_study(direction='maximize')
-#x = train_dropped_encoded_nonulls
+x = train_dropped_encoded_nonulls
 
 dtrain = lgb.Dataset(x, label=y)
 
@@ -260,52 +262,6 @@ if tmp_best_params['bagging_fraction']==1:
     tmp_best_params['bagging_fraction']=1.0-1e-9
 if tmp_best_params['bagging_fraction']==0:
     tmp_best_params['bagging_fraction']=1e-9
-
-
-# import lightgbm as lgb
-# dtrain = lgb.Dataset(x, label=y)
-# def objective(trial):
-#     params = {
-#         'reg_alpha': trial.suggest_float('reg_alpha', 0.001, 10.0),
-#         'reg_lambda': trial.suggest_float('reg_lambda', 0.001, 10.0),
-#         'num_leaves': trial.suggest_int('num_leaves', 11, 333),
-#         'min_child_samples': trial.suggest_int('min_child_samples', 5, 100),
-#         'max_depth': trial.suggest_int('max_depth', 5, 20),
-#         'learning_rate': trial.suggest_categorical('learning_rate', [0.01, 0.02, 0.05, 0.005, 0.1]),
-#         'colsample_bytree': trial.suggest_float('colsample_bytree', 0.1, 0.5),
-#         'n_estimators': trial.suggest_int('n_estimators', 50, 3000),
-#         'random_state': 42,
-#         'boosting_type': 'gbdt',
-#         'metric': 'AUC',
-#         'device': 'cpu',
-#         'feature_pre_filter' : 'false'
-#
-#     }
-#
-# lgbcv = lgb.cv(tmp_best_params,
-#                dtrain,
-#                folds=kf,
-#                verbose_eval=False,
-#                early_stopping_rounds=250,
-#                num_boost_round=1500)
-#
-# # Run LightGBM for the hyperparameter values
-# #pruning_callback = optuna.integration.LightGBMPruningCallback(trial, "auc")
-#     lgbcv = lgb.cv(params,
-#                    dtrain,
-#                    folds=kf,
-#                    verbose_eval=False,
-#                    early_stopping_rounds=250,
-#                    num_boost_round=1500)
-#                    #callbacks= pruning_callback)
-
-#
-# optuna.logging.set_verbosity(optuna.logging.WARNING)
-# study = optuna.create_study(direction='maximize')
-# study.enqueue_trial(tmp_best_params)
-# study.optimize(objective, n_trials=30)
-# print('Best trial:', study.best_trial.params)
-# print('Best value:', study.best_value)
 
 
 # OPT
@@ -372,6 +328,7 @@ paramsLGBM['objective'] = 'binary'
 
 # MDL
 
+#LGBM 
 kf = KFold(n_splits=10, shuffle=True, random_state=42)
 
 x = train_dropped_encoded_nonulls
@@ -397,6 +354,51 @@ for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
 np.mean(auc)
 #roc mena
 #0.859017
+
+# CATBOOST 
+
+params = {'iterations': 10000,
+                  'use_best_model':True ,
+                  'eval_metric': 'AUC', # 'Accuracy'
+                  'loss_function':'Logloss',
+                  'od_type':'Iter',
+                  'od_wait':od_wait,
+                  'depth': 6, # [4, 10]
+                  'l2_leaf_reg': 3,
+                  # random_strength ??
+                  'bootstrap_type': 'Bayesian',
+                  'bagging_temperature': 2,
+                  'max_bin': 254,
+                  'grow_policy': 'SymmetricTree',
+                  'cat_features': lab_cols,
+                  'verbose': od_wait,
+                  'random_seed': 314
+         }
+         
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
+
+x = train_dropped_encoded_nonulls
+y = train.Survived
+auc = []
+preds = np.zeros(test_dropped_encoded_nonulls.shape[0])
+n=0   
+
+
+for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
+    print(f"===== FOLD {fold+1} =====")
+    x_train, x_val = x.iloc[trn_idx], x.iloc[val_idx]
+    y_train, y_val = y.iloc[trn_idx], y.iloc[val_idx]
+
+    model = CatBoostClassifier(**params)
+
+    model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=-1,early_stopping_rounds=500)
+
+     preds += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / kf.n_splits
+
+    auc.append(roc_auc_score(y_val, model.predict_proba(x_val)[:, 1]))
+    
+np.mean(auc)
+
 
 
 sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
