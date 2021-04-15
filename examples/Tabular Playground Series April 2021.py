@@ -388,7 +388,7 @@ global_predictions.value_counts()
 # CATBOOST 
 
 params = {'iterations': 10000,
-                  'use_best_model':True ,
+                  #'use_best_model':True ,
                   'eval_metric': 'AUC', # 'Accuracy'
                   'loss_function':'Logloss',
                   'od_type':'Iter',
@@ -438,12 +438,28 @@ np.mean(auc)
 catboost_predicitions =  np.where(preds > 0.5, 1, 0) 
 
 
+
+#Stacking
+
+lgbm = model
+cat = model
+
+sclf = StackingCVClassifier(classifiers=[lgbm, cat],
+                            meta_classifier=lgbm,
+                            random_state=314,use_features_in_secondary=True)
+
+stack_gen_model = sclf.fit(np.array(train_dropped_encoded_nonulls), np.array(y))
+
+stack_gen_model_preds = stack_gen_model.predict(test_dropped_encoded_nonulls)
+
+
 #Submission
 
 sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
+sample_submission.iloc[:, 1] = stack_gen_model_preds)
 sample_submission
 
-sample_submission.to_csv('~/Downloads/tabular_playground_april_10.csv', index=False)
+sample_submission.to_csv('~/Downloads/tabular_playground_april_11.csv', index=False)
 
 
 
