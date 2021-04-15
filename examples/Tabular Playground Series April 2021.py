@@ -29,81 +29,95 @@ sample_submission, test, train = read_data('/home/r/Downloads/tabular-playground
 sample_submission.shape, test.shape, train.shape
 
 
-# EDA {
-# train.Survived.value_counts(normalize=True) * 100
-# sns.countplot()
-# describe_df(train)
-# (train.Age < 1).value_counts()
-# train[(train.Age < 1)].value_counts('Survived', normalize=True)
-# # Babies under the age of 1
-# pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts(normalize=True).sort_index() * 100
-# pd.cut(train.loc[train.Age < 1, 'Age'], bins=5, right=True).value_counts().sort_index()
-# pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts().sort_index()
-# train[train.Age.between(0.92, 1, inclusive=False)]
-# # Babies under the age of 1 who died
-# train.loc[(train.Age < 1) & (train.Survived == 0)]
-# # Babies under the age of 1 who died by class
-# train.loc[(train.Age < 1) & (train.Survived == 0)].value_counts(train.Pclass).sum()
-# # Dead by class global
-# train[train.Survived == 0].value_counts(train.Pclass, normalize=True).sort_index() * 100
-# # we got a 30& reduction in mortality by not being in the lowest class.
-# # Mortlity by embarked
-# # Plots
-# fig, ax = plt.subplots(figsize=(12, 6))
-# sns.countplot(data=train, x='Embarked', hue='Survived', ax=ax)
-#
-# train.loc[:, ['Embarked', 'Survived']].value_counts().sort_index().unstack().plot.bar(figsize=(12, 6), rot=0)
-# train.loc[:, ['Embarked', 'Survived']].value_counts().sort_index().unstack(1)
-#
-# sns.scatterplot(data=train, x="Age", y="Fare", hue='Embarked')
-# # Fare embarked
-# train.loc[:, ['Embarked', 'Fare']].groupby('Embarked')
-#
-# train.loc[:, ['Embarked', 'Fare']].groupby('Embarked').describe().unstack(1)
-# train.loc[:, ['Embarked', 'Survived']].value_counts(train.Survived)
-#
-# train.Embarked.value_counts(normalize=True) * 100
-# train.Embarked.value_counts()
-#
-# # Comparing train & test
-# # Age -testvstrain
-# ax = sns.distplot(train.Age, hist=False, label="Train", color='olive', kde=True)
-# ax = sns.distplot(test.Age, hist=False, label="Test", color='blue', kde=True)
-#
-# l1 = ax.lines[0]
-# l2 = ax.lines[1]
-#
-# x1 = l1.get_xydata()[:, 0]
-# y1 = l1.get_xydata()[:, 1]
-# x2 = l2.get_xydata()[:, 0]
-# y2 = l2.get_xydata()[:, 1]
-# ax.fill_between(x1, y1, color='olive', alpha=0.3)
-# ax.fill_between(x2, y2, color="blue", alpha=0.3)
-# plt.legend()
-# plt.show(block=False)
-# # FAre tst/trn
-# ax = sns.distplot(train.Fare, hist=False, label="Train", color='olive', kde=True)
-# ax = sns.distplot(test.Fare, hist=False, label="Test", color='blue', kde=True)
-#
-# l1 = ax.lines[0]
-# l2 = ax.lines[1]
-#
-# x1 = l1.get_xydata()[:, 0]
-# y1 = l1.get_xydata()[:, 1]
-# x2 = l2.get_xydata()[:, 0]
-# y2 = l2.get_xydata()[:, 1]
-# ax.fill_between(x1, y1, color='olive', alpha=0.3)
-# ax.fill_between(x2, y2, color="blue", alpha=0.3)
-# plt.legend()
-# plt.show(block=False)
-# # Scatterplot to visualize outliers
-# train.Age.plot(style='.')
-# sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index, marker='x', s=20)
-# sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index)
-#
-# sns.distplot(train.Age, hist=True, color='black')
-# sns.kdeplot(train.Age, color='black', shade=True)
-#}
+EDA {
+train.Survived.value_counts(normalize=True) * 100
+
+describe_df(train)
+(train.Age < 1).value_counts()
+train[(train.Age < 1)].value_counts('Survived', normalize=True)
+# Babies under the age of 1
+pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts(normalize=True).sort_index() * 100
+pd.cut(train.loc[train.Age < 1, 'Age'], bins=5, right=True).value_counts().sort_index()
+pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts().sort_index()
+train[train.Age.between(0.92, 1, inclusive=False)]
+# Babies under the age of 1 who died
+train.loc[(train.Age < 1) & (train.Survived == 0)]
+# Babies under the age of 1 who died by class
+train.loc[(train.Age < 1) & (train.Survived == 0)].value_counts(train.Pclass).sum()
+# Dead by class global
+train[train.Survived == 0].value_counts(train.Pclass, normalize=True).sort_index() * 100
+# we got a 30& reduction in mortality by not being in the lowest class.
+# Mortlity by embarked
+# Plots
+plt.figure()
+fig, ax = plt.subplots(figsize=(12, 6))
+sns.countplot(data=train, x='Embarked', hue='Survived', ax=ax)
+plt.show()
+train.loc[:, ['Embarked', 'Survived']].value_counts().sort_index().unstack().plot.bar(figsize=(12, 6), rot=0)
+train.loc[:, ['Embarked', 'Survived']].value_counts().sort_index().unstack(1)
+
+sns.scatterplot(data=train, x="Age", y="Fare", hue='Embarked')
+plt.show()
+# Fare embarked
+plt.figure()
+train.loc[:, ['Embarked', 'Fare']].groupby('Embarked')
+
+train.loc[:, ['Embarked', 'Fare']].groupby('Embarked').describe().unstack(1)
+train.loc[:, ['Embarked', 'Survived']].value_counts(train.Survived)
+
+train.Embarked.value_counts(normalize=True) * 100
+train.Embarked.value_counts()
+
+# Comparing train & test
+# Age -testvstrain
+ax = sns.distplot(train.Age, hist=False, label="Train", color='olive', kde=True)
+ax = sns.distplot(test.Age, hist=False, label="Test", color='blue', kde=True)
+
+l1 = ax.lines[0]
+l2 = ax.lines[1]
+
+x1 = l1.get_xydata()[:, 0]
+y1 = l1.get_xydata()[:, 1]
+x2 = l2.get_xydata()[:, 0]
+y2 = l2.get_xydata()[:, 1]
+ax.fill_between(x1, y1, color='olive', alpha=0.3)
+ax.fill_between(x2, y2, color="blue", alpha=0.3)
+plt.legend()
+plt.show()
+
+del ax
+# FAre tst/trn
+plt.figure()
+ax = sns.distplot(train.Fare, hist=False, label="Train", color='olive', kde=True)
+
+l1 = ax.lines[0]
+l2 = ax.lines[1]
+
+x1 = l1.get_xydata()[:, 0]
+y1 = l1.get_xydata()[:, 1]
+x2 = l2.get_xydata()[:, 0]
+y2 = l2.get_xydata()[:, 1]
+ax.fill_between(x1, y1, color='olive', alpha=0.3)
+ax.fill_between(x2, y2, color="blue", alpha=0.3)
+plt.legend()
+plt.show(block=False)
+# Scatterplot to visualize outliers
+train.Age.plot(style='.')
+plt.figure()
+sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index, marker='x', s=20)
+plt.show()
+plt.figure()
+sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index)
+plt.show()
+plt.figure()
+sns.distplot(train.Age, hist=True, color='black')
+plt.show()
+plt.figure()
+sns.kdeplot(train.Age, color='black', shade=True)
+plt.show()
+
+}
+
 
 # FE
 y = train.Survived

@@ -3,7 +3,10 @@ library(DataExplorer)
 library(readr)
 library(easycsv)
 library(scales)
-
+library(ggplot2)
+library(Hmisc)
+library(xray)
+anomalies(train)
 # load ---- 
 unzip('~/Downloads/tabular-playground-series-apr-2021.zip',list = TRUE)
 
@@ -11,10 +14,32 @@ train  = fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2
 test = fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  test.csv')
 sample_submission = fread(cmd = 'unzip -p /home/r/Downloads/tabular-playground-series-apr-2021.zip  sample_submission.csv')
 
-dim(train)
-dim(test)
-dim(sample_submission)
+# dim(train)
+# dim(test)
+# dim(sample_submission)
  
+
+
+# survived by sex ---- 
+# use this for proportions of any category
+prop.table(table(train[Sex=='male',.(Survived,Sex)]))*100
+prop.table(table(train[Sex=='female',.(Survived,Sex)]))*100
+# ok so the survival rates for the sexes are opposite. 
+# so lets start with the smallest group. men who survived by age 
+
+ggplot(train[Sex=='male'], aes(Age, fill=factor(Survived))) + geom_histogram(color='black') + scale_x_continuous(breaks =  seq(0,85,5))
+x11()
+# then women 
+
+ggplot(train[Sex=='female'], aes(Age, fill=factor(Survived))) + geom_histogram(color='black') + scale_x_continuous(breaks =  seq(0,85,5))
+
+
+# Distribution of survived vs not survived of men by age ranges | age group percent  ----
+na.omit(train[Sex=='male',
+              {GRP = .GRP-1
+              .SD[,.(.N,GRP),Survived]},.(Age=Hmisc::cut2(Age,c(18,25,50,75)))][,c(.SD, .(pct = percent(N/sum(N)), Sex = "Male")),GRP][,-"GRP"][,c(5,seq(1,4))][order(Age,Survived)])
+
+
 
 # age range men  ---- 
 na.omit(train[Sex=='male', .N,.(Hmisc::cut2(Age,c(18,25,50,75)),Sex)])[order(-N), c(.SD, .(Pct =percent(N/na.omit(train[,.N]))))][,c(2,1,3,4)]
@@ -24,10 +49,6 @@ na.omit(train[Sex=='male', .N,.(Hmisc::cut2(Age,c(18,25,50,75)),Sex)])[order(-N)
 na.omit(train[Sex=='male',.N,.(Age=Hmisc::cut2(Age,c(18,25,50,75)),Survived)])[order(-N), c(.SD,.(age_group_pct = percent(N/nrow(na.omit(train)))))][order(Age)]
 
 
-# Distribution of survived vs not survived of men by age ranges | age group percent  ----
-na.omit(train[Sex=='male',
-              {GRP = .GRP-1
-              .SD[,.(.N,GRP),Survived]},.(Age=Hmisc::cut2(Age,c(18,25,50,75)))][,c(.SD, .(pct = percent(N/sum(N)), Sex = "Male")),GRP][,-"GRP"][,c(5,seq(1,4))][order(Age,Survived)])
 
 
 na.omit(train[Sex=='female',
@@ -53,9 +74,8 @@ na.omit(train[,.N,Sex])
 na.omit(train[Sex=='male' & Survived ==1 , .N, Hmisc::cut2(Age,c(18,25,50,75))])[order(-N)]
 
 
-# survived by sex ---- 
-# use this for proportions of any category
-prop.table(table(train[,.(Survived,Sex)]))*100
+
+
 # pct distribution of nas  ---- 
 train[,prop.table(table(is.na(Age)))]
 
