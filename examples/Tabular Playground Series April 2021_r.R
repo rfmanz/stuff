@@ -28,7 +28,11 @@ prop.table(table(train[Sex=='female',.(Survived,Sex)]))*100
 # so lets start with the smallest group. men who survived by age 
 
 ggplot(train[Sex=='male'], aes(Age, fill=factor(Survived))) + geom_histogram(color='black') + scale_x_continuous(breaks =  seq(0,85,5))
+
+ggplot(train[Sex=='male' & Survived==0], aes(Age, fill=factor(Pclass))) + geom_histogram(color='black') + scale_x_continuous(breaks =  seq(0,85,5))
 x11()
+
+
 # then women 
 
 ggplot(train[Sex=='female'], aes(Age, fill=factor(Survived))) + geom_histogram(color='black') + scale_x_continuous(breaks =  seq(0,85,5))

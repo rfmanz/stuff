@@ -35,10 +35,10 @@ sample_submission.shape, test.shape, train.shape
 
 
 # EDA {
-# train.Survived.value_counts(normalize=True) * 100
-# train.loc[train.Sex == 'male'].value_counts(train.Pclass, train.Survived)
-# train.loc[(train.Sex == 'male')& (train.Survived== 0)].value_counts(train.Pclass)
-# 
+ train.Survived.value_counts(normalize=True) * 100
+
+train.loc[(train.Sex == 'male')& (train.Survived== 0)].value_counts(train.Pclass)
+ 
 # describe_df(train)
 # (train.Age < 1).value_counts()
 # train[(train.Age < 1)].value_counts('Survived', normalize=True)
@@ -350,12 +350,16 @@ paramsLGBM = {'reg_alpha': 1.7756323120719368,
 # MDL
 
 #LGBM 
+
 kf = KFold(n_splits=10, shuffle=True, random_state=42)
 
-x = train_dropped_encoded_nonulls
-y = train.Survived
+x = train_dropped_encoded_nonulls.loc[train_dropped_encoded_nonulls.Sex.astype('int')==1]
+y = train.loc[train.Sex == 'male','Survived']
+
+test = test_dropped_encoded_nonulls.loc[test_dropped_encoded_nonulls.Sex.astype('int')==1]
+PassengerId = pd.Series(test.index)
 auc = []
-preds = np.zeros(test_dropped_encoded_nonulls.shape[0])
+preds = np.zeros(test.shape[0])
 n=0   
 
 
@@ -368,7 +372,7 @@ for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
 
     model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=-1,early_stopping_rounds=500)
 
-    preds += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / kf.n_splits
+    preds += model.predict_proba(test)[:, 1] / kf.n_splits
 
     auc.append(roc_auc_score(y_val, model.predict_proba(x_val)[:, 1]))
     
@@ -377,7 +381,24 @@ np.mean(auc)
 #0.859017
 
 
-lgbm_predictions =  np.where(preds > 0.5, 1, 0) 
+lgbm_male =  np.where(preds > 0.5, 1, 0) 
+lgbm_female =  np.where(preds > 0.5, 1, 0) 
+
+lgbm_male.shape
+
+gmf = pd.concat([pd.Series(lgbm_female),PassengerId],axis=1)
+gmf.reset_index()
+gmf.set_index(1,inplace=True)
+
+gmm = pd.concat([pd.Series(lgbm_male),PassengerId],axis=1)
+gmm.reset_index()
+gmm.set_index(1,inplace=True)
+
+gender_model= pd.concat([gmm,gmf],ignore_index=False)
+gender_model.sort_index()
+gender_model = pd.concat([pd.Series(lgbm_male),pd.Series(lgbm_female)],axis=0)
+
+
 
 
 global_predictions = pd.concat([pd.Series(lgbm_predictions),pd.Series(catboost_predicitions)],axis=1,keys=['LGBM','CAT'])
@@ -456,15 +477,25 @@ stack_gen_model_preds = stack_gen_model.predict(test_dropped_encoded_nonulls)
 #Submission
 
 sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
-sample_submission.iloc[:, 1] = stack_gen_model_preds)
-sample_submission
 
+sample_submission = pd.merge(pd.DataFrame(gender_model), sample_submission, left_index=True, right_index=True)
+sample_submission.reset_index(inplace=True,drop=True)
+
+sample_submission.iloc[:, 1] = pd.merge(pd.DataFrame(gender_model), sample_submission, left_index=True, right_index=True)
+sample_submission = sample_submission.drop(0,axis=1)
+sample_submission.sort_values('PassengerId')
 sample_submission.to_csv('~/Downloads/tabular_playground_april_11.csv', index=False)
 
+# del comparison
+submission9 = pd.read_csv('~/Downloads/tabular_playground_april_9.csv')
+# comparison = pd.concat([submission9, gender_model,pd.Series(hirodreamsofsushi.Survived)],keys=['submission9','gender','hirodreamsofsushi'],axis=1)
+# comparison['comparison']= comparison.Survived + comparison.iloc[:,1] + hirodreamsofsushi.Survived
+# comparison['comparison'].value_counts()
+hirodreamsofsushi = pd.read_csv("~/Downloads/voting_submission_from_3_best.csv")
 
-
-
-
+t = pd.concat([submission9,hirodreamsofsushi.Survived],axis=1)
+t['comparison'] = t.iloc[:,1] + t.iloc[:,2]
+t.comparison.value_counts()
 
 import lightgbm
 plt.rcParams["figure.figsize"] = (6, 5)
