@@ -33,6 +33,8 @@ read_data('/home/r/Downloads/tabular-playground-series-apr-2021.zip')
 sample_submission, test, train = read_data('/home/r/Downloads/tabular-playground-series-apr-2021.zip', True)
 sample_submission.shape, test.shape, train.shape
 
+pseudo_label =  read_data('/home/r/Downloads/tabular_playground_april_11.csv',True)
+test['Survived'] = [x for x in pseudo_label.Survived]
 
 # EDA {
 train.Survived.value_counts(normalize=True) * 100
@@ -151,12 +153,87 @@ def create_extra_features(data):
     data['FamilySize'] = data['SibSp'] + data['Parch']
     data['isAlone'] = data['FamilySize'].apply(lambda x: 1 if x == 0 else 0)
     data['age*fare'] = data.Age * data.Fare
-    data['LastNanme'] = data['Name'].apply(lambda x:x.split(', ')[0])
+    #data['LastNanme'] = data['Name'].apply(lambda x:x.split(', ')[0])
     return data
 
 
 train = create_extra_features(train)
 test = create_extra_features(test)
+
+
+
+# age bin : 
+bins = [0, 18, 30, 45,60,87]
+labels = ['0-18','18-30','30-45','45-60','60+']
+labels = [1,2,3,4,5]
+
+train['age_bin'] = pd.cut(train.Age, bins = bins, labels= labels, right=False, include_lowest=True).astype(str)
+test['age_bin'] = pd.cut(test.Age, bins = bins, labels= labels, right=False, include_lowest=True).astype(str)
+
+
+
+def target_encode2(train, valid, col, target='target', kfold=5, smooth=20, verbose=True):
+    """
+        train:  train dataset
+        valid:  validation dataset
+        col:   column which will be encoded (in the example RESOURCE)
+        target: target column which will be used to calculate the statistic
+    """
+
+    # We assume that the train dataset is shuffled
+    train['kfold'] = ((train.index) % kfold)
+    # We keep the original order as cudf merge will not preserve the original order
+    train['org_sorting'] = np.arange(len(train), dtype="int32")
+    # We create the output column, we fill with 0
+    col_name = '_'.join(col) + '_' + str(smooth)
+    train['TE_' + col_name] = 0.
+    for i in range(kfold):
+        ###################################
+        # filter for out of fold
+        # calculate the mean/counts per group category
+        # calculate the global mean for the oof
+        # calculate the smoothed TE
+        # merge it to the original dataframe
+        ###################################
+
+        df_tmp = train[train['kfold'] != i]
+        mn = df_tmp[target].mean()
+        df_tmp = df_tmp[col + [target]].groupby(col).agg(['mean', 'count']).reset_index()
+        df_tmp.columns = col + ['mean', 'count']
+        df_tmp['TE_tmp'] = ((df_tmp['mean'] * df_tmp['count']) + (mn * smooth)) / (df_tmp['count'] + smooth)
+        df_tmp_m = train[col + ['kfold', 'org_sorting', 'TE_' + col_name]].merge(df_tmp, how='left', left_on=col,
+                                                                                 right_on=col).sort_values(
+            'org_sorting')
+        df_tmp_m.loc[df_tmp_m['kfold'] == i, 'TE_' + col_name] = df_tmp_m.loc[df_tmp_m['kfold'] == i, 'TE_tmp']
+        train['TE_' + col_name] = df_tmp_m['TE_' + col_name].fillna(mn).values
+
+    ###################################
+    # calculate the mean/counts per group for the full training dataset
+    # calculate the global mean
+    # calculate the smoothed TE
+    # merge it to the original dataframe
+    # drop all temp columns
+    ###################################    
+
+    df_tmp = train[col + [target]].groupby(col).agg(['mean', 'count']).reset_index()
+    mn = train[target].mean()
+    df_tmp.columns = col + ['mean', 'count']
+    df_tmp['TE_tmp'] = ((df_tmp['mean'] * df_tmp['count']) + (mn * smooth)) / (df_tmp['count'] + smooth)
+    valid['org_sorting'] = np.arange(len(valid), dtype="int32")
+    df_tmp_m = valid[col + ['org_sorting']].merge(df_tmp, how='left', left_on=col, right_on=col).sort_values(
+        'org_sorting')
+    valid['TE_' + col_name] = df_tmp_m['TE_tmp'].fillna(mn).values
+
+    valid = valid.drop('org_sorting', axis=1)
+    train = train.drop('kfold', axis=1)
+    train = train.drop('org_sorting', axis=1)
+    return (train, valid)
+
+#train, test = target_encode2(train,test,['Pclass', 'Sex', 'Embarked'],target='Survived')
+train, test = target_encode2(train,test,['Pclass', 'Sex', 'Embarked','age_bin'],target='Survived')
+train, test = target_encode2(train,test,['Pclass', 'Sex', 'Embarked','age*fare'],target='Survived')
+train, test = target_encode2(train,test,['Sex', 'age*fare','Pclass'],target='Survived')
+
 
 train_dropped = train.drop(columns=['Cabin', 'Ticket', 'PassengerId', 'Survived', 'Name'], axis=1)
 test_dropped = test.drop(columns=['Cabin', 'Ticket', 'PassengerId', 'Name'], axis=1)
@@ -319,7 +396,7 @@ def objective(trial):
 from optuna.pruners import SuccessiveHalvingPruner
 
 study = optuna.create_study(direction='maximize',pruner=SuccessiveHalvingPruner())
-study.enqueue_trial(tmp_best_params)
+#study.enqueue_trial(tmp_best_params)
 study.optimize(objective, n_trials=100)
 print('Number of finished trials:', len(study.trials))
 print('Best trial:', study.best_trial.params)
@@ -351,6 +428,9 @@ paramsLGBM = {'reg_alpha': 1.7756323120719368,
  'colsample_bytree': 0.25638115462185734,
  'n_estimators': 731}
 
+
+
+
 #}
 # MDL
 
@@ -361,11 +441,23 @@ y = train.loc[train.Sex == 'male','Survived']
 test = test_dropped_encoded_nonulls.loc[test_dropped_encoded_nonulls.Sex.astype('int')==1]
 PassengerId = pd.Series(test.index)
 
+
+
+#pseudo labelling 
+
+data = pd.concat([train_dropped_encoded_nonulls, test_dropped_encoded_nonulls], axis=0)
+y_pseudo = pd.concat([y,test.Survived],axis=0)
+
+x = data
+y = y_pseudo
+
 #LGBM 
 
-kf = KFold(n_splits=10, shuffle=True, random_state=42)
 x = train_dropped_encoded_nonulls
 y = train.Survived
+
+
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
 test = test_dropped_encoded_nonulls
 auc = []
 preds = np.zeros(test.shape[0])
@@ -386,7 +478,7 @@ for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
     auc.append(roc_auc_score(y_val, model.predict_proba(x_val)[:, 1]))
     
 np.mean(auc)
-#roc mena
+#roc mean
 #0.859017
 
 
@@ -491,7 +583,7 @@ stack_gen_model_preds = stack_gen_model.predict(test_dropped_encoded_nonulls)
 
 sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
 
-sample_submission.to_csv('~/Downloads/tabular_playground_april_12.csv', index=False)
+sample_submission.to_csv('~/Downloads/tabular_playground_april_15.csv', index=False)
 
 # del comparison
 submission9 = pd.read_csv('~/Downloads/tabular_playground_april_9.csv')
