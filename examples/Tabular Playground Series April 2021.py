@@ -35,7 +35,7 @@ sample_submission.shape, test.shape, train.shape
 
 
 # EDA {
- train.Survived.value_counts(normalize=True) * 100
+train.Survived.value_counts(normalize=True) * 100
 
 train.loc[(train.Sex == 'male')& (train.Survived== 0)].value_counts(train.Pclass)
  
@@ -145,10 +145,13 @@ def converter(x):
 
 def create_extra_features(data):
     data['Ticket_type'] = data['Ticket'].map(lambda x: converter(x)[0])
+    data.loc[(data.Ticket_type=='')|(data.Ticket_type=='nan'),"Ticket_type"] = 'UNKNOWN'    
+    data['Ticket_type'] = data['Ticket_type'].str.upper()
     data['Cabin_type'] = data['Cabin'].map(lambda x: converter(x)[0])
     data['FamilySize'] = data['SibSp'] + data['Parch']
     data['isAlone'] = data['FamilySize'].apply(lambda x: 1 if x == 0 else 0)
     data['age*fare'] = data.Age * data.Fare
+    data['LastNanme'] = data['Name'].apply(lambda x:x.split(', ')[0])
     return data
 
 
@@ -158,7 +161,7 @@ test = create_extra_features(test)
 train_dropped = train.drop(columns=['Cabin', 'Ticket', 'PassengerId', 'Survived', 'Name'], axis=1)
 test_dropped = test.drop(columns=['Cabin', 'Ticket', 'PassengerId', 'Name'], axis=1)
 
-cat = train_dropped.select_dtypes('object').columns
+cat = train_dropped.select_dtypes(['object']).columns
 cont = train_dropped.select_dtypes('number').columns
 
 
@@ -238,7 +241,7 @@ correlated(train_dropped_encoded_nonulls,0.8)
 
 x_train, x_test, y_train, y_test = train_test_split(train_dropped_encoded_nonulls, y, test_size=.2)
 
-
+# opt {
 #OPT .5
 #kf = KFold(n_splits=5)
 kf = StratifiedKFold(n_splits=10, shuffle=True)
@@ -322,6 +325,8 @@ print('Number of finished trials:', len(study.trials))
 print('Best trial:', study.best_trial.params)
 print('Best value:', study.best_value)
 
+
+
 optuna.visualization.plot_optimization_history(study)
 optuna.visualization.plot_param_importances(study)
 
@@ -346,18 +351,22 @@ paramsLGBM = {'reg_alpha': 1.7756323120719368,
  'colsample_bytree': 0.25638115462185734,
  'n_estimators': 731}
 
-
+#}
 # MDL
 
-#LGBM 
-
-kf = KFold(n_splits=10, shuffle=True, random_state=42)
-
+#gender model
 x = train_dropped_encoded_nonulls.loc[train_dropped_encoded_nonulls.Sex.astype('int')==1]
 y = train.loc[train.Sex == 'male','Survived']
 
 test = test_dropped_encoded_nonulls.loc[test_dropped_encoded_nonulls.Sex.astype('int')==1]
 PassengerId = pd.Series(test.index)
+
+#LGBM 
+
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
+x = train_dropped_encoded_nonulls
+y = train.Survived
+test = test_dropped_encoded_nonulls
 auc = []
 preds = np.zeros(test.shape[0])
 n=0   
@@ -380,6 +389,10 @@ np.mean(auc)
 #roc mena
 #0.859017
 
+
+feature_importances_extra = pd.Series(model.feature_importances_,train_dropped_encoded_nonulls.columns).sort_values(ascending=False)
+feature_importances_extra
+##########
 
 lgbm_male =  np.where(preds > 0.5, 1, 0) 
 lgbm_female =  np.where(preds > 0.5, 1, 0) 
@@ -406,7 +419,7 @@ global_predictions.value_counts()
 
 
 
-# CATBOOST 
+# CATBOOST {
 
 params = {'iterations': 10000,
                   #'use_best_model':True ,
@@ -458,7 +471,7 @@ np.mean(auc)
 
 catboost_predicitions =  np.where(preds > 0.5, 1, 0) 
 
-
+#}
 
 #Stacking
 
@@ -478,13 +491,7 @@ stack_gen_model_preds = stack_gen_model.predict(test_dropped_encoded_nonulls)
 
 sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
 
-sample_submission = pd.merge(pd.DataFrame(gender_model), sample_submission, left_index=True, right_index=True)
-sample_submission.reset_index(inplace=True,drop=True)
-
-sample_submission.iloc[:, 1] = pd.merge(pd.DataFrame(gender_model), sample_submission, left_index=True, right_index=True)
-sample_submission = sample_submission.drop(0,axis=1)
-sample_submission.sort_values('PassengerId')
-sample_submission.to_csv('~/Downloads/tabular_playground_april_11.csv', index=False)
+sample_submission.to_csv('~/Downloads/tabular_playground_april_12.csv', index=False)
 
 # del comparison
 submission9 = pd.read_csv('~/Downloads/tabular_playground_april_9.csv')
@@ -497,9 +504,6 @@ t = pd.concat([submission9,hirodreamsofsushi.Survived],axis=1)
 t['comparison'] = t.iloc[:,1] + t.iloc[:,2]
 t.comparison.value_counts()
 
-import lightgbm
-plt.rcParams["figure.figsize"] = (6, 5)
-lightgbm.plot_importance(model, max_num_features=16, height=.9)
 
 
 
@@ -542,3 +546,111 @@ RobustScalar
 #neural net
 
 http://rasbt.github.io/mlxtend/user_guide/classifier/StackingCVClassifier/
+
+
+
+
+kfold =5 
+smooth = 20 
+
+train['kfold'] = ((train.index) % kfold)
+train['org_sorting'] = np.arange(len(train), dtype="int32")
+col_name = '_'.join(col) + '_' + str(smooth)
+
+import np
+
+
+# TARGET ENCODE WITH KFOLD
+
+def target_encode2(train, valid, col, target='target', kfold=5, smooth=20, verbose=True):
+    """
+        train:  train dataset
+        valid:  validation dataset
+        col:   column which will be encoded (in the example RESOURCE)
+        target: target column which will be used to calculate the statistic
+    """
+
+    # We assume that the train dataset is shuffled
+    train['kfold'] = ((train.index) % kfold)
+    # We keep the original order as cudf merge will not preserve the original order
+    train['org_sorting'] = np.arange(len(train), dtype="int32")
+    # We create the output column, we fill with 0
+    col_name = '_'.join(col) + '_' + str(smooth)
+    train['TE_' + col_name] = 0.
+    for i in range(kfold):
+        ###################################
+        # filter for out of fold
+        # calculate the mean/counts per group category
+        # calculate the global mean for the oof
+        # calculate the smoothed TE
+        # merge it to the original dataframe
+        ###################################
+
+        df_tmp = train[train['kfold'] != i]
+        mn = df_tmp[target].mean()
+        df_tmp = df_tmp[col + [target]].groupby(col).agg(['mean', 'count']).reset_index()
+        df_tmp.columns = col + ['mean', 'count']
+        df_tmp['TE_tmp'] = ((df_tmp['mean'] * df_tmp['count']) + (mn * smooth)) / (df_tmp['count'] + smooth)
+        df_tmp_m = train[col + ['kfold', 'org_sorting', 'TE_' + col_name]].merge(df_tmp, how='left', left_on=col,
+                                                                                 right_on=col).sort_values(
+            'org_sorting')
+        df_tmp_m.loc[df_tmp_m['kfold'] == i, 'TE_' + col_name] = df_tmp_m.loc[df_tmp_m['kfold'] == i, 'TE_tmp']
+        train['TE_' + col_name] = df_tmp_m['TE_' + col_name].fillna(mn).values
+
+    ###################################
+    # calculate the mean/counts per group for the full training dataset
+    # calculate the global mean
+    # calculate the smoothed TE
+    # merge it to the original dataframe
+    # drop all temp columns
+    ###################################    
+
+    df_tmp = train[col + [target]].groupby(col).agg(['mean', 'count']).reset_index()
+    mn = train[target].mean()
+    df_tmp.columns = col + ['mean', 'count']
+    df_tmp['TE_tmp'] = ((df_tmp['mean'] * df_tmp['count']) + (mn * smooth)) / (df_tmp['count'] + smooth)
+    valid['org_sorting'] = np.arange(len(valid), dtype="int32")
+    df_tmp_m = valid[col + ['org_sorting']].merge(df_tmp, how='left', left_on=col, right_on=col).sort_values(
+        'org_sorting')
+    valid['TE_' + col_name] = df_tmp_m['TE_tmp'].fillna(mn).values
+
+    valid = valid.drop('org_sorting', axis=1)
+    train = train.drop('kfold', axis=1)
+    train = train.drop('org_sorting', axis=1)
+    return (train, valid)
+
+train, test = target_encode2(train,test,['Pclass', 'Sex', 'Embarked'],target='Survived')
+train, test = target_encode2(train,test,['Pclass', 'Sex', 'Embarked','age_bin'],target='Survived')
+
+
+
+train_dropped
+
+# test target encode 
+pclass sex embarked 
+train[['Pclass', 'Sex', 'Embarked','Survived']].groupby(['Pclass', 'Sex', 'Embarked']).mean().sort_values('Survived',ascending=False)
+train[['Pclass', 'Sex', 'Embarked','Survived','age_bin']].groupby(['Pclass', 'Sex', 'Embarked','age_bin']).mean().sort_values('Survived',ascending=False)
+
+#target encode 
+pclass sex age bin 
+
+
+# age bin : 
+bins = [0, 18, 30, 45,60,87]
+labels = ['0-18','18-30','30-45','45-60','60+']
+labels = [1,2,3,4,5]
+
+
+train['age_bin'] = pd.cut(train.Age, bins = bins, labels= labels, right=False, include_lowest=True).astype(str)
+test['age_bin'] = pd.cut(test.Age, bins = bins, labels= labels, right=False, include_lowest=True).astype(str)
+
+
+plt.figure()
+train['age_bin'].hist()
+plt.show()
+#pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts(normalize=True).sort_index() * 100
+
+
+
+#target encode 
+ticket type age*fare 
