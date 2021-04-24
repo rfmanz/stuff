@@ -138,3 +138,60 @@ def mice_imputer(data):
     completed_data = kds.complete_data()
 
     return completed_data
+
+def target_encode(train, valid, col, target='target', kfold=5, smooth=20, verbose=True):
+    """
+        train:  train dataset
+        valid:  validation dataset
+        col:   column which will be encoded (in the example RESOURCE)
+        target: target column which will be used to calculate the statistic
+    """
+
+    # We assume that the train dataset is shuffled
+    train['kfold'] = ((train.index) % kfold)
+    # We keep the original order as cudf merge will not preserve the original order
+    train['org_sorting'] = np.arange(len(train), dtype="int32")
+    # We create the output column, we fill with 0
+    col_name = '_'.join(col) + '_' + str(smooth)
+    train['TE_' + col_name] = 0.
+    for i in range(kfold):
+        ###################################
+        # filter for out of fold
+        # calculate the mean/counts per group category
+        # calculate the global mean for the oof
+        # calculate the smoothed TE
+        # merge it to the original dataframe
+        ###################################
+
+        df_tmp = train[train['kfold'] != i]
+        mn = df_tmp[target].mean()
+        df_tmp = df_tmp[col + [target]].groupby(col).agg(['mean', 'count']).reset_index()
+        df_tmp.columns = col + ['mean', 'count']
+        df_tmp['TE_tmp'] = ((df_tmp['mean'] * df_tmp['count']) + (mn * smooth)) / (df_tmp['count'] + smooth)
+        df_tmp_m = train[col + ['kfold', 'org_sorting', 'TE_' + col_name]].merge(df_tmp, how='left', left_on=col,
+                                                                                 right_on=col).sort_values(
+            'org_sorting')
+        df_tmp_m.loc[df_tmp_m['kfold'] == i, 'TE_' + col_name] = df_tmp_m.loc[df_tmp_m['kfold'] == i, 'TE_tmp']
+        train['TE_' + col_name] = df_tmp_m['TE_' + col_name].fillna(mn).values
+
+    ###################################
+    # calculate the mean/counts per group for the full training dataset
+    # calculate the global mean
+    # calculate the smoothed TE
+    # merge it to the original dataframe
+    # drop all temp columns
+    ###################################    
+
+    df_tmp = train[col + [target]].groupby(col).agg(['mean', 'count']).reset_index()
+    mn = train[target].mean()
+    df_tmp.columns = col + ['mean', 'count']
+    df_tmp['TE_tmp'] = ((df_tmp['mean'] * df_tmp['count']) + (mn * smooth)) / (df_tmp['count'] + smooth)
+    valid['org_sorting'] = np.arange(len(valid), dtype="int32")
+    df_tmp_m = valid[col + ['org_sorting']].merge(df_tmp, how='left', left_on=col, right_on=col).sort_values(
+        'org_sorting')
+    valid['TE_' + col_name] = df_tmp_m['TE_tmp'].fillna(mn).values
+
+    valid = valid.drop('org_sorting', axis=1)
+    train = train.drop('kfold', axis=1)
+    train = train.drop('org_sorting', axis=1)
+    return (train, valid)
