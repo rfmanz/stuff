@@ -20,65 +20,16 @@ peek(test,3)
 test_id = test.id
 
 ad= pd.concat([train.drop("churn",axis=1), test.drop("id",axis=1)],axis=0)
-ad.shape
-
-def correlated(df, threshold, drop_columns=False, encode_type='dumy'):
-    '''Create a copy if you're viewing before deleting.
-    If deleting df= correlated(df,...)'''
-
-    if bool((df.select_dtypes('object')).size > 0):
-        df2 = encode(df, encode_type)
-        df_corr = df2.corr()
-
-    else:
-        df_corr = df.corr()
-
-    triangle = df_corr.where(np.triu(np.ones(df_corr.shape), k=1).astype(bool))
-    to_drop = pd.Series(df_corr.iloc[:,
-                        np.where((df_corr.mask(np.tril(np.ones(df_corr.shape, dtype=bool))).abs() > threshold).any())[
-                            0]].columns)
-
-    if drop_columns:
-        dftodrop = df.drop(labels=to_drop, axis=1)
-        return dftodrop
+ad2 = correlated(ad,0.8,True,encode_type='dmy')
+y = train.churn.map(dict(yes=1,no=0))
+print_split()
+x_train, x_test, y_train, y_test  = split(ad2.iloc[:4250],y)
 
 
-    else:
-
-        collinear = pd.DataFrame(columns=['drop_feature', 'corr_feature', 'corr_value'])
-
-        for i in to_drop:
-
-            # Find the correlated features
-            corr_features = list(triangle.index[triangle[i].abs() > threshold])
-
-            # Find the correlated values
-            corr_values = list(triangle[i][triangle[i].abs() > threshold])
-            drop_features = [i for _ in range(len(corr_features))]
-
-            # Record the information (need a temp df for now)
-            temp_df = pd.DataFrame.from_dict({'drop_feature': drop_features,
-                                              'corr_feature': corr_features,
-                                              'corr_value': corr_values})
-            # Add to dataframe
-            collinear = collinear.append(temp_df, ignore_index=True)
 
 
-        else:
-            print(f"From {len(df.columns)} columns")
-            print(f"{len(to_drop)} highly correlated columns to drop:")
-            print()
-            print(to_drop)
-            print("-----")
-            print(
-                "Note_to_self...drop_feature may be duplicated due to multiple, stronger than threshold, correlated pairs:")
-            print()
-            print(collinear)
 
-ad2 = correlated(ad,0.8,True,encode_type='lbl')
-ad2.shape
-peek(ad2,3)
-peek(ad,3)
+
 #}
 
 

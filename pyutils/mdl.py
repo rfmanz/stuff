@@ -13,10 +13,17 @@ from sklearn.metrics import roc_auc_score
 import joblib
 import os
 
+def print_split():
+  print("x_train", "x_test", "y_train", "y_test")
 
 
+def split(x,y,test_size=.2):
+  x_train, x_test, y_train, y_test = train_test_split(x, y, test_size= test_size)
+  print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)
+  return x_train, x_test, y_train, y_test 
 
-def tuner_optuna_LGBMClassifier(x_train, x_test, y_train , y_test , n_trials=30,params = None):
+
+def tuner_optuna_LGBMClassifier(x_train, x_test, y_train , y_test , n_trials=30,paramsLGBM = None):
   """paramsLGBM = optuna_LGBMClassifier_tuner(...)"""
 
   def objective(trial):
