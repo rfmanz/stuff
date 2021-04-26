@@ -47,7 +47,7 @@ def optuna_LGBMClassifier_tuner(x_train = x_train, x_test = x_test, y_train = y_
       roc_auc = roc_auc_score(y_test, y_pred)
       return roc_auc
 
-  study = optuna.1create_study(direction='maximize',pruner=SuccessiveHalvingPruner())
+  study = optuna.create_study(direction='maximize',pruner=SuccessiveHalvingPruner())
   study.optimize(objective, n_trials=n_trials)
   print('Number of finished trials:', len(study.trials))
   print('Best trial:', study.best_trial.params)
