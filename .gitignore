@@ -106,3 +106,4 @@ dmypy.json
 .Rproj.user
 .tmp
 .idea
+.Rhistory
