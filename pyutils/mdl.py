@@ -16,7 +16,7 @@ import os
 
 
 
-def optuna_LGBMClassifier_tuner(x_train, x_test, y_train , y_test = y_test, n_trials=30,params = None):
+def optuna_LGBMClassifier_tuner(x_train, x_test, y_train , y_test , n_trials=30,params = None):
   """paramsLGBM = optuna_LGBMClassifier_tuner(...)"""
 
   def objective(trial):
@@ -56,7 +56,13 @@ def optuna_LGBMClassifier_tuner(x_train, x_test, y_train , y_test = y_test, n_tr
   return paramsLGBM
 
 
-def model_LGBMClassifier(x=x_train, y=y_train, test=x_test, y_test=y_test, Kfold_splits = 10, paramsLGBM=paramsLGBM , early_stopping_rounds =500):
+def model_LGBMClassifier(x, y, test, y_test, Kfold_splits = 10, paramsLGBM , early_stopping_rounds =500):
+  """
+  x= x_train
+  y = y_train
+  test = x_test
+  y_test = y_test
+  """
 
   kf = KFold(n_splits=Kfold_splits, shuffle=True, random_state=42)
   auc = []
@@ -92,7 +98,7 @@ def model_LGBMClassifier(x=x_train, y=y_train, test=x_test, y_test=y_test, Kfold
   return model
 
 
-def save_model(model = model, name = "something.sav"):
+def save_model(model, name = "something.sav"):
   joblib.dump(model, name)
   print("Model_Name:",name)
   print("Saved to:", os.getcwd())
