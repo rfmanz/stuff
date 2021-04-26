@@ -16,7 +16,7 @@ import os
 
 
 
-def optuna_LGBMClassifier_tuner(x_train = x_train, x_test = x_test, y_train = y_train, y_test = y_test, n_trials=30,params = None):
+def optuna_LGBMClassifier_tuner(x_train, x_test, y_train , y_test = y_test, n_trials=30,params = None):
   """paramsLGBM = optuna_LGBMClassifier_tuner(...)"""
 
   def objective(trial):
