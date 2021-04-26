@@ -1,4 +1,6 @@
+
 import numpy as np
+import pandas as pd
 from lightgbm import LGBMClassifier
 
 import optuna
@@ -10,11 +12,38 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score
 
 
+
+
+
+library(rutils)
+# Load --------------------------------------------------------------------
+
+ all_data  = fread(cmd = 'unzip -p /home/r/Downloads/archive.zip  telecom_users.csv',drop = "V1", stringsAsFactors = TRUE)
+
+# FE ----------------------------------------------------------------------
+
+
+all_data = setDT((churn_recipe =
+    all_data %>%
+    recipe(Churn~ .) %>%
+    step_rm(customerID) %>%
+    step_impute_knn(all_predictors(), neighbors = 6) %>%
+    step_normalize(all_numeric()) %>%
+    step_integer(all_nominal_predictors()) %>%
+    prep(all_data) %>%
+    bake(all_data))
+    )
+levels(all_data$Churn) = c(0,1)
+
+
+
+all_data = r.all_data
 y = all_data.Churn
 x_train, x_test, y_train, y_test = train_test_split(all_data.drop("Churn",axis=1), y, test_size=.2)
 
 
-def optuna_LGBMClassifier_tuner(x_train, x_test, y_train, y_test, n_trials=5,params = None):
+def optuna_LGBMClassifier_tuner(x_train = x_train, x_test = x_test, y_train = y_train, y_test = y_test, n_trials=5,params = None):
+  """paramsLGBM= optuna_LGBMClassifier_tuner"""
 
   def objective(trial):
       params = {
@@ -52,15 +81,16 @@ def optuna_LGBMClassifier_tuner(x_train, x_test, y_train, y_test, n_trials=5,par
   paramsLGBM = study.best_trial.params
   return paramsLGBM
 
+#paramsLGBM = optuna_LGBMClassifier_tuner()
+
 paramsLGBM= optuna_LGBMClassifier_tuner(x_train, x_test, y_train, y_test, n_trials=2)
 
-
-def model_LGBMClassifier(x_train=x_train, y_train=y_train, test=x_test,y_test=y_test, Kfold_splits = 10, paramsLGBM=paramsLGBM , early_stopping_rounds =500):
+def model_LGBMClassifier(x=x_train, y=y_train, test=x_test, y_test=y_test, Kfold_splits = 10, paramsLGBM=paramsLGBM , early_stopping_rounds =500):
 
   kf = KFold(n_splits=Kfold_splits, shuffle=True, random_state=42)
   auc = []
   preds = np.zeros(test.shape[0])
-  n=0   
+  
   
   for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
       print(f"===== FOLD {fold+1} =====")
@@ -69,7 +99,7 @@ def model_LGBMClassifier(x_train=x_train, y_train=y_train, test=x_test,y_test=y_
   
       model = LGBMClassifier(**paramsLGBM)
   
-      model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=-1,early_stopping_rounds=500)
+      model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=False,early_stopping_rounds=500)
   
       auc.append(roc_auc_score(y_val, model.predict_proba(x_val)[:, 1]))
       
@@ -77,17 +107,37 @@ def model_LGBMClassifier(x_train=x_train, y_train=y_train, test=x_test,y_test=y_
   
   feature_importances_extra = pd.Series(model.feature_importances_,x_train.columns).sort_values(ascending=False)
   
-  print(np.mean(auc))
+  print()
+  print("-"*80)
+  print("CV AUC MEAN:",np.mean(auc))
+  print()
+  print("-"*80)
+  print("CV Feature Importance:")
+  print("-"*80)
   print(feature_importances_extra)
-  print(roc_auc_score(y_test,preds))
+  print("-"*80)
+  print("MODEL AUC PERFORMANCE ON TEST:", roc_auc_score(y_test,preds))
+  print("-"*80)
   return model
+
+model = model_LGBMClassifier()
+
+def save_model(model):
   
+filename = 'lgbm_final_acept.sav'
+pickle.dump(gbm, open(filename, 'wb'))
 
-model_LGBMClassifier()
+gbm = pd.read_pickle('lgbm_final_acept.sav')
 
 
 
 
+
+
+import joblib
+joblib.dump(my_model, "my_model.pkl")
+# and later...
+my_model_loaded = joblib.load("my_model.pkl")
 
 
 
