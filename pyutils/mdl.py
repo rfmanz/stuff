@@ -56,7 +56,7 @@ def optuna_LGBMClassifier_tuner(x_train, x_test, y_train , y_test , n_trials=30,
   return paramsLGBM
 
 
-def model_LGBMClassifier(x, y, test, y_test, Kfold_splits = 10, paramsLGBM , early_stopping_rounds =500):
+def model_LGBMClassifier(x, y, test, y_test, paramsLGBM, Kfold_splits = 10,  early_stopping_rounds = 500):
   """
   x= x_train
   y = y_train
