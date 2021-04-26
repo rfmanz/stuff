@@ -21,6 +21,15 @@ from tabulate import tabulate
 # + facet_wrap('~gear'))
 
 
+#import datatable as dt 
+#tr = dt.fread(cmd = 'unzip -p /home/r/Downloads/archive.zip  telecom_users.csv').to_pandas()
+
+
+
+def peek(df,rows=3):
+  print(df.iloc[:rows].T)
+
+
 def describe_df(df):
     # Numerical
     print("--" * 20)

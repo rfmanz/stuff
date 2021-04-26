@@ -33,7 +33,7 @@ def identify_missing(df, missing_threshold, drop=False):
         print(to_drop)
 
 
-def encode(df, method="dumy"):
+def encode(df, method="dmy"):
     """ methods:
         Dummy encoding = pandas get_dummies
         Label encoding = sklearn LabelEncoders
@@ -45,17 +45,17 @@ def encode(df, method="dumy"):
             df[i] = LabelEncoder().fit_transform(df[i].astype(str))
         return df
 
-    if method == "dumy":
+    if method == "dmy":
         encoded = pd.get_dummies(df[cols])
         df = df.drop(columns=cols, axis=1)
         df = pd.concat([df, encoded], axis=1)
         return df
 
 
-def correlated(df, threshold, drop_columns=False, encode_type='dumy'):
+def correlated(df, threshold, drop_columns=False, encode_type='dmy'):
     '''Create a copy if you're viewing before deleting.
     If deleting df= correlated(df,...)'''
-
+    df = df.copy()
     if bool((df.select_dtypes('object')).size > 0):
         df = encode(df, encode_type)
         df_corr = df.corr()
@@ -69,7 +69,7 @@ def correlated(df, threshold, drop_columns=False, encode_type='dumy'):
                             0]].columns)
 
     if drop_columns:
-        df.drop(labels=to_drop, axis=1, inplace=True)
+        df= df.drop(labels=to_drop, axis=1)
         return df
 
 
