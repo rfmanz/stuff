@@ -63,14 +63,8 @@ def tuner_optuna_LGBMClassifier(x_train, x_test, y_train , y_test , n_trials=30,
   return paramsLGBM
 
 
-def model_LGBMClassifier(x, y, test, y_test, paramsLGBM, Kfold_splits = 10,  early_stopping_rounds = 500):
-  """
-  x= x_train
-  y = y_train
-  test = x_test
-  y_test = y_test
-  """
-
+def model_LGBMClassifier(x, y, test,  paramsLGBM, Kfold_splits = 10,  early_stopping_rounds = 500):
+ 
   kf = KFold(n_splits=Kfold_splits, shuffle=True, random_state=42)
   auc = []
   preds = np.zeros(test.shape[0])
@@ -100,9 +94,7 @@ def model_LGBMClassifier(x, y, test, y_test, paramsLGBM, Kfold_splits = 10,  ear
   print("-"*80)
   print(feature_importances_extra)
   print("-"*80)
-  print("MODEL AUC PERFORMANCE ON TEST:", roc_auc_score(y_test,preds))
-  print("-"*80)
-  return model
+  return model, preds
 
 
 def save_model(model, name = "something.sav"):
