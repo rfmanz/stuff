@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import sys
 from tabulate import tabulate
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def describe_df(df):
