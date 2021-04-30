@@ -229,11 +229,11 @@ def class_hists(data, column, target, bins="auto", ax=None, legend=False,
     return ax
 
 def plot_univariate_classification(df, target_name):
-    continous_cols = list(df.select_dtypes("number").columns)
-    fig, axes = _make_subplots(n_plots=len(continous_cols), row_height=2)
-    for i, (ind, ax) in enumerate(zip(continous_cols, axes.ravel())):
-        class_hists(df, continous_cols[i],
-                    target_col, ax=ax, legend=i == 0)
+    continuous_cols = list(df.select_dtypes("number").columns)
+    fig, axes = _make_subplots(n_plots=len(continuous_cols), row_height=2)
+    for i, (ind, ax) in enumerate(zip(continuous_cols, axes.ravel())):
+        class_hists(df, continuous_cols[i],
+                    target_name, ax=ax, legend=i == 0)
     for j in range(i + 1, axes.size):
         # turn off axis if we didn't fill last row
         axes.ravel()[j].set_axis_off()
