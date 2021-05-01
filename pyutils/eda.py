@@ -4,6 +4,7 @@ import sys
 from tabulate import tabulate
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.preprocessing import StandardScaler
 
 
 def describe_df(df):
@@ -146,6 +147,7 @@ def find_pretty_grid(n_plots, max_cols=5):
             best_cols = cols
     return int(np.ceil(n_plots / best_cols)), best_cols
 
+
 def _make_subplots(n_plots, max_cols=5, row_height=3):
     """Create a harmonious subplot grid.
     """
@@ -156,6 +158,7 @@ def _make_subplots(n_plots, max_cols=5, row_height=3):
     # we don't want ravel to fail, this is awkward!
     axes = np.atleast_2d(axes)
     return fig, axes
+
 
 def class_hists(data, column, target, bins="auto", ax=None, legend=False,
                 scale_separately=True):
@@ -228,7 +231,9 @@ def class_hists(data, column, target, bins="auto", ax=None, legend=False,
     ax.set_xlabel(column)
     return ax
 
+
 def plot_univariate_classification(df, target_name):
+    df[[target_name]] = df[[target_name]].astype('object')
     continuous_cols = list(df.select_dtypes("number").columns)
     fig, axes = _make_subplots(n_plots=len(continuous_cols), row_height=2)
     for i, (ind, ax) in enumerate(zip(continuous_cols, axes.ravel())):
@@ -239,6 +244,50 @@ def plot_univariate_classification(df, target_name):
         axes.ravel()[j].set_axis_off()
     return plt.show()
 
+
+def violin_plot(df, target_name):
+    continuous_cols = list(df.select_dtypes("number").columns)
+    data = pd.DataFrame(StandardScaler().fit_transform(df[continuous_cols]), columns=df[continuous_cols].columns,
+                        index=df[continuous_cols].index)
+    data = pd.concat([data, df[[target_name]]], axis=1)
+    data = pd.melt(data, id_vars=target_name,
+                   var_name="features",
+                   value_name='value')
+
+    plt.figure(figsize=(10, 10))
+    ax = sns.violinplot(x="features", y="value", hue=target_name, data=data, split=True, inner="quartile")
+    for i in range(len(np.unique(data["features"])) - 1):
+        ax.axvline(i + 0.5, color='grey', lw=1)
+    plt.xticks(rotation=20)
+    return plt.show()
+
+
+def box_plot(df, target_name):
+    continuous_cols = list(df.select_dtypes("number").columns)
+    data = pd.DataFrame(StandardScaler().fit_transform(df[continuous_cols]), columns=df[continuous_cols].columns,
+                        index=df[continuous_cols].index)
+    data = pd.concat([data, df[[target_name]]], axis=1)
+    data = pd.melt(data, id_vars=target_name,
+                   var_name="features",
+                   value_name='value')
+
+    plt.figure(figsize=(10, 10))
+    ax = sns.boxplot(x="features", y="value", hue="churn", data=data)
+    for i in range(len(np.unique(data["features"])) - 1):
+        ax.axvline(i + 0.5, color='grey', lw=1)
+    plt.xticks(rotation=20)
+    return plt.show()
+
+
+def plot_density_numerical(df):
+    continuous_cols = list(df.select_dtypes("number").columns)
+    fig, axes = _make_subplots(n_plots=len(continuous_cols), row_height=2)
+    for i, (ind, ax) in enumerate(zip(continuous_cols, axes.ravel())):
+        sns.kdeplot(df[continuous_cols[i]], color='black', shade=True, legend=True, ax=ax)
+    for j in range(i + 1, axes.size):
+        # turn off axis if we didn't fill last row
+        axes.ravel()[j].set_axis_off()
+    return plt.show()
 
 
 

@@ -118,13 +118,13 @@ train.loc[(train.Sex == 'male')& (train.Survived== 0)].value_counts(train.Pclass
 # plt.figure()
 # sns.scatterplot(train.loc[(train.Age > 80), 'Age'], train[(train.Age > 80)].index)
 # plt.show()
-# plt.figure()
-# sns.distplot(train.Age, hist=True, color='black')
-# plt.show()
-# plt.figure()
-# sns.kdeplot(train.Age, color='black', shade=True)
-# plt.show()
-# 
+plt.figure()
+sns.distplot(train.Age, hist=True, color='black')
+plt.show()
+plt.figure()
+sns.kdeplot(train.Age, color='black', shade=True)
+plt.show()
+
 # }
 
 
