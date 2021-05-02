@@ -148,7 +148,7 @@ def find_pretty_grid(n_plots, max_cols=5):
     return int(np.ceil(n_plots / best_cols)), best_cols
 
 
-def _make_subplots(n_plots, max_cols=5, row_height=3):
+def make_subplots(n_plots, max_cols=5, row_height=3):
     """Create a harmonious subplot grid.
     """
     n_rows, n_cols = find_pretty_grid(n_plots, max_cols=max_cols)
@@ -235,7 +235,7 @@ def class_hists(data, column, target, bins="auto", ax=None, legend=False,
 def plot_univariate_classification(df, target_name):
     df[[target_name]] = df[[target_name]].astype('object')
     continuous_cols = list(df.select_dtypes("number").columns)
-    fig, axes = _make_subplots(n_plots=len(continuous_cols), row_height=2)
+    fig, axes = make_subplots(n_plots=len(continuous_cols), row_height=2)
     for i, (ind, ax) in enumerate(zip(continuous_cols, axes.ravel())):
         class_hists(df, continuous_cols[i],
                     target_name, ax=ax, legend=i == 0)
@@ -281,7 +281,7 @@ def box_plot(df, target_name):
 
 def plot_density_numerical(df):
     continuous_cols = list(df.select_dtypes("number").columns)
-    fig, axes = _make_subplots(n_plots=len(continuous_cols), row_height=2)
+    fig, axes = make_subplots(n_plots=len(continuous_cols), row_height=2)
     for i, (ind, ax) in enumerate(zip(continuous_cols, axes.ravel())):
         sns.kdeplot(df[continuous_cols[i]], color='black', shade=True, legend=True, ax=ax)
     for j in range(i + 1, axes.size):

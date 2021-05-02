@@ -10,9 +10,6 @@ sampleSubmission.shape, test.shape, train.shape
 tr = train
 continuous_cols = list(tr.select_dtypes("number").columns)
 
-violin_plot(train, "Survived")
-plot_univariate_classification(train, "Survived")
-
 data = pd.DataFrame(StandardScaler().fit_transform(tr[continuous_cols]), columns=tr[continuous_cols].columns,
                     index=tr[continuous_cols].index)
 data = pd.concat([data, train.churn.map({"no": 0, "yes": 1})], axis=1)
@@ -20,6 +17,10 @@ data = pd.concat([data, train.churn.map({"no": 0, "yes": 1})], axis=1)
 data = pd.melt(data, id_vars="churn",
                var_name="features",
                value_name='value')
+
+import plotly.express as px
+fig = px.violin(data)
+fig.show()
 # boxplot
 plt.figure(figsize=(40, 40))
 sns.boxplot(x="features", y="value", hue="churn", data=data)
