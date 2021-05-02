@@ -17,10 +17,13 @@ data = pd.concat([data, train.churn.map({"no": 0, "yes": 1})], axis=1)
 data = pd.melt(data, id_vars="churn",
                var_name="features",
                value_name='value')
+import plotly.io as pio
+pio.renderers.default = "browser"
 
 import plotly.express as px
-fig = px.violin(data)
+fig = px.violin(data,)
 fig.show()
+
 # boxplot
 plt.figure(figsize=(40, 40))
 sns.boxplot(x="features", y="value", hue="churn", data=data)
@@ -53,9 +56,8 @@ plt.figure()
 sns.kdeplot(data=data, x="value", color='black', shade=True, legend=True)
 plt.show()
 
-from pyutils.eda import _make_subplots
 
-fig, axes = _make_subplots(n_plots=len(continuous_cols), row_height=2)
+fig, axes = make_subplots(n_plots=len(continuous_cols), row_height=2)
 for i, (ind, ax) in enumerate(zip(continuous_cols, axes.ravel())):
     sns.kdeplot(tr[continuous_cols[i]], color='black', shade=True, legend=True, ax=ax)
 for j in range(i + 1, axes.size):
@@ -66,7 +68,7 @@ plt.show()
 
 def plot_density_numerical(df):
     continuous_cols = list(df.select_dtypes("number").columns)
-    fig, axes = _make_subplots(n_plots=len(continuous_cols), row_height=2)
+    fig, axes = make_subplots(n_plots=len(continuous_cols), row_height=2)
     for i, (ind, ax) in enumerate(zip(continuous_cols, axes.ravel())):
         sns.kdeplot(df[continuous_cols[i]], color='black', shade=True, legend=True, ax=ax)
     for j in range(i + 1, axes.size):
@@ -128,7 +130,7 @@ plt.show()
 
 categorical_cols = list(tr.select_dtypes("object").columns)
 fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(15, 15))
-# fig, axes = _make_subplots(n_plots=len(categorical_cols), row_height=2)
+# fig, axes = make_subplots(n_plots=len(categorical_cols), row_height=2)
 
 for i, (ind, ax) in enumerate(zip(categorical_cols, axes.ravel())):
     ax = sns.histplot(x=tr[categorical_cols[i]], data=tr, color='green', ax=ax)
@@ -140,7 +142,7 @@ for i, (ind, ax) in enumerate(zip(categorical_cols, axes.ravel())):
 plt.show()
 # ---
 categorical_cols = list(tr.select_dtypes("object").columns)
-fig, axes = _make_subplots(n_plots=len(categorical_cols), row_height=2)
+fig, axes = make_subplots(n_plots=len(categorical_cols), row_height=2)
 for i, (ind, ax) in enumerate(zip(categorical_cols, axes.ravel())):
     ax = sns.histplot(x=tr[categorical_cols[i]], data=tr, color='green', ax=ax)
 ax.set_xticklabels(labels=tr[categorical_cols[i]], rotation=90)
@@ -168,7 +170,6 @@ import plotly.express as px
 
 
 import plotly.io as pio
-
 pio.renderers.default = "browser"
 
 fig = px.histogram(tr.state)

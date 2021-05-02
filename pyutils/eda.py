@@ -6,6 +6,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 
+# import dtale
+# dtale.show(df)
+
+# from pandas_profiling import ProfileReport
+# profile = ProfileReport(tr, explorative=True)
+
 
 def describe_df(df):
     # Numerical
