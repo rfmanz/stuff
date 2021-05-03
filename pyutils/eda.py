@@ -339,15 +339,15 @@ def ordered_barplot(df, variable_name):
                     ha='center', va='bottom')  # set the alignment of the text
 
     # Use a LinearLocator to ensure the correct number of ticks
-    ax.yaxis.set_major_locator(ticker.LinearLocator(11))
+    #ax.yaxis.set_major_locator(ticker.LinearLocator(11))
 
     # Fix the frequency range to 0-100
     ax2.set_ylim(0, 100)
     ax.set_ylim(0, ncount)
 
     # And use a MultipleLocator to ensure a tick spacing of 10
-    ax2.yaxis.set_major_locator(ticker.MultipleLocator(10))
+    #ax2.yaxis.set_major_locator(ticker.MultipleLocator(10))
 
     # Need to turn the grid on ax2 off, otherwise the gridlines end up on top of the bars
-    #ax2.grid(None)
+    ax2.grid(None)
     return plt.show()
