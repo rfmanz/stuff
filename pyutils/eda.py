@@ -10,13 +10,12 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.ticker as ticker
 
 
-
 # import dtale
 # dtale.show(df)
 
 # from pandas_profiling import ProfileReport
 # profile = ProfileReport(tr, explorative=True)
-def peek(df,rows = 3):
+def peek(df, rows=3):
     return df.iloc[:rows, :].T
 
 
@@ -318,7 +317,7 @@ def ordered_barplot(df, variable_name):
     ax = sns.barplot(x="labels", y="data", data=chart)
     ncount = len(df[[variable_name]])
     # plt.title('Distribution of Truck Configurations')
-    # plt.xlabel('Number of Axles')
+    plt.xlabel(variable_name)
 
     # Make twin axis
     ax2 = ax.twinx()
@@ -350,5 +349,5 @@ def ordered_barplot(df, variable_name):
     ax2.yaxis.set_major_locator(ticker.MultipleLocator(10))
 
     # Need to turn the grid on ax2 off, otherwise the gridlines end up on top of the bars
-    ax2.grid(None)
+    #ax2.grid(None)
     return plt.show()
