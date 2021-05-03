@@ -69,7 +69,7 @@ def correlated(df, threshold, drop_columns=False, encode_type='dmy'):
                             0]].columns)
 
     if drop_columns:
-        df= df.drop(labels=to_drop, axis=1)
+        df = df.drop(labels=to_drop, axis=1)
         return df
 
 
@@ -139,6 +139,7 @@ def mice_imputer(data):
 
     return completed_data
 
+
 def target_encode(train, valid, col, target='target', kfold=5, smooth=20, verbose=True):
     """
         train:  train dataset
@@ -195,3 +196,5 @@ def target_encode(train, valid, col, target='target', kfold=5, smooth=20, verbos
     train = train.drop('kfold', axis=1)
     train = train.drop('org_sorting', axis=1)
     return (train, valid)
+
+

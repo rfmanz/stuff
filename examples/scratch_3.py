@@ -199,8 +199,6 @@ chart = pd.value_counts(s).to_frame(name='data')
 chart.index.name = 'labels'
 chart = chart.reset_index().sort_values(['data', 'labels'], ascending=[False, True])
 
-plot_density_numerical(tr)
-
 
 plt.figure()
 sns.kdeplot(tr.number_customer_service_calls,color="black",shade="gray")

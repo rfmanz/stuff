@@ -6,11 +6,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 
+
+
 # import dtale
 # dtale.show(df)
 
 # from pandas_profiling import ProfileReport
 # profile = ProfileReport(tr, explorative=True)
+def peek(df):
+    df.iloc[:3, :].T
 
 
 def describe_df(df):
@@ -298,8 +302,50 @@ def plot_density_numerical_for_whole_dataframe(df):
 
 def plot_single_numerical(df):
     plt.figure()
-    sns.kdeplot(df,color="black",shade="gray")
+    sns.kdeplot(df, color="black", shade="gray")
     return plt.show()
 
 
-#def ordered_barplot()
+def ordered_barplot(df, variable_name):
+    s = df[~pd.isnull(df[[variable_name]])][variable_name]
+    chart = pd.value_counts(s).to_frame(name='data')
+    chart.index.name = 'labels'
+    chart = chart.reset_index().sort_values(['data', 'labels'], ascending=[False, True])
+    plt.figure(figsize=(12, 8))
+    ax = sns.barplot(x="labels", y="data", data=chart)
+    ncount = len(df[[variable_name]])
+    # plt.title('Distribution of Truck Configurations')
+    # plt.xlabel('Number of Axles')
+
+    # Make twin axis
+    ax2 = ax.twinx()
+
+    # Switch so count axis is on right, frequency on left
+    ax2.yaxis.tick_left()
+    ax.yaxis.tick_right()
+
+    # Also switch the labels over
+    ax.yaxis.set_label_position('right')
+    ax2.yaxis.set_label_position('left')
+
+    ax2.set_ylabel('Frequency [%]')
+
+    for p in ax.patches:
+        x = p.get_bbox().get_points()[:, 0]
+        y = p.get_bbox().get_points()[1, 1]
+        ax.annotate('{:.1f}%'.format(100. * y / ncount), (x.mean(), y),
+                    ha='center', va='bottom')  # set the alignment of the text
+
+    # Use a LinearLocator to ensure the correct number of ticks
+    ax.yaxis.set_major_locator(ticker.LinearLocator(11))
+
+    # Fix the frequency range to 0-100
+    ax2.set_ylim(0, 100)
+    ax.set_ylim(0, ncount)
+
+    # And use a MultipleLocator to ensure a tick spacing of 10
+    ax2.yaxis.set_major_locator(ticker.MultipleLocator(10))
+
+    # Need to turn the grid on ax2 off, otherwise the gridlines end up on top of the bars
+    ax2.grid(None)
+    return plt.show()
