@@ -14,7 +14,7 @@ from sklearn.preprocessing import StandardScaler
 # from pandas_profiling import ProfileReport
 # profile = ProfileReport(tr, explorative=True)
 def peek(df):
-    df.iloc[:3, :].T
+    return df.iloc[:3, :].T
 
 
 def describe_df(df):
