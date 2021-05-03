@@ -2,12 +2,11 @@ import pandas as pd
 import numpy as np
 import sys
 
-from matplotlib import ticker
 from tabulate import tabulate
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
-import matplotlib.ticker as ticker
+
 
 
 # import dtale
