@@ -1,11 +1,14 @@
 import pandas as pd
 import numpy as np
 import sys
+
+from matplotlib import ticker
 from tabulate import tabulate
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
-#import matplotlib.ticker as ticker
+import matplotlib.ticker as ticker
+
 
 
 # import dtale
@@ -344,7 +347,7 @@ def ordered_barplot(df, variable_name):
     ax.set_ylim(0, ncount)
 
     # And use a MultipleLocator to ensure a tick spacing of 10
-    #ax2.yaxis.set_major_locator(ticker.MultipleLocator(10))
+    ax2.yaxis.set_major_locator(ticker.MultipleLocator(10))
 
     # Need to turn the grid on ax2 off, otherwise the gridlines end up on top of the bars
     ax2.grid(None)
