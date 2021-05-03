@@ -128,8 +128,18 @@ fig.delaxes(ax[3, 3])
 plt.tight_layout()
 plt.show()
 
+sns.countplot(tr.state)
+
+#grid = plt.GridSpec( nrows=2, ncols=1, wspace=0.4, hspace=0.3)
+grid = plt.GridSpec( nrows=2, ncols=1)
+plt.grid()
+plt.subplot(grid[0, 0])
+plt.subplot(grid[0, 1:])
+plt.subplot(grid[1, :2])
+plt.subplot(grid[1, 2]);
+plt.show()
 categorical_cols = list(tr.select_dtypes("object").columns)
-fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(15, 15))
+fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15, 15))
 # fig, axes = make_subplots(n_plots=len(categorical_cols), row_height=2)
 
 for i, (ind, ax) in enumerate(zip(categorical_cols, axes.ravel())):
@@ -145,12 +155,11 @@ categorical_cols = list(tr.select_dtypes("object").columns)
 fig, axes = make_subplots(n_plots=len(categorical_cols), row_height=2)
 for i, (ind, ax) in enumerate(zip(categorical_cols, axes.ravel())):
     ax = sns.histplot(x=tr[categorical_cols[i]], data=tr, color='green', ax=ax)
-ax.set_xticklabels(labels=tr[categorical_cols[i]], rotation=90)
+    ax=  ax.set_xticklabels(labels=tr[categorical_cols[i]].value_counts().index.values, rotation=90)
+
 for j in range(i + 1, axes.size):
     axes.ravel()[j].set_axis_off()
     # plt.xticks(rotate=90)
-ax.set_xticklabels(labels=tr[categorical_cols[i]].value_counts().index.values, rotation=90)
-
 plt.show()
 
 categorical_cols
@@ -189,6 +198,24 @@ s = tr[~pd.isnull(tr['state'])]['state']
 chart = pd.value_counts(s).to_frame(name='data')
 chart.index.name = 'labels'
 chart = chart.reset_index().sort_values(['data', 'labels'], ascending=[False, True])
+
+plot_density_numerical(tr)
+
+
+plt.figure()
+sns.kdeplot(tr.number_customer_service_calls,color="black",shade="gray")
+plt.show()
+
+plt.figure()
+ax = sns.barplot(y= "labels",x = "data",data = chart)
+#ax.set_xlabel('labels')
+plt.xticks(rotation = 90 )
+plt.show()
+
+plt.barh(chart.labels, chart.data)
+chart.plot.barh(figsize=(10,20))
+plt.show()
+
 charts = [go.Bar(x=chart['labels'].values, y=chart['data'].values, name='Frequency')]
 figure = go.Figure(data=charts, layout=go.Layout({
     'barmode': 'group',
@@ -215,3 +242,53 @@ plt.show()
 # when you're done with graphing : Feature's
 # https://featuretools.alteryx.com/en/stable/
 # https://github.com/alteryx/featuretools
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+import matplotlib.ticker as ticker
+
+# Some random data
+dfWIM = pd.DataFrame({'AXLES': np.random.normal(8, 2, 5000).astype(int)})
+dfWIM
+ncount = len(dfWIM)
+
+plt.figure(figsize=(12,8))
+ax = sns.barplot(x= "labels",y = "data",data = chart)
+ncount = len(tr.state)
+#plt.title('Distribution of Truck Configurations')
+#plt.xlabel('Number of Axles')
+
+# Make twin axis
+ax2=ax.twinx()
+
+# Switch so count axis is on right, frequency on left
+ax2.yaxis.tick_left()
+ax.yaxis.tick_right()
+
+# Also switch the labels over
+ax.yaxis.set_label_position('right')
+ax2.yaxis.set_label_position('left')
+
+ax2.set_ylabel('Frequency [%]')
+
+for p in ax.patches:
+    x=p.get_bbox().get_points()[:,0]
+    y=p.get_bbox().get_points()[1,1]
+    ax.annotate('{:.1f}%'.format(100.*y/ncount), (x.mean(), y),
+            ha='center', va='bottom') # set the alignment of the text
+
+# Use a LinearLocator to ensure the correct number of ticks
+ax.yaxis.set_major_locator(ticker.LinearLocator(11))
+
+# Fix the frequency range to 0-100
+ax2.set_ylim(0,100)
+ax.set_ylim(0,ncount)
+
+# And use a MultipleLocator to ensure a tick spacing of 10
+ax2.yaxis.set_major_locator(ticker.MultipleLocator(10))
+
+# Need to turn the grid on ax2 off, otherwise the gridlines end up on top of the bars
+ax2.grid(None)
+plt.show()
+

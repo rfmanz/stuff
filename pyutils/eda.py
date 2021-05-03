@@ -285,7 +285,7 @@ def box_plot(df, target_name):
     return plt.show()
 
 
-def plot_density_numerical(df):
+def plot_density_numerical_for_whole_dataframe(df):
     continuous_cols = list(df.select_dtypes("number").columns)
     fig, axes = make_subplots(n_plots=len(continuous_cols), row_height=2)
     for i, (ind, ax) in enumerate(zip(continuous_cols, axes.ravel())):
@@ -296,5 +296,10 @@ def plot_density_numerical(df):
     return plt.show()
 
 
+def plot_single_numerical(df):
+    plt.figure()
+    sns.kdeplot(df,color="black",shade="gray")
+    return plt.show()
 
 
+#def ordered_barplot()
