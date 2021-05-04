@@ -6,7 +6,7 @@ from tabulate import tabulate
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
-
+import matplotlib.ticker as ticker
 
 
 # import dtale
@@ -15,7 +15,7 @@ from sklearn.preprocessing import StandardScaler
 # from pandas_profiling import ProfileReport
 # profile = ProfileReport(tr, explorative=True)
 def peek(df, rows=3):
-    return df.iloc[:rows, :].T
+    return pd.concat([df.dtypes,df.iloc[:rows, :].T],axis=1)
 
 
 def describe_df(df):
@@ -307,7 +307,7 @@ def plot_single_numerical(df):
     return plt.show()
 
 
-def ordered_barplot(df, variable_name):
+def ordered_barplot(df, variable_name, rotate=0):
     s = df[~pd.isnull(df[[variable_name]])][variable_name]
     chart = pd.value_counts(s).to_frame(name='data')
     chart.index.name = 'labels'
@@ -316,7 +316,9 @@ def ordered_barplot(df, variable_name):
     ax = sns.barplot(x="labels", y="data", data=chart)
     ncount = len(df[[variable_name]])
     # plt.title('Distribution of Truck Configurations')
+    # ax.set_xticklabels(labels=tr.state, rotation=90)
     plt.xlabel(variable_name)
+    plt.xticks(rotation=rotate)
 
     # Make twin axis
     ax2 = ax.twinx()
@@ -334,19 +336,82 @@ def ordered_barplot(df, variable_name):
     for p in ax.patches:
         x = p.get_bbox().get_points()[:, 0]
         y = p.get_bbox().get_points()[1, 1]
-        ax.annotate('{:.1f}%'.format(100. * y / ncount), (x.mean(), y),
-                    ha='center', va='bottom')  # set the alignment of the text
+        ax.annotate('{:.1f}%'.format(100. * y / ncount), (x.mean(), y), ha='center',
+                    va='bottom')  # set the alignment of the text
 
     # Use a LinearLocator to ensure the correct number of ticks
-    #ax.yaxis.set_major_locator(ticker.LinearLocator(11))
+    ax.yaxis.set_major_locator(ticker.LinearLocator(11))
 
     # Fix the frequency range to 0-100
     ax2.set_ylim(0, 100)
     ax.set_ylim(0, ncount)
 
     # And use a MultipleLocator to ensure a tick spacing of 10
-    #ax2.yaxis.set_major_locator(ticker.MultipleLocator(10))
+    ax2.yaxis.set_major_locator(ticker.MultipleLocator(10))
 
     # Need to turn the grid on ax2 off, otherwise the gridlines end up on top of the bars
     ax2.grid(None)
+    ax2.grid(False)
+
+
     return plt.show()
+
+
+def ordered_barplot_h(df, variable_name, rotate=0):
+    s = df[~pd.isnull(df[[variable_name]])][variable_name]
+    chart = pd.value_counts(s).to_frame(name='data')
+    chart.index.name = 'labels'
+    chart = chart.reset_index().sort_values(['data', 'labels'], ascending=[False, True])
+
+    plt.figure(figsize=(12, 8))
+    ax = sns.barplot(y="labels", x="data", data=chart)
+    ncount = len(df[[variable_name]])
+    # plt.title('Distribution of Truck Configurations')
+    # ax.set_xticklabels(labels=tr.state, rotation=90)
+
+    plt.xticks(rotation=rotate)
+
+    # ax2 = ax.secondary_xaxis('top')
+    # # np.arange(0,100,len(ax.get_xticks()))/100
+    # # [100/x for x in ax.get_xticks()]
+    # ax2.set_xticklabels(np.arange(0,100,len(ax.get_xticks()))/100)
+    #
+
+    # ,functions= (lambda x : normalize(x.reshape(-1, 1)),lambda x : normalize(x.reshape(-1, 1))))
+
+    # ax2.set_xticks(ax.get_xticks())
+    # ax2.set_xbound(ax.get_xbound())
+    #ax2.set_xticklabels([ for x in ax.get_xticks()])
+
+    # # ax2 = ax.secondary_xaxis('top', functions=(lambda x: (x/ncount), lambda x: (x/ncount)))
+    #
+    # # ax2.set_xticklabels([0, 25, 50, 75, 100])
+    # # ax2.set_xticklabels([f'{x}' for x in ax2.get_xticks()])
+    #
+    # #ax2.xaxis.set_major_formatter(ticker.PercentFormatter(1.0))
+    #
+    # # Switch so count axis is on right, frequency on left
+    ax.yaxis.tick_left()
+    # ax2.yaxis.tick_right()
+
+    # Also switch the labels over
+    ax.yaxis.set_label_position('right')
+    #ax2.yaxis.set_label_position('left')
+
+    # ax.set_ylabel('%', rotation=180, fontsize=10, va='bottom', ha='right')
+    ax.set_ylabel("")
+
+    for p in ax.patches:
+        percentage = '{:.1f}%'.format(p.get_width() / ncount * 100)
+        width, height = p.get_width(), p.get_height()
+        x = p.get_x() + width + 0.02
+        y = p.get_y() + height / 2
+        ax.annotate(percentage, (x, y), ha='left', va='center')
+
+    return plt.show()
+
+#
+# from sklearn.preprocessing import normalize
+#
+# x = list(range(0, train.Ticket_type.value_counts()[0]))
+

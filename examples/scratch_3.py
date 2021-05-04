@@ -194,11 +194,14 @@ profile
 
 import plotly.graph_objs as go
 
-s = tr[~pd.isnull(tr['state'])]['state']
+s = train[~pd.isnull(train['Ticket_type'])]['Ticket_type']
 chart = pd.value_counts(s).to_frame(name='data')
 chart.index.name = 'labels'
 chart = chart.reset_index().sort_values(['data', 'labels'], ascending=[False, True])
 
+plt.figure()
+sns.barplot(y="labels", x="data", data=chart)
+plt.show()
 
 plt.figure()
 sns.kdeplot(tr.number_customer_service_calls,color="black",shade="gray")
