@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 import matplotlib.ticker as ticker
+from pyutils import *
 
 
 # import dtale
@@ -14,8 +15,12 @@ import matplotlib.ticker as ticker
 
 # from pandas_profiling import ProfileReport
 # profile = ProfileReport(tr, explorative=True)
+
+
+
+
 def peek(df, rows=3):
-    return pd.concat([df.dtypes,df.iloc[:rows, :].T],axis=1)
+    return pd.concat([df.dtypes, df.iloc[:rows, :].T], axis=1)
 
 
 def describe_df(df):
@@ -256,7 +261,7 @@ def plot_univariate_classification(df, target_name):
     return plt.show()
 
 
-def violin_plot(df, target_name):
+def violin_plot_classification(df, target_name):
     continuous_cols = list(df.select_dtypes("number").columns)
     data = pd.DataFrame(StandardScaler().fit_transform(df[continuous_cols]), columns=df[continuous_cols].columns,
                         index=df[continuous_cols].index)
@@ -273,7 +278,8 @@ def violin_plot(df, target_name):
     return plt.show()
 
 
-def box_plot(df, target_name):
+def box_plot_classification(df, target_name):
+    df[target_name] = df[target_name].astype('object')
     continuous_cols = list(df.select_dtypes("number").columns)
     data = pd.DataFrame(StandardScaler().fit_transform(df[continuous_cols]), columns=df[continuous_cols].columns,
                         index=df[continuous_cols].index)
@@ -283,7 +289,7 @@ def box_plot(df, target_name):
                    value_name='value')
 
     plt.figure(figsize=(10, 10))
-    ax = sns.boxplot(x="features", y="value", hue="churn", data=data)
+    ax = sns.boxplot(x="features", y="value", hue=target_name, data=data)
     for i in range(len(np.unique(data["features"])) - 1):
         ax.axvline(i + 0.5, color='grey', lw=1)
     plt.xticks(rotation=20)
@@ -299,6 +305,19 @@ def plot_density_numerical_for_whole_dataframe(df):
         # turn off axis if we didn't fill last row
         axes.ravel()[j].set_axis_off()
     return plt.show()
+
+
+# def plot_histograms_categoricals_for_whole_dataframe(df):
+#     categorical_cols = list(df.select_dtypes("object").columns)
+#     fig, axes = make_subplots(n_plots=len(categorical_cols), row_height=2)
+#     for i, (ind, ax) in enumerate(zip(categorical_cols, axes.ravel())):
+#         ax = sns.histplot(x=df[categorical_cols[i]], data=df, color='green', ax=ax)
+#         ax = ax.set_xticklabels(labels=df[categorical_cols[i]].value_counts().index.values, rotation=90)
+#
+#     for j in range(i + 1, axes.size):
+#         axes.ravel()[j].set_axis_off()
+#         # plt.xticks(rotate=90)
+#     plt.show()
 
 
 def plot_single_numerical(df):
@@ -353,7 +372,6 @@ def ordered_barplot(df, variable_name, rotate=0):
     ax2.grid(None)
     ax2.grid(False)
 
-
     return plt.show()
 
 
@@ -381,7 +399,7 @@ def ordered_barplot_h(df, variable_name, rotate=0):
 
     # ax2.set_xticks(ax.get_xticks())
     # ax2.set_xbound(ax.get_xbound())
-    #ax2.set_xticklabels([ for x in ax.get_xticks()])
+    # ax2.set_xticklabels([ for x in ax.get_xticks()])
 
     # # ax2 = ax.secondary_xaxis('top', functions=(lambda x: (x/ncount), lambda x: (x/ncount)))
     #
@@ -396,7 +414,7 @@ def ordered_barplot_h(df, variable_name, rotate=0):
 
     # Also switch the labels over
     ax.yaxis.set_label_position('right')
-    #ax2.yaxis.set_label_position('left')
+    # ax2.yaxis.set_label_position('left')
 
     # ax.set_ylabel('%', rotation=180, fontsize=10, va='bottom', ha='right')
     ax.set_ylabel("")
@@ -409,9 +427,3 @@ def ordered_barplot_h(df, variable_name, rotate=0):
         ax.annotate(percentage, (x, y), ha='left', va='center')
 
     return plt.show()
-
-#
-# from sklearn.preprocessing import normalize
-#
-# x = list(range(0, train.Ticket_type.value_counts()[0]))
-

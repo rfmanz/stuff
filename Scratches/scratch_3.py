@@ -151,11 +151,11 @@ for i, (ind, ax) in enumerate(zip(categorical_cols, axes.ravel())):
 # plt.tight_layout()
 plt.show()
 # ---
-categorical_cols = list(tr.select_dtypes("object").columns)
+categorical_cols = list(train.select_dtypes("object").columns)
 fig, axes = make_subplots(n_plots=len(categorical_cols), row_height=2)
 for i, (ind, ax) in enumerate(zip(categorical_cols, axes.ravel())):
-    ax = sns.histplot(x=tr[categorical_cols[i]], data=tr, color='green', ax=ax)
-    ax=  ax.set_xticklabels(labels=tr[categorical_cols[i]].value_counts().index.values, rotation=90)
+    ax = sns.histplot(x=train[categorical_cols[i]], data=train, color='green', ax=ax)
+    ax=  ax.set_xticklabels(labels=train[categorical_cols[i]].value_counts().index.values, rotation=90)
 
 for j in range(i + 1, axes.size):
     axes.ravel()[j].set_axis_off()
