@@ -142,6 +142,8 @@ def mice_imputer(data):
 
 def target_encode(train, valid, col, target='target', kfold=5, smooth=20, verbose=True):
     """
+    example :  train, test = target_encode2(train,test,['Pclass', 'Sex', 'Embarked','age_bin'],target='Survived')
+
         train:  train dataset
         valid:  validation dataset
         col:   column which will be encoded (in the example RESOURCE)
