@@ -12,8 +12,10 @@
 
 ## Stats
 ### [Odds vs Probability](https://www.youtube.com/watch?v=ARfXDSkQf1Y)
-![Odds vs Probability](1.png)
-Above odds, below probability. 
+![Odds vs Probability](1.png)<br>
+
+Above odds, below probability.<br>
+
 ![Odds vs Probability](2.png)
 From probability to odds: <br>
 0.625/0.375
