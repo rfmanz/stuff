@@ -26,7 +26,14 @@ From probability to odds: <br>
 
 Additive modelling is the foundation of boosting. <br>
 Additive modelling basically means we start from simple functions and add more on top. <br>
-Example: 
+Example:<br>
+We want to find the function which best fits this set of points(y values): 
+![[Pasted image 20210508102757.png]]
+
+
+![Additive Modelling](3.png)
+
+
 
 Boosting is a loosely-defined strategy that combines multiple simple models into a single composite model. The idea is that, as we introduce more simple models, the overall model becomes a stronger and stronger predictor. In boosting terminology, the simple models are called weak models or weak learners.
 
