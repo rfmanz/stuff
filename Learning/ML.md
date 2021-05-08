@@ -20,8 +20,14 @@ Above odds, below probability.<br>
 From probability to odds: <br>
 0.625/0.375
 <br>
-
+---
 ### Gradient Boosting
 
+Boosting is a loosely-defined strategy that combines multiple simple models into a single composite model. The idea is that, as we introduce more simple models, the overall model becomes a stronger and stronger predictor. In boosting terminology, the simple models are called weak models or weak learners.
+
+Boosting constructs and adds weak models in a stage-wise fashion, one after the other, each one chosen to improve the overall model performance. 
+
+> Resources:
+  - https://explained.ai/gradient-boosting/L2-loss.html
 
 
