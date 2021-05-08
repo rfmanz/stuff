@@ -20,7 +20,8 @@ Above odds, below probability.<br>
 From probability to odds: <br>
 0.625/0.375
 <br>
-Yeah bra 
+
+### Gradient Boosting
 
 
 
