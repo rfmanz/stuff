@@ -1,25 +1,18 @@
-import os
-from typing import List
-
-import matplotlib.pyplot as plt
-import pandas as pd
-
 from pyutils import *
 import zipfile
 import time
 from datetime import timedelta
 
-
-
 path = '/home/r/Downloads/interbank20.zip'
 path2 = '/home/r/Downloads/intro-ml-project-main.zip'
 path3 = '/home/r/Downloads/house-prices-advanced-regression-techniques'
 
+read_data('/home/r/Downloads/house-prices-advanced-regression-techniques/train.csv')
+
+
 csvs = ['/home/r/Downloads/house-prices-advanced-regression-techniques/train.csv',
         '/home/r/Downloads/house-prices-advanced-regression-techniques/test.csv',
         '/home/r/Downloads/house-prices-advanced-regression-techniques/sample_submission.csv']
-
-read_data(csvs)
 
 
 def read_data(path_ending_with_filename=None, return_df=False, method=None):
@@ -128,12 +121,14 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
 
 
 
-read_data(path)
+read_data(path3)
 
 censo_test, censo_train, productos, rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train = read_data(path, True, "dt")
 
 d = censo_test, censo_train, productos, rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train
 d2 = 'censo_test, censo_train, productos, rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train'
+
+read_data(path2)
 
 all_dfs(d,d2)
 
