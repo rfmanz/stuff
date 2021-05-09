@@ -1,33 +1,154 @@
+from typing import List
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
 from pyutils import *
+import zipfile
 
-path = '/home/r/Downloads/customer-churn-prediction-2020.zip'
+path = '/home/r/Downloads/interbank20.zip'
+path2 = '/home/r/Downloads/intro-ml-project-main.zip'
+path3 = '/home/r/Downloads/house-prices-advanced-regression-techniques'
+
+
+def read_data(path_ending_with_filename=None, return_df=False, method=None):
+    """
+    Reads single csv or list of csvs or csvs in zip.
+
+    Available methods:
+        'dt' = Datatable fread
+
+    TODO: Add to read methods. i.e., parquet, pickle, arrow, etc.
+    """
+    dt.options.progress.enabled = True
+    if isinstance(path_ending_with_filename, str):
+        if path_ending_with_filename.endswith('.zip'):
+            zf = zipfile.ZipFile(path_ending_with_filename)
+            files = zf.namelist()
+            if return_df:
+                dfs = {}
+                for x in files:
+                    if x.endswith('.csv'):
+                        if method == 'dt':
+                            dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = dt.fread(zf.open(x)).to_pandas()
+                        else:
+                            dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = pd.read_csv(zf.open(x))
+                keys = list(dfs.keys())
+                values = list(dfs.values())
+                for i in enumerate(dfs):
+                    print(i[1], ":", values[i[0]].shape)
+                #print(str(",".join(keys)))
+
+                return dfs.values()
+            else:
+                filelist = zf.filelist
+                csv_file_names = [format(re.findall("\w+(?=\.)", zf.namelist()[i])[0]) for i in
+                                  range(len(zf.namelist())) if zf.namelist()[i].endswith('.csv')]
+                file_pos = [i for i, x in enumerate(zf.namelist()) if x.endswith('.csv')]
+                uncompressed = [f"{(zf.filelist[i].file_size / 1024 ** 2):.2f} Mb" for i in file_pos]
+                compressed = [f"{(zf.filelist[i].compress_size / 1024 ** 2):.2f} Mb" for i in file_pos]
+
+                print(pd.concat([pd.Series(csv_file_names), pd.Series(uncompressed), pd.Series(compressed)], axis=1,
+                                keys=["file_names", "uncompressed", "compressed"]))
+                print()
+                print(*csv_file_names, sep=",")
+
+
+        else:
+            # SINGLE FILE
+            df_name = re.findall("\w+(?=\.)", path_ending_with_filename)[0]
+            if method == 'dt':
+                df = dt.fread(path_ending_with_filename)
+                df = df.to_pandas()
+            else:
+                df = pd.read_csv(path_ending_with_filename)
+            if return_df:
+                return df
+            else:
+                print(df_name, df.shape)
+
+    else:
+        # LIST OF FILES
+        dfs = {}
+        for x in path_ending_with_filename:
+            if x.endswith('.csv'):
+                if method == 'dt':
+                    dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = dt.fread(x).to_pandas()
+                else:
+                    dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = pd.read_csv(x)
+        keys = list(dfs.keys())
+        values = list(dfs.values())
+        if return_df:
+            return dfs.values()
+        else:
+            for i in enumerate(dfs):
+                print(i[1], " ", "=", " ", "(", f"{values[i[0]].shape[0]:,}", ":", f"{values[i[0]].shape[1]:,}", ")",
+                      sep="")
+
+            print(str(",".join(keys)))
+
+censo_test,censo_train,productos,rcc_test,rcc_train,sample_submission,se_test,se_train,sunat_test,sunat_train,y_train = read_data(path,True,"dt")
+
+private_test_data,question_meta,student_meta,subject_meta,test_data,train_data,valid_data = read_data(path2,True,'dt')
+
+directory(path3)
+
+# TODO:  1. Add timer to data.table fread. 2. Sort out the functions in load so they are coherent and can be used in conjunction. 3.
+
+
+read_data(path)
+read_data(path2)
+
+private_test_data, question_meta, student_meta, subject_meta, test_data, train_data, valid_data = read_data(path2, True)
+
+private_test_data.shape,question_meta.shape,student_meta.shape,subject_meta.shape,test_data.shape,train_data.shape,valid_data.shape
+
+for i in enumerate(dfs):
+    print(i[1], ":", values[i[0]].shape)
+print(str(",".join(keys)))
+print(str(".shape,".join(keys)), ".shape", sep='')
+
+zf = zipfile.ZipFile(path2)
+
+filelist = zf.filelist
+
+csv_file_names = [format(re.findall("\w+(?=\.)", zf.namelist()[i])[0]) for i in range(len(zf.namelist())) if
+                  zf.namelist()[i].endswith('.csv')]
+
+file_pos = [i for i, x in enumerate(zf.namelist()) if x.endswith('.csv')]
+
+uncompressed = [f"{(zf.filelist[i].file_size / 1024 ** 2):.2f} Mb" for i in file_pos]
+
+compressed = [f"{(zf.filelist[i].compress_size / 1024 ** 2):.2f} Mb" for i in file_pos]
+
+pd.concat([pd.Series(csv_file_names), pd.Series(uncompressed), pd.Series(compressed)], axis=1,
+          keys=["file_names", "uncompressed", "compressed"])
+
+print(*csv_file_names, sep=",")
+
+zipfile.ZipFile(path).infolist()[1]
+
+print(f"{(110209469 / 1024 ** 2):.2f} Mb")
+print(f"{(5824159 / 1024 ** 2):.2f} Mb")
+
 read_data(path)
 sampleSubmission, test, train = read_data(path, True)
 sampleSubmission.shape, test.shape, train.shape
 tr = train
+
 continuous_cols = list(tr.select_dtypes("number").columns)
 
 data = pd.DataFrame(StandardScaler().fit_transform(tr[continuous_cols]), columns=tr[continuous_cols].columns,
                     index=tr[continuous_cols].index)
 data = pd.concat([data, train.churn.map({"no": 0, "yes": 1})], axis=1)
-
+# data = pd.concat([data.iloc[:,:3], train.churn.map({"no": 0 , "yes":1})],axis=1)
 data = pd.melt(data, id_vars="churn",
                var_name="features",
                value_name='value')
-import plotly.io as pio
-pio.renderers.default = "browser"
-
-import plotly.express as px
-fig = px.violin(data,)
-fig.show()
-
 # boxplot
-plt.figure(figsize=(40, 40))
-sns.boxplot(x="features", y="value", hue="churn", data=data)
-plt.xticks(rotation=20)
+# plt.figure(figsize=(10,10))
+# sns.boxplot(x="features", y="value", hue="churn", data=data)
+# plt.xticks(rotation=20)
 
 # violin plot
 # sns.set_theme(style="whitegrid")
@@ -42,8 +163,6 @@ for i in range(len(np.unique(data["features"])) - 1):
 plt.xticks(rotation=20)
 plt.show()
 
-# global density
-
 attend = sns.load_dataset("attention").query("subject <= 12")
 
 plt.figure()
@@ -56,61 +175,16 @@ plt.figure()
 sns.kdeplot(data=data, x="value", color='black', shade=True, legend=True)
 plt.show()
 
-
-fig, axes = make_subplots(n_plots=len(continuous_cols), row_height=2)
-for i, (ind, ax) in enumerate(zip(continuous_cols, axes.ravel())):
-    sns.kdeplot(tr[continuous_cols[i]], color='black', shade=True, legend=True, ax=ax)
-for j in range(i + 1, axes.size):
-    # turn off axis if we didn't fill last row
-    axes.ravel()[j].set_axis_off()
-plt.show()
+# swarm plot
+# sns.set(style="whitegrid", palette="muted")
+# plt.figure(figsize=(10,10))
+# sns.swarmplot(x="features", y="value", hue="churn", data=data)
+# plt.xticks(rotation=90)
 
 
-def plot_density_numerical(df):
-    continuous_cols = list(df.select_dtypes("number").columns)
-    fig, axes = make_subplots(n_plots=len(continuous_cols), row_height=2)
-    for i, (ind, ax) in enumerate(zip(continuous_cols, axes.ravel())):
-        sns.kdeplot(df[continuous_cols[i]], color='black', shade=True, legend=True, ax=ax)
-    for j in range(i + 1, axes.size):
-        # turn off axis if we didn't fill last row
-        axes.ravel()[j].set_axis_off()
-    return plt.show()
-
-
-plot_density_numerical(train)
-
-plt.figure()
-fig =
-plt.show()
-tr.Survived = tr.Survived.astype('object')
 plot_univariate_classification(tr, "churn")
 
 fig, ax = plt.subplots(nrows=4, ncols=4, figsize=(15, 15))
-tr.plot.density()
-tr.hist()
-plt.show()
-
-fig, ax = plt.subplots(nrows=3, ncols=4, figsize=(15, 15))
-fig.suptitle('Distribution of Continuous Features (cont0-cont10)', fontsize=16)
-
-for idx, col in enumerate(range(len(continuous_cols))):
-    i, j = (idx // 4, idx % 4)
-    sns.kdeplot(tr[continuous_cols[i]], color="blue", shade=True, ax=ax[i, j])
-# label="%1.1f"%(tr[continuous_cols[i]].skew()),)
-
-fig.delaxes(ax[2, 3])
-plt.tight_layout()
-plt.show()
-
-# -----
-
-
-# ----
-
-# plot_univariate_classification_categorical
-plot_univariate_classification(tr, "churn")
-
-fig, ax = plt.subplots(nrows=3, ncols=5, figsize=(15, 15))
 fig.suptitle('Distribution of Categorical Features with respect to Targets(cat0-cat18)', fontsize=16)
 
 catCols_s = ['cat0', 'cat1', 'cat2', 'cat3', 'cat4', 'cat6', 'cat9', 'cat11', 'cat12', 'cat13', 'cat14', 'cat15',
@@ -127,169 +201,3 @@ for idx, col in enumerate(train_file[catCols_s]):
 fig.delaxes(ax[3, 3])
 plt.tight_layout()
 plt.show()
-
-sns.countplot(tr.state)
-
-#grid = plt.GridSpec( nrows=2, ncols=1, wspace=0.4, hspace=0.3)
-grid = plt.GridSpec( nrows=2, ncols=1)
-plt.grid()
-plt.subplot(grid[0, 0])
-plt.subplot(grid[0, 1:])
-plt.subplot(grid[1, :2])
-plt.subplot(grid[1, 2]);
-plt.show()
-categorical_cols = list(tr.select_dtypes("object").columns)
-fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15, 15))
-# fig, axes = make_subplots(n_plots=len(categorical_cols), row_height=2)
-
-for i, (ind, ax) in enumerate(zip(categorical_cols, axes.ravel())):
-    ax = sns.histplot(x=tr[categorical_cols[i]], data=tr, color='green', ax=ax)
-    ax.set_xticklabels(labels=tr[categorical_cols[i]].value_counts().index.values, rotation=90)
-
-# fig.delaxes(ax[3, 3])
-# plt.xticks(rotate=90)
-# plt.tight_layout()
-plt.show()
-# ---
-categorical_cols = list(train.select_dtypes("object").columns)
-fig, axes = make_subplots(n_plots=len(categorical_cols), row_height=2)
-for i, (ind, ax) in enumerate(zip(categorical_cols, axes.ravel())):
-    ax = sns.histplot(x=train[categorical_cols[i]], data=train, color='green', ax=ax)
-    ax=  ax.set_xticklabels(labels=train[categorical_cols[i]].value_counts().index.values, rotation=90)
-
-for j in range(i + 1, axes.size):
-    axes.ravel()[j].set_axis_off()
-    # plt.xticks(rotate=90)
-plt.show()
-
-categorical_cols
-
-tr.international_plan.value_counts().index.values
-
-
-def plot_bar_single_column(df):
-    plt.figure()
-    ax = sns.histplot(df)
-    ax.set_xticklabels(labels=df.value_counts().index.values, rotation=90)
-    return plt.show()
-
-
-plot_bar_single_column(tr.state)
-import plotly.express as px
-
-
-import plotly.io as pio
-pio.renderers.default = "browser"
-
-fig = px.histogram(tr.state)
-fig.show()
-
-import dtale
-
-dtale.show(tr)
-from pandas_profiling import ProfileReport
-
-profile = ProfileReport(tr, explorative=True)
-profile
-
-import plotly.graph_objs as go
-
-s = train[~pd.isnull(train['Ticket_type'])]['Ticket_type']
-chart = pd.value_counts(s).to_frame(name='data')
-chart.index.name = 'labels'
-chart = chart.reset_index().sort_values(['data', 'labels'], ascending=[False, True])
-
-plt.figure()
-sns.barplot(y="labels", x="data", data=chart)
-plt.show()
-
-plt.figure()
-sns.kdeplot(tr.number_customer_service_calls,color="black",shade="gray")
-plt.show()
-
-plt.figure()
-ax = sns.barplot(y= "labels",x = "data",data = chart)
-#ax.set_xlabel('labels')
-plt.xticks(rotation = 90 )
-plt.show()
-
-plt.barh(chart.labels, chart.data)
-chart.plot.barh(figsize=(10,20))
-plt.show()
-
-charts = [go.Bar(x=chart['labels'].values, y=chart['data'].values, name='Frequency')]
-figure = go.Figure(data=charts, layout=go.Layout({
-    'barmode': 'group',
-    'legend': {'orientation': 'h'},
-    'title': {'text': 'state Value Counts'},
-    'xaxis': {'title': {'text': 'state'}},
-    'yaxis': {'title': {'text': 'Frequency'}}
-}))
-
-# https://plotly.com/python/statistical-charts/
-
-fig = figure
-fig.show()
-
-plt.figure()
-ax = sns.histplot(tr[["state"]].sort_values)
-ax.set_xticklabels(labels=tr.state, rotation=90)
-# plt.xticks(rotoate=90)
-plt.show()
-# interesting to use:
-# segmented pie chart
-# cumulative graphs
-
-# when you're done with graphing : Feature's
-# https://featuretools.alteryx.com/en/stable/
-# https://github.com/alteryx/featuretools
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import seaborn as sns
-import matplotlib.ticker as ticker
-
-# Some random data
-dfWIM = pd.DataFrame({'AXLES': np.random.normal(8, 2, 5000).astype(int)})
-dfWIM
-ncount = len(dfWIM)
-
-plt.figure(figsize=(12,8))
-ax = sns.barplot(x= "labels",y = "data",data = chart)
-ncount = len(tr.state)
-#plt.title('Distribution of Truck Configurations')
-#plt.xlabel('Number of Axles')
-
-# Make twin axis
-ax2=ax.twinx()
-
-# Switch so count axis is on right, frequency on left
-ax2.yaxis.tick_left()
-ax.yaxis.tick_right()
-
-# Also switch the labels over
-ax.yaxis.set_label_position('right')
-ax2.yaxis.set_label_position('left')
-
-ax2.set_ylabel('Frequency [%]')
-
-for p in ax.patches:
-    x=p.get_bbox().get_points()[:,0]
-    y=p.get_bbox().get_points()[1,1]
-    ax.annotate('{:.1f}%'.format(100.*y/ncount), (x.mean(), y),
-            ha='center', va='bottom') # set the alignment of the text
-
-# Use a LinearLocator to ensure the correct number of ticks
-ax.yaxis.set_major_locator(ticker.LinearLocator(11))
-
-# Fix the frequency range to 0-100
-ax2.set_ylim(0,100)
-ax.set_ylim(0,ncount)
-
-# And use a MultipleLocator to ensure a tick spacing of 10
-ax2.yaxis.set_major_locator(ticker.MultipleLocator(10))
-
-# Need to turn the grid on ax2 off, otherwise the gridlines end up on top of the bars
-ax2.grid(None)
-plt.show()
-
