@@ -129,7 +129,13 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
 
 
 read_data(path)
+
 censo_test, censo_train, productos, rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train = read_data(path, True, "dt")
+
+d = censo_test, censo_train, productos, rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train
+d2 = 'censo_test, censo_train, productos, rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train'
+
+all_dfs(d,d2)
 
 def all_dfs(list_of_dfs, list_of_dfs_with_single_quotes):
     """Example:
@@ -143,7 +149,7 @@ s2 = 'private_test_data, question_meta, student_meta, subject_meta, test_data, t
     keys = list(dic.keys())
     values = list(dic.values())
     for i in enumerate(dic):
-        print(i[1], " ", "=", " ", "(", f"{values[i[0]].shape[0]:,}", ":", f"{values[i[0]].shape[1]:,}", ")",
+        print(i[1], " ", "=", " ", "(", f"{values[i[0]].shape[0]:,}", " ",":"," " , f"{values[i[0]].shape[1]:,}", ")",
               sep="")
 
 #        print(str(",".join(keys)))
