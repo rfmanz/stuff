@@ -17,8 +17,6 @@ from pyutils import *
 # profile = ProfileReport(tr, explorative=True)
 
 
-
-
 def peek(df, rows=3):
     return pd.concat([df.dtypes, df.iloc[:rows, :].T], axis=1)
 
@@ -109,6 +107,22 @@ def describe_df(df):
             "Unique_Values"
 
         ], tablefmt="presto", colalign=("left")))
+
+
+def all_dfs(list_of_dfs, list_of_dfs_with_single_quotes):
+    """Example:
+    s = private_test_data, question_meta, student_meta, subject_meta, test_data, train_data, valid_data
+s2 = 'private_test_data, question_meta, student_meta, subject_meta, test_data, train_data, valid_data'"""
+    dic = {}
+    dfs = list_of_dfs
+    s2 = list_of_dfs_with_single_quotes.split(",")
+    for i, p in enumerate(dfs):
+        dic["{0}".format(s2[i])] = p
+    keys = list(dic.keys())
+    values = list(dic.values())
+    for i in enumerate(dic):
+        print(i[1], " ", "=", " ", "(", f"{values[i[0]].shape[0]:,}", ":", f"{values[i[0]].shape[1]:,}", ")",
+              sep="")
 
 
 def find_pretty_grid(n_plots, max_cols=5):

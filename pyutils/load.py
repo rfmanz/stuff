@@ -76,7 +76,7 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
                 print(df_name, df.shape)
 
     else:
-        # LIST OF FILES
+        # LIST OF CSV FILES
         dfs = {}
         for x in path_ending_with_filename:
             if x.endswith('.csv'):
