@@ -35,19 +35,33 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
         if path_ending_with_filename.endswith('.zip'):
             zf = zipfile.ZipFile(path_ending_with_filename)
             files = zf.namelist()
-            dfs = {}
-            for x in files:
-                if x.endswith('.csv'):
-                    dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = pd.read_csv(zf.open(x))
-            keys = list(dfs.keys())
-            values = list(dfs.values())
             if return_df:
-                return dfs.values()
-            else:
+                dfs = {}
+                for x in files:
+                    if x.endswith('.csv'):
+                        if method == 'dt':
+                            dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = dt.fread(zf.open(x)).to_pandas()
+                        else:
+                            dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = pd.read_csv(zf.open(x))
+                keys = list(dfs.keys())
+                values = list(dfs.values())
                 for i in enumerate(dfs):
                     print(i[1], ":", values[i[0]].shape)
-                print(str(",".join(keys)))
-                print(str(".shape,".join(keys)), ".shape", sep='')
+                return dfs.values()
+            else:
+                filelist = zf.filelist
+                csv_file_names = [format(re.findall("\w+(?=\.)", zf.namelist()[i])[0]) for i in
+                                  range(len(zf.namelist())) if zf.namelist()[i].endswith('.csv')]
+                file_pos = [i for i, x in enumerate(zf.namelist()) if x.endswith('.csv')]
+                uncompressed = [f"{(zf.filelist[i].file_size / 1024 ** 2):.2f} Mb" for i in file_pos]
+                compressed = [f"{(zf.filelist[i].compress_size / 1024 ** 2):.2f} Mb" for i in file_pos]
+
+                print(pd.concat([pd.Series(csv_file_names), pd.Series(uncompressed), pd.Series(compressed)], axis=1,
+                                keys=["file_names", "uncompressed", "compressed"]))
+                print()
+                print(*csv_file_names, sep=",")
+
+
         else:
             # SINGLE FILE
             df_name = re.findall("\w+(?=\.)", path_ending_with_filename)[0]
