@@ -3,6 +3,9 @@ import datatable as dt
 import zipfile
 import re
 import os
+import time
+from datetime import timedelta
+
 
 def directory(directory_path):
     """Puts you in the right directory. Gives you list of files in path"""
@@ -37,26 +40,31 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
             files = zf.namelist()
             if return_df:
                 dfs = {}
+                start_time = time.monotonic()
                 for x in files:
                     if x.endswith('.csv'):
                         if method == 'dt':
                             dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = dt.fread(zf.open(x)).to_pandas()
                         else:
                             dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = pd.read_csv(zf.open(x))
+                end_time = time.monotonic()
+                print(timedelta(seconds=end_time - start_time))
+
                 keys = list(dfs.keys())
                 values = list(dfs.values())
                 for i in enumerate(dfs):
                     print(i[1], ":", values[i[0]].shape)
+
                 return dfs.values()
             else:
                 filelist = zf.filelist
                 csv_file_names = [format(re.findall("\w+(?=\.)", zf.namelist()[i])[0]) for i in
                                   range(len(zf.namelist())) if zf.namelist()[i].endswith('.csv')]
                 file_pos = [i for i, x in enumerate(zf.namelist()) if x.endswith('.csv')]
-                uncompressed = [f"{(zf.filelist[i].file_size / 1024 ** 2):.2f} Mb" for i in file_pos]
+                uncompressed_dir = [f"{(zf.filelist[i].file_size / 1024 ** 2):.2f} Mb" for i in file_pos]
                 compressed = [f"{(zf.filelist[i].compress_size / 1024 ** 2):.2f} Mb" for i in file_pos]
 
-                print(pd.concat([pd.Series(csv_file_names), pd.Series(uncompressed), pd.Series(compressed)], axis=1,
+                print(pd.concat([pd.Series(csv_file_names), pd.Series(uncompressed_dir), pd.Series(compressed)], axis=1,
                                 keys=["file_names", "uncompressed", "compressed"]))
                 print()
                 print(*csv_file_names, sep=",")
@@ -64,16 +72,41 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
 
         else:
             # SINGLE FILE
-            df_name = re.findall("\w+(?=\.)", path_ending_with_filename)[0]
-            if method == 'dt':
-                df = dt.fread(path_ending_with_filename)
-                df = df.to_pandas()
+            if path_ending_with_filename.endswith(".csv"):
+                df_name = re.findall("\w+(?=\.)", path_ending_with_filename)[0]
+                if method == 'dt':
+                    df = dt.fread(path_ending_with_filename)
+                    df = df.to_pandas()
+                else:
+                    df = pd.read_csv(path_ending_with_filename)
+                if return_df:
+                    return df
+                else:
+                    print(df_name, df.shape)
             else:
-                df = pd.read_csv(path_ending_with_filename)
-            if return_df:
-                return df
-            else:
-                print(df_name, df.shape)
+                # CSVS IN DIRECTORY
+                dfs = {}
+                os.chdir(path_ending_with_filename)
+                for x in os.listdir(path_ending_with_filename):
+                    if x.endswith('.csv'):
+                        if method == 'dt':
+                            dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = dt.fread(x).to_pandas()
+                        else:
+                            dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = pd.read_csv(x)
+                keys = list(dfs.keys())
+                values = list(dfs.values())
+                if return_df:
+                    return dfs.values()
+                else:
+
+                    uncompressed_dir = [f"{(sys.getsizeof(dfs[i]) / 1024 ** 2):.2f} Mb" for i in dfs]
+
+                    print(pd.concat([pd.Series(keys), pd.Series(uncompressed_dir)], axis=1,
+                                    keys=["file_names", "uncompressed"]))
+                    print()
+                    print(*keys, sep=",")
+
+
 
     else:
         # LIST OF CSV FILES
