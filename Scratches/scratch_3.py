@@ -1,7 +1,6 @@
+import matplotlib.pyplot as plt
+
 from pyutils import *
-import zipfile
-import time
-from datetime import timedelta
 
 path = '/home/r/Downloads/interbank20.zip'
 path2 = '/home/r/Downloads/intro-ml-project-main.zip'
@@ -9,12 +8,11 @@ path3 = '/home/r/Downloads/house-prices-advanced-regression-techniques'
 
 read_data('/home/r/Downloads/house-prices-advanced-regression-techniques/train.csv')
 
-
 csvs = ['/home/r/Downloads/house-prices-advanced-regression-techniques/train.csv',
         '/home/r/Downloads/house-prices-advanced-regression-techniques/test.csv',
         '/home/r/Downloads/house-prices-advanced-regression-techniques/sample_submission.csv']
 
-
+read_data(csvs)
 def read_data(path_ending_with_filename=None, return_df=False, method=None):
     """
     Reads single csv or list of csvs or csvs in zip.
@@ -119,8 +117,14 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
 
             print(str(",".join(keys)))
 
-
-
+test,sample_submission,train = read_data(path3,True)
+violin_plot_classification(train,target_name= "SalePrice")
+from pyutils import eda
+peek(train)
+describe_df(train)
+plot_density_numerical_for_whole_dataframe(train)
+plt.figure()
+eda.
 read_data(path3)
 
 censo_test, censo_train, productos, rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train = read_data(path, True, "dt")

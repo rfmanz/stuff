@@ -53,9 +53,10 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
 
                 keys = list(dfs.keys())
                 values = list(dfs.values())
-                for i in enumerate(dfs):
-                    print(i[1], ":", values[i[0]].shape)
-
+                for i, k in enumerate(dfs):
+                    print(i + 1, ".", " ", k, " ", "=", " ", "(", f"{values[i].shape[0]:,}", " ", ":", " ",
+                          f"{values[i].shape[1]:,}", ")",
+                          sep="")
                 return dfs.values()
             else:
                 filelist = zf.filelist
@@ -97,6 +98,11 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
                 keys = list(dfs.keys())
                 values = list(dfs.values())
                 if return_df:
+                    for i, k in enumerate(dfs):
+                        print(i + 1, ".", " ", k, " ", "=", " ", "(", f"{values[i].shape[0]:,}", " ", ":", " ",
+                              f"{values[i].shape[1]:,}", ")",
+                              sep="")
+
                     return dfs.values()
                 else:
 
@@ -123,11 +129,10 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
         if return_df:
             return dfs.values()
         else:
-            for i in enumerate(dfs):
-                print(i[1], " ", "=", " ", "(", f"{values[i[0]].shape[0]:,}", ":", f"{values[i[0]].shape[1]:,}", ")",
+            for i, k in enumerate(dfs):
+                print(i + 1, ".", " ", k, " ", "=", " ", "(", f"{values[i].shape[0]:,}", " ", ":", " ",
+                      f"{values[i].shape[1]:,}", ")",
                       sep="")
-
-            print(str(",".join(keys)))
 
 
 
