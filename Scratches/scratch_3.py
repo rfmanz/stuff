@@ -11,11 +11,18 @@ read_data('/home/r/Downloads/house-prices-advanced-regression-techniques/train.c
 csvs = ['/home/r/Downloads/house-prices-advanced-regression-techniques/train.csv',
         '/home/r/Downloads/house-prices-advanced-regression-techniques/test.csv',
         '/home/r/Downloads/house-prices-advanced-regression-techniques/sample_submission.csv']
-dataframes =  'censo_train,rcc_train,se_train,sunat_train,y_train,productos'
+dataframes =  'censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission'
 
-censo_train,rcc_train,se_train,sunat_train,y_train,productos = read_data(path,True,'dt', dataframes=dataframes)
+censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission = read_data(path,True,'dt', dataframes=dataframes)
+
+
+sample_submission.shape
+y_train.shape
+censo_train
+
 
 read_data(path, return_df=True,method='dt' ,dataframes=dataframes)
+read_data(path)
 
 zf = zipfile.ZipFile(path)
 zf.namelist()
@@ -43,7 +50,8 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None, data
 
             if dataframes:
                 dataframes = [x.strip(" ") for x in dataframes.split(",")]
-                files= list(set(zf.namelist()) & set([x+'.csv' for x in dataframes]))
+                #files= list(set(zf.namelist()) & set([x+'.csv' for x in dataframes]))
+                files= [x+'.csv' for x in dataframes]
             else:
                 files = zf.namelist()
 
@@ -67,12 +75,12 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None, data
                           sep="")
                 return dfs.values()
             else:
-                filelist = zf.filelist
+
                 csv_file_names = [format(re.findall("\w+(?=\.)", zf.namelist()[i])[0]) for i in
                                   range(len(zf.namelist())) if zf.namelist()[i].endswith('.csv')]
                 if dataframes:
-                    csv_file_names = list(set(csv_file_names) & set(dataframes))
-                    file_pos = [i for i, x in enumerate(list(set(zf.namelist()) & set([x+'.csv' for x in csv_file_names]))) if x.endswith('.csv')]
+
+                    file_pos = [i for i, x in enumerate(csv_file_names)]
 
                 else:
                     file_pos = [i for i, x in enumerate(zf.namelist()) if x.endswith('.csv')]
