@@ -25,7 +25,7 @@ def get_csv_names_from_list(paths):
     print(str(",".join(dfs)))
     print(str(".shape,".join(dfs)), ".shape", sep='')
 
-def read_data(path_ending_with_filename=None, return_df=False, method=None):
+def read_data(path_ending_with_filename=None, return_df=False, method=None, dataframes =None):
     """
     Reads single csv or list of csvs or csvs in zip.
 
@@ -38,7 +38,13 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
     if isinstance(path_ending_with_filename, str):
         if path_ending_with_filename.endswith('.zip'):
             zf = zipfile.ZipFile(path_ending_with_filename)
-            files = zf.namelist()
+
+            if dataframes:
+                dataframes = [x.strip(" ") for x in dataframes.split(",")]
+                files= list(set(zf.namelist()) & set([x+'.csv' for x in dataframes]))
+            else:
+                files = zf.namelist()
+
             if return_df:
                 dfs = {}
                 start_time = time.monotonic()
@@ -62,7 +68,13 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
                 filelist = zf.filelist
                 csv_file_names = [format(re.findall("\w+(?=\.)", zf.namelist()[i])[0]) for i in
                                   range(len(zf.namelist())) if zf.namelist()[i].endswith('.csv')]
-                file_pos = [i for i, x in enumerate(zf.namelist()) if x.endswith('.csv')]
+                if dataframes:
+                    csv_file_names = list(set(csv_file_names) & set(dataframes))
+                    file_pos = [i for i, x in enumerate(list(set(zf.namelist()) & set([x+'.csv' for x in csv_file_names]))) if x.endswith('.csv')]
+
+                else:
+                    file_pos = [i for i, x in enumerate(zf.namelist()) if x.endswith('.csv')]
+
                 uncompressed_dir = [f"{(zf.filelist[i].file_size / 1024 ** 2):.2f} Mb" for i in file_pos]
                 compressed = [f"{(zf.filelist[i].compress_size / 1024 ** 2):.2f} Mb" for i in file_pos]
 
@@ -89,8 +101,13 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
                 # CSVS IN DIRECTORY
                 dfs = {}
                 os.chdir(path_ending_with_filename)
-                for x in os.listdir(path_ending_with_filename):
-                    if x.endswith('.csv'):
+                if dataframes:
+                    dataframes = [x.strip(" ") for x in dataframes.split(",")]
+                    csvs_in_directory = [x for x in os.listdir(path_ending_with_filename) if x.endswith('.csv')]
+                    files = list(set(csvs_in_directory) & set([x+'.csv' for x in dataframes]))
+                else:
+                    files = [x for x in os.listdir(path_ending_with_filename) if x.endswith('.csv')]
+                for x in files:
                         if method == 'dt':
                             dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = dt.fread(x).to_pandas()
                         else:
@@ -113,8 +130,6 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
                     print()
                     print(*keys, sep=",")
 
-
-
     else:
         # LIST OF CSV FILES
         dfs = {}
@@ -133,6 +148,7 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None):
                 print(i + 1, ".", " ", k, " ", "=", " ", "(", f"{values[i].shape[0]:,}", " ", ":", " ",
                       f"{values[i].shape[1]:,}", ")",
                       sep="")
+
 
 
 

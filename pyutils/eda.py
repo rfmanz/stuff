@@ -21,7 +21,7 @@ def peek(df, rows=3):
     return pd.concat([df.dtypes, df.iloc[:rows, :].T], axis=1)
 
 
-def describe_df(df):
+def describe_df(df,floatfmt= '.3f'):
     # Numerical
     print("--" * 20)
     print('Columns:', df.shape[1])
@@ -59,7 +59,7 @@ def describe_df(df):
         "#_NULLS",
         "NOT_NULL",
 
-    ], tablefmt="presto", colalign=("right"), floatfmt='.3f'))
+    ], tablefmt="presto", colalign=("right"), floatfmt=floatfmt))
 
     # Categorical
 
