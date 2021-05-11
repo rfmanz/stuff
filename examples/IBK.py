@@ -6,17 +6,16 @@ from pyutils import *
 path = '/home/r/Downloads/interbank20.zip'
 
 # Load
-read_data(path)
+#read_data(path)
 # censo_test, censo_train, productos, rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train = read_data(path, True, "dt")
 # Read only train:
 censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission = read_data(path, True, 'dt',dataframes= 'censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission')
 
 
-all_inital_columns = censo_test, censo_train, productos, rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train
-all_inital_columns_quoted = 'censo_test, censo_train, productos, rcc_test,
- rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train'
+s = censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission
+s2 = 'censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission'
 
-all_dfs(all_inital_columns, all_inital_columns_quoted)
+all_dfs(s, s2)
 
 
 #EDA
