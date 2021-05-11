@@ -9,23 +9,73 @@ path = '/home/r/Downloads/interbank20.zip'
 #read_data(path)
 # censo_test, censo_train, productos, rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train = read_data(path, True, "dt")
 # Read only train:
+
+# Only load train
 censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission = read_data(path, True, 'dt',dataframes= 'censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission')
 
 
-s = censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission
-s2 = 'censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission'
-
+s = censo_train,rcc_train,se_train,sunat_train
+s2 = 'censo_train,rcc_train,se_train,sunat_train'
 all_dfs(s, s2)
 
 
+# rcc_train
+peek(rcc_train)
+rcc_train.columns = map(str.lower, rcc_train.columns)
+for i in [censo_train, rcc_train, se_train, sunat_train]:
+    print(peek(i))
+
+df_merged = reduce(lambda  left,right: pd.merge(left,right,on=['DATE'],
+                                            how='outer'), data_frames)
+
+train = pd.merge([rcc_train, se_train, sunat_train,censo_train],on='key_value', )
+#test = pd.concat([censo_tes, rcc_train, se_train, sunat_train], axis=0)
+y = y_train
+
+set(y_train.key_value) in set(rcc_train.key_value)
+
+set(rcc_train.key_value.unique()) in set(y_train.key_value)
+
+rcc_train[rcc_train.key_value.unique()]
+
+list(set(rcc_train.key_value.unique()).difference(y_train.key_value))
+
+
+list(set(y_train.key_value).difference(sunat_train.key_value))
+
+len(list(set(y_train.key_value).difference(censo_train.key_value.unique())))
+
+censo_train.key_value.nunique()
+
+list(set(se_train.key_value).difference(y_train.key_value))
+
+list(set(y_train.key_value).difference(rcc_train.key_value.unique()))
+
+
+# censo train nos falta data de 205348 personas. Vale la pena incluir esta tabla en el analisis ?
+
+
+
+
+
+
+set(rcc_train.key_value.unique()) in set(y_train.key_value)
+
+pd.Series.rcc_train.key_value.unique().str.match() in set(y_train.key_value)
+
+
+
+
 #EDA
+describe_df(rcc_train)
+productos_dic = productos.to_dict()
+productos_dic.keys()
+rcc_train.prod
+
 peek(y_train)
 peek(productos)
 
 # Unique key values by dataframe ?
-y_train.key_value.nunique()
-censo_train.key_value.nunique()
-
 all_inital_columns_sin_productos = 'censo_test, censo_train,  rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train'
 
 
@@ -84,7 +134,7 @@ pd.concat([pd.Series(keys_train),pd.Series(d_train),pd.Series(keys_test),pd.Seri
 all_dfs(all_inital_columns,all_inital_columns_quoted)
 describe_df(rcc_train,'.0f')
 
-rcc_train.columns = map(str.lower, rcc_train.columns)
+
 
 rcc_train.value_counts("producto")
 productos
