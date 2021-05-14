@@ -1,3 +1,4 @@
+
 from pyutils import *
 
 # data: https://www.kaggle.com/c/interbank20/data
@@ -14,61 +15,21 @@ path = '/home/r/Downloads/interbank20.zip'
 censo_train, rcc_train, se_train, sunat_train, y_train, productos, sample_submission = read_data(path, True, 'dt',
                                                                                                  dataframes='censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission')
 
+# RCC
+
+rcc_train, y_train = read_data(path, True, 'dt', 'rcc_train,y_train')
+
+
+
 s = censo_train, rcc_train, se_train, sunat_train
 s2 = 'censo_train,rcc_train,se_train,sunat_train'
 all_dfs(s, s2)
 
-# rcc_train
-peek(rcc_train)
-rcc_train.columns = map(str.lower, rcc_train.columns)
-for i in [censo_train, rcc_train, se_train, sunat_train]:
-    print(peek(i))
 
-d = [censo_train, rcc_train, se_train, sunat_train]
-from functools import reduce
-
-df_merged = reduce(lambda left, right: pd.merge(left, right, on=['key_value']), d)
-
-
-def memory_usage_mb(df, *args, **kwargs):
-    """Dataframe memory usage in MB. """
-    return df.memory_usage(*args, **kwargs).sum()
-
-
-def reduce_memory_usage(df, deep=True, verbose=True, categories=True):
-    # All types that we want to change for "lighter" ones.
-    # int8 and float16 are not include because we cannot reduce
-    # those data types.
-    # float32 is not include because float16 has too low precision.
-    numeric2reduce = ["int16", "int32", "int64", "float64"]
-    start_mem = 0
-    if verbose:
-        start_mem = memory_usage_mb(df, deep=deep)
-
-    for col, col_type in df.dtypes.iteritems():
-        best_type = None
-        if col_type == "object":
-            df[col] = df[col].astype("category")
-            best_type = "category"
-        elif col_type in numeric2reduce:
-            downcast = "integer" if "int" in str(col_type) else "float"
-            df[col] = pd.to_numeric(df[col], downcast=downcast)
-            best_type = df[col].dtype.name
-        # Log the conversion performed.
-        # if verbose and best_type is not None and best_type != str(col_type):
-        # print(f"Column {col} converted from {col_type} to {best_type}")
-
-    if verbose:
-        end_mem = memory_usage_mb(df, deep=deep)
-        diff_mem = start_mem - end_mem
-        percent_mem = 100 * diff_mem / start_mem
-        print(f"Memory usage decreased from"
-              f" {start_mem:.2f}MB to {end_mem:.2f}MB"
-              f" ({diff_mem:.2f}MB, {percent_mem:.2f}% reduction)")
 
 
 for i in d:
-    reduce_memory_usage(i)
+    reduce_memory_usage(rcc_train)
 
 print(f"{(sys.getsizeof(rcc_train) / 1024 ** 2):.2f} Mb")
 
