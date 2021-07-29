@@ -11,13 +11,14 @@ from scipy.stats import boxcox_normmax
 
 # Load
 
-read_data("/home/r/Downloads/house-prices-advanced-regression-techniques.zip")
-sample_submission, test, train = read_data("/home/r/Downloads/house-prices-advanced-regression-techniques.zip", True)
-# sample_submission.shape,test.shape,train.shape
+path = "D:/Downloads/house-prices-advanced-regression-techniques.zip"
+read_data(path)
+sample_submission, test, train = read_data("D:/Downloads/house-prices-advanced-regression-techniques.zip",True)
+#sample_submission.shape,test.shape,train.shape
 
 
 # EDA
-# describe_df(full_df)
+describe_df(train)
 
 # FE
 y = train.SalePrice
