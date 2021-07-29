@@ -420,20 +420,6 @@ paramsLGBM = {'reg_alpha': 1.7756323120719368,
  'colsample_bytree': 0.25638115462185734,
  'n_estimators': 731}
 
-paramsLGBM = {'reg_alpha': 8.354370213207666,
-              'reg_lambda': 1.1329669604585568,
-              'num_leaves': 32,
-              'min_child_samples': 74,
-              'lambda_l1': 0.10778419855175325,
-              'feature_fraction': 0.4199498862570688,
-              'bagging_fraction': 0.9192428145485326,
-              'bagging_freq': 1,
-              'max_depth': 16,
-              'learning_rate': 0.02,
-              'colsample_bytree': 0.25638115462185734,
-              'n_estimators': 731}
-
-
 
 #endregion 
 
