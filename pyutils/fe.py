@@ -141,7 +141,15 @@ def mice_imputer(data):
 
 
 def target_encode(train, valid, col, target='target', kfold=5, smooth=20, verbose=True):
+    
     """
+    
+
+    So you're extracting information from categorical features, how important is this categorical to predicting the target. 
+    You're saying: for categorical variable brand, with many brands as it's categories you're grouping brand1, brand2, etc and then seeing that brand 1 has a x% probability of being purchased which is the target in this example. And then you can combinations of various brands, in order to say, ok when you recommend brand 1 and 2, then the probability of purchase is x.  
+
+    https://youtu.be/uROvhp7cj6Q?t=2833
+
     example :  
     train, test = target_encode2(train,test,['Pclass', 'Sex', 'Embarked','age_bin'], target='Survived')
 
@@ -149,6 +157,8 @@ def target_encode(train, valid, col, target='target', kfold=5, smooth=20, verbos
         valid:  validation dataset
         col:   column which will be encoded (in the example RESOURCE)
         target: target column which will be used to calculate the statistic
+
+
     """
 
     # We assume that the train dataset is shuffled
