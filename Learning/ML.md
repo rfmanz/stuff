@@ -84,4 +84,5 @@ def create_extra_features(data):
 ```
 <br>
 
-
+- Maybe read a bit more on pruning for boosted trees
+- How to train gbm models on gpu. Now that you have one 
