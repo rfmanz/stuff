@@ -349,7 +349,6 @@ tuner = lgb.LightGBMTunerCV(params,
 
 tuner.run()
 print(tuner.best_params)
-# Classification error
 print(tuner.best_score)
 
 
@@ -400,11 +399,7 @@ print('Best trial:', study.best_trial.params)
 print('Best value:', study.best_value)
 
 
-optuna.visualization.plot_optimization_history(study)
-optuna.visualization.plot_param_importances(study)
-
 paramsLGBM = study.best_trial.params
-#paramsLGBM = tuner.best_params
 paramsLGBM['boosting_type'] = 'gbdt'
 paramsLGBM['metric'] = 'AUC'
 paramsLGBM['random_state'] = 42
@@ -424,6 +419,20 @@ paramsLGBM = {'reg_alpha': 1.7756323120719368,
  'learning_rate': 0.02,
  'colsample_bytree': 0.25638115462185734,
  'n_estimators': 731}
+
+paramsLGBM = {'reg_alpha': 8.354370213207666,
+              'reg_lambda': 1.1329669604585568,
+              'num_leaves': 32,
+              'min_child_samples': 74,
+              'lambda_l1': 0.10778419855175325,
+              'feature_fraction': 0.4199498862570688,
+              'bagging_fraction': 0.9192428145485326,
+              'bagging_freq': 1,
+              'max_depth': 16,
+              'learning_rate': 0.02,
+              'colsample_bytree': 0.25638115462185734,
+              'n_estimators': 731}
+
 
 
 #endregion 
