@@ -59,9 +59,12 @@ Types of ensemble methods:
     - A random forest classifier is a specific type of bootstrap aggregating
 ---
 
-**to use**: <Br>
-lambda
-map 
+**to use**: <Br><Br>
+lambda, map 
+
+pandas.Series.map
+<Br>
+Map values of Series according to input correspondence.
 ```python
 def converter(x):
     c, n = '', ''
@@ -80,4 +83,5 @@ def create_extra_features(data):
     data['Ticket_type'] = data['Ticket'].map(lambda x: converter(x)[0])
 ```
 <br>
+
 
