@@ -57,25 +57,27 @@ Types of ensemble methods:
   <br><br>
 - [Bagging](https://blog.mlreview.com/gradient-boosting-from-scratch-1e317ae4587d)
     - A random forest classifier is a specific type of bootstrap aggregating
-  
-  
-
 ---
 
+**to use**: <Br>
+lambda
+map 
+```python
+def converter(x):
+    c, n = '', ''
+    x = str(x).replace('.', '').replace('/', '').replace(' ', '')
+    for i in x:
+        if i.isnumeric():
+            n += i
+        else:
+            c += i
+    if n != '':
+        return c, int(n)
+    return c, np.nan
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def create_extra_features(data):
+    data['Ticket_type'] = data['Ticket'].map(lambda x: converter(x)[0])
+```
+<br>
 
