@@ -1,6 +1,6 @@
 # Machine Learning
 
----
+
 
 ## Definitions: 
 
@@ -9,9 +9,12 @@
 - Machine learning tasks are usually described in terms of how the machine learning system should process an example. An example is a collection off features that have been quantitatively measured from some object or event that we want the machine learning system to process.
   <br>*5.1 Learning Algorithms* https://www.deeplearningbook.org/contents/ml.html
   
-
+---
 ## Stats
-
+<details>
+  <summary>Odds vs Probability</summary>
+  
+  
 [Odds vs Probability](https://www.youtube.com/watch?v=ARfXDSkQf1Y)
 ![Odds vs Probability](1.png)<br>
 Above odds, below probability.<br>
@@ -20,10 +23,14 @@ Above odds, below probability.<br>
 From probability to odds: <br>
 0.625/0.375
 <br>
----
-## Tree Models & Ensembles 
+</details>
 
 ---
+<br>
+
+## Tree Models & Ensembles 
+
+
 **Definition:**
 
 
