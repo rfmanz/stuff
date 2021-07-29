@@ -27,7 +27,7 @@ full_df = pd.concat([train.drop(columns='SalePrice'), test])
 full_df.drop('Id', axis=1, inplace=True)
 
 
-# identify_missing(full_df,0.8,True)
+#identify_missing(full_df,0.8,True)
 # https://www.kaggle.com/lavanyashukla01/how-i-made-top-0-3-on-a-kaggle-competition/notebook#Feature-Engineering:
 def handle_missing(features):
     # the data description states that NA refers to typical ('Typ') values
@@ -82,6 +82,8 @@ print("There are {} numerical features with Skew > 0.5 :".format(high_skew.shape
 for i in skew_index:
     full_df[i] = boxcox1p(full_df[i], boxcox_normmax(full_df[i] + 1))
 
+
+#correlated(train,0.8)
 full_df = correlated(full_df, 0.8, True)
 
 full_df = pd.DataFrame(StandardScaler().fit_transform(full_df), columns=full_df.columns, index=full_df.index)
