@@ -146,7 +146,7 @@ def target_encode(train, valid, col, target='target', kfold=5, smooth=20, verbos
     
 
     So you're extracting information from categorical features, how important is this categorical to predicting the target. 
-    You're saying: for categorical variable brand, with many brands as it's categories you're grouping brand1, brand2, etc and then seeing that brand 1 has a x% probability of being purchased which is the target in this example. And then you can combinations of various brands, in order to say, ok when you recommend brand 1 and 2, then the probability of purchase is x.  
+    You're saying: for categorical variable brand, with many brands as it's categories you're grouping brand1, brand2, etc and then seeing that brand 1 has a x% probability of being purchased which is the target in this example. And then you can bundles of brands of different brands, in order to say, ok when you view brand 1 and brand2 the probability of purchase is x.  
 
     https://youtu.be/uROvhp7cj6Q?t=2833
 

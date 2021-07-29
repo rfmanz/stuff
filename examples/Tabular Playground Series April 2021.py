@@ -1,3 +1,6 @@
+# region /// Libraries /// ----
+
+
 from pyutils import *
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -19,24 +22,28 @@ from mlxtend.classifier import StackingCVClassifier
 
 import warnings
 
+# endregion
 
-# pd.options
+# region /// pd.options /// ----
 desired_width = 100
 pd.set_option('display.width', desired_width)
 pd.set_option('max.columns', 20)
 
 warnings.filterwarnings('ignore')
+# endregion
 
-
-# Load
-read_data('/home/r/Downloads/tabular-playground-series-apr-2021.zip')
-sample_submission, test, train = read_data('/home/r/Downloads/tabular-playground-series-apr-2021.zip', True)
+# region /// Load /// ----
+path = 'D:/Downloads/tabular-playground-series-apr-2021.zip'
+read_data(path)
+sample_submission, test, train = read_data(path, True)
 sample_submission.shape, test.shape, train.shape
 
-pseudo_label =  read_data('/home/r/Downloads/tabular_playground_april_11.csv',True)
-test['Survived'] = [x for x in pseudo_label.Survived]
+# pseudo_label =  read_data('/home/r/Downloads/tabular_playground_april_11.csv',True)
+# test['Survived'] = [x for x in pseudo_label.Survived]
+# endregion
 
-# EDA {
+# region/// EDA ///----
+
 train.Survived.value_counts(normalize=True) * 100
 
 train.loc[(train.Sex == 'male')& (train.Survived== 0)].value_counts(train.Pclass)
@@ -125,10 +132,9 @@ plt.figure()
 sns.kdeplot(train.Age, color='black', shade=True)
 plt.show()
 
-# }
+# endregion 
 
-
-# FE
+# region/// FE /// ----
 y = train.Survived
 
 
@@ -287,16 +293,12 @@ conditions = [
 ]
 
 choices = [0, 1, 2, 3]
+
 data["Fare"] = np.select(conditions, choices)
 data['Fare'] = data['Fare'].astype(int)
 
 train_dropped_encoded_nonulls = data.iloc[:train.shape[0]]
 test_dropped_encoded_nonulls = data.iloc[train.shape[0]:]
-
-
-# Dummies of cabin and ticket:
-# train_dropped_encoded_nonulls = pd.concat([train_dropped_encoded_nonulls.drop(['Ticket_type','Cabin_type'],axis=1),encode(train_dropped_encoded_nonulls[['Ticket_type','Cabin_type']].astype('object'))],axis=1)
-# test_dropped_encoded_nonulls = pd.concat([test_dropped_encoded_nonulls.drop(['Ticket_type','Cabin_type'],axis=1),encode(test_dropped_encoded_nonulls[['Ticket_type','Cabin_type']].astype('object'))],axis=1)
 
 train_dropped_encoded_nonulls = pd.DataFrame(MinMaxScaler().fit_transform(train_dropped_encoded_nonulls),columns= train_dropped_encoded_nonulls.columns, index= train_dropped_encoded_nonulls.index)
 
@@ -314,16 +316,17 @@ correlated(train_dropped_encoded_nonulls,0.8)
 # train_dropped_encoded_nonulls = correlated(train_dropped_encoded_nonulls,0.8,True)
 # test_dropped_encoded_nonulls = correlated(test_dropped_encoded_nonulls,0.8,True)
 
-#CV
+
+# endregion
+
+# region/// Train, test split ///
 
 x_train, x_test, y_train, y_test = train_test_split(train_dropped_encoded_nonulls, y, test_size=.2)
+# endregion
 
-# opt {
-#OPT .5
-#kf = KFold(n_splits=5)
+# region// Optuna Parameter Search ///---- 
+
 kf = StratifiedKFold(n_splits=10, shuffle=True)
-
-
 params = {
         "objective": "binary",
         "metric": "auc",
@@ -331,14 +334,10 @@ params = {
         "boosting_type": "gbdt",
     }
 
-
 study_tuner = optuna.create_study(direction='maximize')
 x = train_dropped_encoded_nonulls
 
 dtrain = lgb.Dataset(x, label=y)
-
-# Run optuna LightGBMTunerCV tuning of LightGBM with cross-validation
-#pruning_callback = optuna.integration.LightGBMPruningCallback(study_tuner, "auc")
 
 tuner = lgb.LightGBMTunerCV(params,
                             dtrain,
@@ -365,7 +364,6 @@ if tmp_best_params['bagging_fraction']==0:
     tmp_best_params['bagging_fraction']=1e-9
 
 
-# OPT
 def objective(trial):
     params = {
         'reg_alpha': trial.suggest_float('reg_alpha', 0.001, 10.0),
@@ -396,17 +394,14 @@ def objective(trial):
 from optuna.pruners import SuccessiveHalvingPruner
 
 study = optuna.create_study(direction='maximize',pruner=SuccessiveHalvingPruner())
-#study.enqueue_trial(tmp_best_params)
 study.optimize(objective, n_trials=100)
 print('Number of finished trials:', len(study.trials))
 print('Best trial:', study.best_trial.params)
 print('Best value:', study.best_value)
 
 
-
 optuna.visualization.plot_optimization_history(study)
 optuna.visualization.plot_param_importances(study)
-
 
 paramsLGBM = study.best_trial.params
 #paramsLGBM = tuner.best_params
@@ -414,6 +409,8 @@ paramsLGBM['boosting_type'] = 'gbdt'
 paramsLGBM['metric'] = 'AUC'
 paramsLGBM['random_state'] = 42
 paramsLGBM['objective'] = 'binary'
+
+
 
 paramsLGBM = {'reg_alpha': 1.7756323120719368,
  'reg_lambda': 1.1329669604585568,
@@ -429,27 +426,19 @@ paramsLGBM = {'reg_alpha': 1.7756323120719368,
  'n_estimators': 731}
 
 
+#endregion 
 
+# region //// pseudo labelling /// ----
+# Idea is that first you train data on the default test set. Then you save the predictions it gives you and then you train it again using the original predictions as the test dataset. This is probably more of a kaggle trick than something applicable real world. 
 
-#}
-# MDL
+# data = pd.concat([train_dropped_encoded_nonulls, test_dropped_encoded_nonulls], axis=0)
+# y_pseudo = pd.concat([y,test.Survived],axis=0)
 
-#gender model
-x = train_dropped_encoded_nonulls.loc[train_dropped_encoded_nonulls.Sex.astype('int')==1]
-y = train.loc[train.Sex == 'male','Survived']
+# x = data
+# y = y_pseudo
+#endregion
 
-test = test_dropped_encoded_nonulls.loc[test_dropped_encoded_nonulls.Sex.astype('int')==1]
-PassengerId = pd.Series(test.index)
-
-
-
-#pseudo labelling 
-
-data = pd.concat([train_dropped_encoded_nonulls, test_dropped_encoded_nonulls], axis=0)
-y_pseudo = pd.concat([y,test.Survived],axis=0)
-
-x = data
-y = y_pseudo
+# region/// MDL ///----
 
 #LGBM 
 
@@ -484,60 +473,47 @@ np.mean(auc)
 
 feature_importances_extra = pd.Series(model.feature_importances_,train_dropped_encoded_nonulls.columns).sort_values(ascending=False)
 feature_importances_extra
-##########
+#endregion
 
-lgbm_male =  np.where(preds > 0.5, 1, 0) 
-lgbm_female =  np.where(preds > 0.5, 1, 0) 
+# region /// Predictions Submission /// ----
 
-lgbm_male.shape
+sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
 
-gmf = pd.concat([pd.Series(lgbm_female),PassengerId],axis=1)
-gmf.reset_index()
-gmf.set_index(1,inplace=True)
+sample_submission.to_csv('~/Downloads/tabular_playground_april_15.csv', index=False)
 
-gmm = pd.concat([pd.Series(lgbm_male),PassengerId],axis=1)
-gmm.reset_index()
-gmm.set_index(1,inplace=True)
-
-gender_model= pd.concat([gmm,gmf],ignore_index=False)
-gender_model.sort_index()
-gender_model = pd.concat([pd.Series(lgbm_male),pd.Series(lgbm_female)],axis=0)
+# endregion 
 
 
 
-
-global_predictions = pd.concat([pd.Series(lgbm_predictions),pd.Series(catboost_predicitions)],axis=1,keys=['LGBM','CAT'])
-global_predictions.value_counts()
-
-
+# region /// boiler_room///
 
 # CATBOOST {
 
 params = {'iterations': 10000,
-                  #'use_best_model':True ,
-                  'eval_metric': 'AUC', # 'Accuracy'
-                  'loss_function':'Logloss',
-                  'od_type':'Iter',
-           #       'od_wait':od_wait,
-                  'depth': 6, # [4, 10]
-                  'l2_leaf_reg': 3,
-                  # random_strength ??
-                  'bootstrap_type': 'Bayesian',
-                  'bagging_temperature': 2,
-                  'max_bin': 254,
-                  'grow_policy': 'SymmetricTree',
-            #      'cat_features': lab_cols,
-             #     'verbose': od_wait,
-                  'random_seed': 314
-         }
-         
+          #'use_best_model':True ,
+          'eval_metric': 'AUC',  # 'Accuracy'
+          'loss_function': 'Logloss',
+          'od_type': 'Iter',
+          #       'od_wait':od_wait,
+          'depth': 6,  # [4, 10]
+          'l2_leaf_reg': 3,
+          # random_strength ??
+          'bootstrap_type': 'Bayesian',
+          'bagging_temperature': 2,
+          'max_bin': 254,
+          'grow_policy': 'SymmetricTree',
+          #      'cat_features': lab_cols,
+          #     'verbose': od_wait,
+          'random_seed': 314
+          }
+
 kf = KFold(n_splits=10, shuffle=True, random_state=42)
 
 x = train_dropped_encoded_nonulls
 y = y
 auc = []
 preds = np.zeros(test_dropped_encoded_nonulls.shape[0])
-n=0   
+n = 0
 
 
 for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
@@ -547,21 +523,21 @@ for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
 
     model = CatBoostClassifier(**params)
 
-    model_fit= model.fit(x_train, y_train, eval_set=[(x_val, y_val)], use_best_model=True,
-                            plot=False)
-    
+    model_fit = model.fit(x_train, y_train, eval_set=[(x_val, y_val)], use_best_model=True,
+                          plot=False)
+
     # yp_val = model_fit.predict_proba(x_val)[:, 1]
     # acc = accuracy_score(y_val, np.where(yp_val>0.5, 1, 0))
     # print(f"- Accuracy before : {acc} ...")
-    
+
     auc.append(roc_auc_score(y_val, model.predict_proba(x_val)[:, 1]))
-    preds += model.predict_proba(test_dropped_encoded_nonulls)[:, 1] / kf.n_splits
-    
-    
-      
+    preds += model.predict_proba(test_dropped_encoded_nonulls)[
+        :, 1] / kf.n_splits
+
+
 np.mean(auc)
 
-catboost_predicitions =  np.where(preds > 0.5, 1, 0) 
+catboost_predicitions = np.where(preds > 0.5, 1, 0)
 
 #}
 
@@ -572,33 +548,12 @@ cat = model
 
 sclf = StackingCVClassifier(classifiers=[lgbm, cat],
                             meta_classifier=lgbm,
-                            random_state=314,use_features_in_secondary=True)
+                            random_state=314, use_features_in_secondary=True)
 
-stack_gen_model = sclf.fit(np.array(train_dropped_encoded_nonulls), np.array(y))
+stack_gen_model = sclf.fit(
+    np.array(train_dropped_encoded_nonulls), np.array(y))
 
 stack_gen_model_preds = stack_gen_model.predict(test_dropped_encoded_nonulls)
-
-
-#Submission
-
-sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
-
-sample_submission.to_csv('~/Downloads/tabular_playground_april_15.csv', index=False)
-
-# del comparison
-submission9 = pd.read_csv('~/Downloads/tabular_playground_april_9.csv')
-# comparison = pd.concat([submission9, gender_model,pd.Series(hirodreamsofsushi.Survived)],keys=['submission9','gender','hirodreamsofsushi'],axis=1)
-# comparison['comparison']= comparison.Survived + comparison.iloc[:,1] + hirodreamsofsushi.Survived
-# comparison['comparison'].value_counts()
-hirodreamsofsushi = pd.read_csv("~/Downloads/voting_submission_from_3_best.csv")
-
-t = pd.concat([submission9,hirodreamsofsushi.Survived],axis=1)
-t['comparison'] = t.iloc[:,1] + t.iloc[:,2]
-t.comparison.value_counts()
-
-
-
-
 
 
 # INFO ON THE DATA
@@ -637,3 +592,4 @@ t.comparison.value_counts()
 http://rasbt.github.io/mlxtend/user_guide/classifier/StackingCVClassifier/
 
 
+# endregion
