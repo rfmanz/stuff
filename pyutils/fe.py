@@ -122,6 +122,7 @@ def standard_scaler(df):
 
 
 def mice_imputer(data):
+    """https://github.com/AnotherSamWilson/miceforest"""
     na_cols = data[data.columns[data.isna().any()]]
 
     # Create kernel.
@@ -141,7 +142,8 @@ def mice_imputer(data):
 
 def target_encode(train, valid, col, target='target', kfold=5, smooth=20, verbose=True):
     """
-    example :  train, test = target_encode2(train,test,['Pclass', 'Sex', 'Embarked','age_bin'],target='Survived')
+    example :  
+    train, test = target_encode2(train,test,['Pclass', 'Sex', 'Embarked','age_bin'], target='Survived')
 
         train:  train dataset
         valid:  validation dataset
