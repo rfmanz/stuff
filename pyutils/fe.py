@@ -107,18 +107,17 @@ def correlated(df, threshold, drop_columns=False, encode_type='dmy'):
 
 
 def standard_scaler(df):
+    """ 
+    Standardization: scales features such that the distribution is centered around 0, with a standard deviation of 1.
+    Normalization: shrinks the range such that the range is now between 0 and 1 (or -1 to 1 if there are negative values).
+    Robust Scaler: similar to normalization but it instead uses the interquartile range, so that it is robust to outliers.
+
+    Min-max scaling (many people call this normalization) is the simplest: values are shifted and rescaled so that they end up ranging from 0 to 1. We do this by subtracting the min value and dividing by the max minus the min. Scikit-Learn provides a transformer called MinMaxScaler for this. It has a feature_range hyperparameter that lets
+    you change the range if, for some reason, you don’t want 0–1.
+
+    Standardization is different: first it subtracts the mean value (so standardized values always have a zero mean), and then it divides by the standard deviation so that the resulting distribution has unit variance. Unlike min-max scaling, standardization does not bound values to a specific range, which may be a problem for some algorithms (e.g., neural networks often expect an input value ranging from 0 to 1). However, standardization is much less affected by outliers. For example, suppose a district had a median income equal to 100 (by mistake). Min-max scaling would then crush all the other values from 0–15 down to 0–0.15, whereas standardization would not be much affected. Scikit-Learn provides a transformer called StandardScaler for standardization. 
     """
-Standardization: scales features such that the distribution is centered around 0, with a standard deviation of 1.
-Normalization: shrinks the range such that the range is now between 0 and 1 (or -1 to 1 if there are negative values).
-Robust Scaler: similar to normalization but it instead uses the interquartile range, so that it is robust to outliers.
 
-Min-max scaling (many people call this normalization) is the simplest: values are shifted and rescaled so that they end up ranging from 0 to 1. We do this by subtracting the min value and dividing by the max minus the min. Scikit-Learn provides a transformer called MinMaxScaler for this. It has a feature_range hyperparameter that lets
-you change the range if, for some reason, you don’t want 0–1.
-
-Standardization is different: first it subtracts the mean value (so standardized values always have a zero mean), and then it divides by the standard deviation so that the resulting distribution has unit variance. Unlike min-max scaling, standardization does not bound values to a specific range, which may be a problem for some algorithms (e.g., neural networks often expect an input value ranging from 0 to 1). However, standardization is much less affected by outliers. For example, suppose a district had a median income equal to 100 (by mistake). Min-max scaling would then crush all the other values from 0–15 down to 0–0.15, whereas standardization would not be much affected. Scikit-Learn provides a transformer called StandardScaler for standardization.
-
-
-"""
     return pd.DataFrame(StandardScaler().fit_transform(df), columns=df.columns, index=df.index)
 
 

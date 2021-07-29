@@ -1,0 +1,94 @@
+{
+  "main": {
+    "id": "671c0d039da37ad9",
+    "type": "split",
+    "children": [
+      {
+        "id": "189d513652837a9e",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "ML.md",
+            "mode": "source"
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "dc46bf2bc57de00b",
+    "type": "split",
+    "children": [
+      {
+        "id": "de2aa8948bbe2743",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bfaa1912c140f3fd",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "3ab06e4f4b7cc0d4",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 190
+  },
+  "right": {
+    "id": "0e30cf8112ab5564",
+    "type": "split",
+    "children": [
+      {
+        "id": "b1d6f3d86337c812",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9f8e28819b484559",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "ML.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "189d513652837a9e",
+  "lastOpenFiles": [
+    "ML.md",
+    "1.png"
+  ]
+}
