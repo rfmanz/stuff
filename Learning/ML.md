@@ -2,7 +2,7 @@
 
 
 
-## Definitions: 
+**Definitions**: 
 
 - A machine learning algorithm is an algorithm that is able to learn from data. But what do we mean by learning? Mitchell (1997) provides a succinct deﬁnition: “A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.” <br> <br>
 - Machine learning enables us to tackle tasks that are too difficult to solve with ﬁxed programs written and designed by human beings.  For example, if we want a robot to be able to walk, then walking is the task. We could program the robot to learn to walk, or we could attempt to directly write a program that speciﬁes how to walk manually. <br><br>
@@ -11,6 +11,7 @@
   
 ---
 ## Stats
+
 <details>
   <summary>Odds vs Probability</summary>
   
