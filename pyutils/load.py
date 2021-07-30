@@ -40,9 +40,11 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None, data
             zf = zipfile.ZipFile(path_ending_with_filename)
 
             if dataframes:
-                dataframes = [x.strip(" ") for x in dataframes.split(",")]
-                #files= list(set(zf.namelist()) & set([x+'.csv' for x in dataframes]))
-                files = [x+'.csv' for x in dataframes]
+                if len(dataframes)==1:
+                    dataframes[0] + '.csv'
+                    else:
+                        dataframes = [x.strip(" ") for x in dataframes.split(",")]
+                        files = [x+'.csv' for x in dataframes]
             else:
                 files = zf.namelist()
 

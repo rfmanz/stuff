@@ -14,7 +14,9 @@ read_data(path)
 # censo_train, rcc_train, se_train, sunat_train, y_train, productos, sample_submission = read_data(path, True, 'dt', dataframes='censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission')
 
 
-# rcc_train
+
+
+# region /// rcc_train /// 
 rcc_train,y_train,productos = read_data(path, True,'dt',dataframes="rcc_train,y_train,productos")
 #TODO: Fix read_data function. When only one dataframe name is passed it returns dictionary insteado of dataframe.
 y_train = y_train.target*1
@@ -24,40 +26,91 @@ rcc_train2 = rcc_train.copy()
 reduce_memory_usage(rcc_train2)
 rcc_train2.columns = rcc_train2.columns.str.lower()
 
-np.setdiff1d(productos.Productos,rcc_train2.producto.unique())
-np.setdiff1d(rcc_train2.producto.unique(),productos.Productos)
+# np.setdiff1d(productos.Productos,rcc_train2.producto.unique())
+# np.setdiff1d(rcc_train2.producto.unique(),productos.Productos)
+
 
 rcc_train2 = rcc_train2.merge(productos, how = 'left',left_on="producto",right_on="Productos")
+
+rcc_train2.
+
 
 rcc_train2.rename(columns= {"C0":"productos_nm"},inplace=True)
 rcc_train2.drop(columns="Productos",inplace=True)
 
+
+rcc_train2.head()
+peek(rcc_train2)
+rcc_train2.columns
+
+
+
+ordered_barplot(rcc_train2.productos_nm.mean(),'productos_nm')
 rcc_train2.groupby('productos_nm')['saldo'].mean().plot.bar()
-productos.C0.str.contains("FORWARDS")
-rcc_train2.loc[np.where(rcc_train2.productos_nm.str.contains("FORWARDS"))]
-rcc_train2.loc[rcc_train2.productos_nm.dropna().str.contains("FORWARDS")]
 
-rcc_train2.productos_nm.filter(like='FORWARDS',axis=0)
-rcc_train2.productos_nm.str.contains("FORWARDS").value_counts()
-rcc_train2.isnull().sum()
-
+#Filter dataframe by string contains 
 rcc_train2[rcc_train2['productos_nm'].str.contains("FORWARDS",na=False)]
+
 rcc_train2.loc[rcc_train2['productos_nm'].str.contains("FORWARDS",na=False),['saldo']].mean()
+rcc_train2.groupby(["productos_nm","producto"])['saldo'].mean().sort_values()
 
-rcc_train2.groupby("productos_nm")['saldo'].mean().sort_values()
-
+rcc_train2[rcc_train2.producto == 255]
 rcc_train2.key_value.nunique()
 
-rcc_train2.productos_nm.value_counts(dropna=False)
+rcc_test, fix = read_data(path, True, 'dt', 'rcc_test,y_train')
 
-rcc_train2.productos_nm.value_counts()
+
+
+peek(rcc_train2)
+
+len(rcc_train2)
+
+
+rcc_test.dropna(inplace=True)
+rcc_test.PRODUCTO.astype(int)
+#Filter by two matches 
+rcc_test[(rcc_test.PRODUCTO.astype(int).isin([36,41]))].key_value.nunique()
+rcc_test[(rcc_test.PRODUCTO.astype(int).isin([36]))].key_value.nunique()
+rcc_train2[(rcc_train2.producto.astype(int).isin([36]))].key_value.nunique()
+rcc_test[(rcc_test.PRODUCTO.astype(int).isin([41]))].key_value.nunique()
+rcc_train2[(rcc_train2.producto.astype(int).isin([41]))].key_value.nunique()
+rcc_test[(rcc_test.PRODUCTO.astype(int).isin([255]))].key_value.nunique()
+rcc_test[["PRODUCTO"]].value_counts().sort_values()
+rcc_train2[["producto","productos_nm"]].value_counts().sort_values()
+rcc_train2.productos_nm.fillna("NULL",inplace=True)
+rcc_train2.productos_nm = rcc_train2.productos_nm.replace('NULL',np.NaN)
+rcc_train[rcc_train.PRODUCTO.astype(int) == 41]
+#get rid of Derivados me -- forwards & descuentos | 3 unique key_values 
+rcc_train2.drop(rcc_train2[rcc_train2.producto.astype(int).isin([36,41])].index, inplace=True)
+
+
+
+rcc_train2.loc[(rcc_train2.producto.astype(int).isin([36, 41, 2])).index,('producto','productos_nm')].value_counts().sort_values()
+rcc_train2[["producto",'productos_nm']].value_counts()
+
+rcc_test.PRODUCTO.value_counts().sort_values()
+rcc_test.PRODUCTO.value_counts(dropna=False).sort_values()
+
+peek(rcc_train2)
 
 productos.C0
 rcc_train.producto.nunique()
 productos.C0.nunique()
 
 
+#endregion 
 
+#region /// socio_economico /// 
+
+read_data(path)
+se_train = read_data(path, True, 'dt', 'se_train')
+
+#endregion 
+
+
+
+
+#-----
 rcc_train.columns
 peek(rcc_train2)
 y_train.dtypes
@@ -73,7 +126,7 @@ train = pd.merge([rcc_train, se_train, sunat_train, censo_train], on='key_value'
 # test = pd.concat([censo_tes, rcc_train, se_train, sunat_train], axis=0)
 y = y_train
 
-set(y_train.key_value) in set(rcc_train.key_value)
+set(y_train.index) in set(rcc_train.key_value)
 
 set(rcc_train.key_value.unique()) in set(y_train.key_value)
 
@@ -98,14 +151,9 @@ set(rcc_train.key_value.unique()) in set(y_train.key_value)
 
 pd.Series.rcc_train.key_value.unique().str.match() in set(y_train.key_value)
 
-# EDA
-describe_df(rcc_train)
-productos_dic = productos.to_dict()
-productos_dic.keys()
-rcc_train.prod
 
-peek(y_train)
-peek(productos)
+
+
 
 # Unique key values by dataframe ?
 all_inital_columns_sin_productos = 'censo_test, censo_train,  rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train'
