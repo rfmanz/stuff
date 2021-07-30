@@ -1,5 +1,3 @@
-
-
 from pyutils import *
 
 # data: https://www.kaggle.com/c/interbank20/data
@@ -13,14 +11,13 @@ read_data(path)
 # Read only train:
 
 # Only load train
-censo_train, rcc_train, se_train, sunat_train, y_train, productos, sample_submission = read_data(path, True, 'dt', dataframes='censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission')
-y_train = y_train.target*1
+# censo_train, rcc_train, se_train, sunat_train, y_train, productos, sample_submission = read_data(path, True, 'dt', dataframes='censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission')
+
 
 # rcc_train
-rcc_train,y_train = read_data(path, True,'dt',dataframes="rcc_train,y_train")
+rcc_train,y_train,productos = read_data(path, True,'dt',dataframes="rcc_train,y_train,productos")
 #TODO: Fix read_data function. When only one dataframe name is passed it returns dictionary insteado of dataframe.
-rcc_train.shape
-y_train.shape
+y_train = y_train.target*1
 
 
 rcc_train2 = rcc_train.copy()
@@ -37,19 +34,28 @@ rcc_train2.drop(columns="Productos",inplace=True)
 
 rcc_train2.groupby('productos_nm')['saldo'].mean().plot.bar()
 productos.C0.str.contains("FORWARDS")
-rcc_train2.productos_nm[rcc_train2.productos_nm.str.contains("FORWARDS")]
+rcc_train2.loc[np.where(rcc_train2.productos_nm.str.contains("FORWARDS"))]
+rcc_train2.loc[rcc_train2.productos_nm.dropna().str.contains("FORWARDS")]
 
-#
+rcc_train2.productos_nm.filter(like='FORWARDS',axis=0)
+rcc_train2.productos_nm.str.contains("FORWARDS").value_counts()
+rcc_train2.isnull().sum()
+
+rcc_train2[rcc_train2['productos_nm'].str.contains("FORWARDS",na=False)]
+rcc_train2.loc[rcc_train2['productos_nm'].str.contains("FORWARDS",na=False),['saldo']].mean()
+
+rcc_train2.groupby("productos_nm")['saldo'].mean()
+
 rcc_train2.productos_nm.value_counts(dropna=False)
 
-rcc_train2.productos_nm.head()
+rcc_train2.productos_nm.value_counts()
 
 productos.C0
 rcc_train.producto.nunique()
 productos.C0.nunique()
 
 
-rcc_train.comdes.as
+
 rcc_train.columns
 peek(rcc_train2)
 y_train.dtypes
