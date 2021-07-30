@@ -22,39 +22,32 @@ rcc_train,y_train = read_data(path, True,'dt',dataframes="rcc_train,y_train")
 rcc_train.shape
 y_train.shape
 
+
+rcc_train2 = rcc_train.copy()
+reduce_memory_usage(rcc_train2)
+rcc_train2.columns = rcc_train2.columns.str.lower()
+
 np.setdiff1d(productos.Productos,rcc_train2.producto.unique())
 np.setdiff1d(rcc_train2.producto.unique(),productos.Productos)
 
-rcc_train2.
-rcc_train2 = rcc_train.copy()
-rcc_train2.columns = rcc_train2.columns.str.lower()
-reduce_memory_usage(rcc_train2)
-productos.dtypes
 rcc_train2 = rcc_train2.merge(productos, how = 'left',left_on="producto",right_on="Productos")
-rcc_train2.isnull().sum()
-rcc_train2.Productos.astype(int)
-rcc_train2.producto.value_counts()
-rcc_train2.C0.value_counts()
-rcc_train2.Productos.value_counts(dropna=False)
-rcc_train2.producto.where(rcc_train2.Productos.isnull())
 
-rcc_train2.producto.value_counts(dropna=False)
-all(rcc_train2.C0 == rcc_train2.producto)
-peek(rcc_train) 
+rcc_train2.rename(columns= {"C0":"productos_nm"},inplace=True)
+rcc_train2.drop(columns="Productos",inplace=True)
 
-np.select(rcc_train.producto,productos.C0)
+rcc_train2.groupby('productos_nm')['saldo'].mean().plot.bar()
+productos.C0.str.contains("FORWARDS")
+rcc_train2.productos_nm[rcc_train2.productos_nm.str.contains("FORWARDS")]
 
-flags = n1[1:] < n1[:-1]
+#
+rcc_train2.productos_nm.value_counts(dropna=False)
 
-
-
-for i in productos.Productos:
-    rcc_train[["productos"]][i]= productos[['C0']][i]
-
+rcc_train2.productos_nm.head()
 
 productos.C0
 rcc_train.producto.nunique()
 productos.C0.nunique()
+
 
 rcc_train.comdes.as
 rcc_train.columns
