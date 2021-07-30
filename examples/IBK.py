@@ -1,40 +1,65 @@
 
+
 from pyutils import *
 
 # data: https://www.kaggle.com/c/interbank20/data
 # Probabilidad de default de prestamo
 
-path = '/home/r/Downloads/interbank20.zip'
+path = 'D:/Downloads/interbank20.zip'
 
 # Load
-# read_data(path)
+read_data(path)
 # censo_test, censo_train, productos, rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train = read_data(path, True, "dt")
 # Read only train:
 
 # Only load train
-censo_train, rcc_train, se_train, sunat_train, y_train, productos, sample_submission = read_data(path, True, 'dt',
-                                                                                                 dataframes='censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission')
+censo_train, rcc_train, se_train, sunat_train, y_train, productos, sample_submission = read_data(path, True, 'dt', dataframes='censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission')
+y_train = y_train.target*1
 
-# RCC
+# rcc_train
+rcc_train,y_train = read_data(path, True,'dt',dataframes="rcc_train,y_train")
+#TODO: Fix read_data function. When only one dataframe name is passed it returns dictionary insteado of dataframe.
+rcc_train.shape
+y_train.shape
 
-rcc_train, y_train = read_data(path, True, 'dt', 'rcc_train,y_train')
+np.setdiff1d(productos.Productos,rcc_train2.producto.unique())
+np.setdiff1d(rcc_train2.producto.unique(),productos.Productos)
+
+rcc_train2.
+rcc_train2 = rcc_train.copy()
+rcc_train2.columns = rcc_train2.columns.str.lower()
+reduce_memory_usage(rcc_train2)
+productos.dtypes
+rcc_train2 = rcc_train2.merge(productos, how = 'left',left_on="producto",right_on="Productos")
+rcc_train2.isnull().sum()
+rcc_train2.Productos.astype(int)
+rcc_train2.producto.value_counts()
+rcc_train2.C0.value_counts()
+rcc_train2.Productos.value_counts(dropna=False)
+rcc_train2.producto.where(rcc_train2.Productos.isnull())
+
+rcc_train2.producto.value_counts(dropna=False)
+all(rcc_train2.C0 == rcc_train2.producto)
+peek(rcc_train) 
+
+np.select(rcc_train.producto,productos.C0)
+
+flags = n1[1:] < n1[:-1]
 
 
 
-s = censo_train, rcc_train, se_train, sunat_train
-s2 = 'censo_train,rcc_train,se_train,sunat_train'
-all_dfs(s, s2)
+for i in productos.Productos:
+    rcc_train[["productos"]][i]= productos[['C0']][i]
 
 
+productos.C0
+rcc_train.producto.nunique()
+productos.C0.nunique()
 
-
-for i in d:
-    reduce_memory_usage(rcc_train)
-
-print(f"{(sys.getsizeof(rcc_train) / 1024 ** 2):.2f} Mb")
-
-reduce_memory_usage(rcc_train)
-
+rcc_train.comdes.as
+rcc_train.columns
+peek(rcc_train2)
+y_train.dtypes
 train =  rcc_train.merge(censo_train, on="key_value", how='left')
 
     .merge(se_train, on='key_value', how='left').merge(sunat_train, on = 'key_valye', how= 'left')

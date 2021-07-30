@@ -453,7 +453,7 @@ for fold, (trn_idx, val_idx) in enumerate(kf.split(x, y)):
     x_train, x_val = x.iloc[trn_idx], x.iloc[val_idx]
     y_train, y_val = y.iloc[trn_idx], y.iloc[val_idx]
 
-    model = LGBMClassifier(**paramsLGBM)
+    model = LGBMClassifier(**paramsLGBM, device = 'gpu')
 
     model.fit(x_train, y_train, eval_set=[(x_val, y_val)], eval_metric='auc', verbose=-1,early_stopping_rounds=500)
 
