@@ -44,7 +44,9 @@ rcc_train2.isnull().sum()
 rcc_train2[rcc_train2['productos_nm'].str.contains("FORWARDS",na=False)]
 rcc_train2.loc[rcc_train2['productos_nm'].str.contains("FORWARDS",na=False),['saldo']].mean()
 
-rcc_train2.groupby("productos_nm")['saldo'].mean()
+rcc_train2.groupby("productos_nm")['saldo'].mean().sort_values()
+
+rcc_train2.key_value.nunique()
 
 rcc_train2.productos_nm.value_counts(dropna=False)
 
