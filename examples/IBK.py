@@ -172,7 +172,7 @@ test_dfs2 = censo_test, rcc_test, se_test, sunat_test
 print("TRAIN: Count of Unique key_values")
 dic = {}
 for i, p in enumerate(train_dfs2):
-    dic["{0}".format(train_dfs[i])] = p
+    dic["{0}".format(train_dfs[i])] =
 keys = list(dic.keys())
 values = list(dic.values())
 for i, j in enumerate(dic):
