@@ -116,7 +116,7 @@ peek(rcc_train2)
 y_train.dtypes
 train =  rcc_train.merge(censo_train, on="key_value", how='left')
 
-    .merge(se_train, on='key_value', how='left').merge(sunat_train, on = 'key_valye', how= 'left')
+rcc_train.merge(se_train, on='key_value', how='left').merge(sunat_train, on = 'key_valye', how= 'left')
 
 all_dfs(s, s2)
 
