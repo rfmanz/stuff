@@ -1,112 +1,94 @@
+import pandas as pd
+from dask.config import set
+
 from pyutils import *
+
+pd.set_option('display.max_columns', None)
+desired_width = 200
+pd.set_option('display.width', desired_width)
+pd.set_option('max.columns', 20)
+import warnings
+warnings.filterwarnings('ignore')
 
 # data: https://www.kaggle.com/c/interbank20/data
 # Probabilidad de default de prestamo
 
 path = 'D:/Downloads/interbank20.zip'
-
-# Load
 read_data(path)
-# censo_test, censo_train, productos, rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train = read_data(path, True, "dt")
-# Read only train:
 
-# Only load train
-# censo_train, rcc_train, se_train, sunat_train, y_train, productos, sample_submission = read_data(path, True, 'dt', dataframes='censo_train,rcc_train,se_train,sunat_train,y_train,productos,sample_submission')
-
-
-
-
-# region /// rcc_train /// 
-rcc_train,y_train,productos = read_data(path, True,'dt',dataframes="rcc_train,y_train,productos")
-#TODO: Fix read_data function. When only one dataframe name is passed it returns dictionary insteado of dataframe.
+y_train = read_data(path, True,'dt',dataframes="y_train")
 y_train = y_train.target*1
+# y_train.value_counts()
 
+# region /// rcc_train ///
 
-rcc_train2 = rcc_train.copy()
-reduce_memory_usage(rcc_train2)
-rcc_train2.columns = rcc_train2.columns.str.lower()
+def rcc_train():
+    rcc_train,productos = read_data(path, True,'dt',dataframes="rcc_train,productos")
+    reduce_memory_usage(rcc_train)
+    rcc_train_sample = rcc_train.sample(int(len(rcc_train) / 100))
+    rcc_train_sample.columns = rcc_train_sample.columns.str.lower()
 
-# np.setdiff1d(productos.Productos,rcc_train2.producto.unique())
-# np.setdiff1d(rcc_train2.producto.unique(),productos.Productos)
+    rcc_train_sample = rcc_train_sample.merge(
+        productos, how='left', left_on="producto", right_on="Productos")
 
+    rcc_train_sample.rename(columns={"C0": "productos_nm"}, inplace=True)
+    rcc_train_sample.drop(columns="Productos", inplace=True)
+    rcc_train_sample.productos_nm.fillna("NULL",inplace=True)
+    rcc_train_sample.drop(rcc_train_sample[rcc_train_sample.producto.astype(int).isin([36,41])].index, inplace=True)
+    rcc_train_sample.codmes = rcc_train_sample.codmes.astype(str)
 
-rcc_train2 = rcc_train2.merge(productos, how = 'left',left_on="producto",right_on="Productos")
-
-rcc_train2.
-
-
-rcc_train2.rename(columns= {"C0":"productos_nm"},inplace=True)
-rcc_train2.drop(columns="Productos",inplace=True)
-
-
-rcc_train2.head()
-peek(rcc_train2)
-rcc_train2.columns
-
-
-
-ordered_barplot(rcc_train2.productos_nm.mean(),'productos_nm')
-rcc_train2.groupby('productos_nm')['saldo'].mean().plot.bar()
-
-#Filter dataframe by string contains 
-rcc_train2[rcc_train2['productos_nm'].str.contains("FORWARDS",na=False)]
-
-rcc_train2.loc[rcc_train2['productos_nm'].str.contains("FORWARDS",na=False),['saldo']].mean()
-rcc_train2.groupby(["productos_nm","producto"])['saldo'].mean().sort_values()
-
-rcc_train2[rcc_train2.producto == 255]
-rcc_train2.key_value.nunique()
-
-rcc_test, fix = read_data(path, True, 'dt', 'rcc_test,y_train')
+    return rcc_train_sample, productos, rcc_train
 
 
 
-peek(rcc_train2)
+def diferent_vals_cat(train,test,varC):
+    diferentes = {}
+    uniques_train =  sorted(train[varC].unique())
+    uniques_test =  sorted(test[varC].unique())
+    diferentes['train'] = list(j for j in uniques_train if j not in uniques_test)
+    diferentes['test'] = list(j for j in uniques_test if j not in uniques_train)
+    print("*"*10, varC, "*"*10)
+    print(f"Not in test: {diferentes['train']}\nNot in train: {diferentes['test']}")
 
-len(rcc_train2)
+read_data(path,dataframes="rcc_train")
 
-
-rcc_test.dropna(inplace=True)
-rcc_test.PRODUCTO.astype(int)
-#Filter by two matches 
-rcc_test[(rcc_test.PRODUCTO.astype(int).isin([36,41]))].key_value.nunique()
-rcc_test[(rcc_test.PRODUCTO.astype(int).isin([36]))].key_value.nunique()
-rcc_train2[(rcc_train2.producto.astype(int).isin([36]))].key_value.nunique()
-rcc_test[(rcc_test.PRODUCTO.astype(int).isin([41]))].key_value.nunique()
-rcc_train2[(rcc_train2.producto.astype(int).isin([41]))].key_value.nunique()
-rcc_test[(rcc_test.PRODUCTO.astype(int).isin([255]))].key_value.nunique()
-rcc_test[["PRODUCTO"]].value_counts().sort_values()
-rcc_train2[["producto","productos_nm"]].value_counts().sort_values()
-rcc_train2.productos_nm.fillna("NULL",inplace=True)
-rcc_train2.productos_nm = rcc_train2.productos_nm.replace('NULL',np.NaN)
-rcc_train[rcc_train.PRODUCTO.astype(int) == 41]
-#get rid of Derivados me -- forwards & descuentos | 3 unique key_values 
-rcc_train2.drop(rcc_train2[rcc_train2.producto.astype(int).isin([36,41])].index, inplace=True)
+rcc_test = read_data(path, True, 'dt', dataframes="rcc_test")
+rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
 
 
+diferent_vals_cat(rcc_train,rcc_test,'tipo_credito')
+peek(rcc_test)
 
-rcc_train2.loc[(rcc_train2.producto.astype(int).isin([36, 41, 2])).index,('producto','productos_nm')].value_counts().sort_values()
-rcc_train2[["producto",'productos_nm']].value_counts()
+rcc_train.drop_duplicates(inplace=True)
+rcc_test.drop_duplicates(inplace=True)
+sunat_train.drop_duplicates(inplace=True)
+sunat_test.drop_duplicates(inplace=True)
+censo_train.drop_duplicates(inplace=True)
+censo_test.drop_duplicates(inplace=True)
 
-rcc_test.PRODUCTO.value_counts().sort_values()
-rcc_test.PRODUCTO.value_counts(dropna=False).sort_values()
+rcc_train_sample, productos,rcc_train = rcc_train()
+rcc_train_sample.head()
 
-peek(rcc_train2)
+rcc_train_sample[["producto",'productos_nm']].value_counts().sort_values()
+rcc_train_sample.groupby(["productos_nm"]).mean("saldo").sort_values("saldo")
+rcc_train_sample.productos_nm
+rcc_train.loc[(rcc_train.PRODUCTO.astype(int).isin([36,41])),'key_value'].nunique()
+rcc_train.loc[(rcc_train.PRODUCTO.astype(int).isin([36,41]))]
 
-productos.C0
-rcc_train.producto.nunique()
-productos.C0.nunique()
+rcc_train_sample.cod_clasificacion_deudor.astype(object)
+rcc_train_sample.riesgo_directo.value_counts()
+encode(pd.DataFrame(rcc_train_sample[["riesgo_directo"]]))
 
+#endregion
 
-#endregion 
 
 #region /// socio_economico /// 
 
-read_data(path)
 se_train = read_data(path, True, 'dt', 'se_train')
-
+describe_df(se_train)
+se_train.astype("object").describe()
+describe_df(se_train)
 #endregion 
-
 
 
 
@@ -114,7 +96,7 @@ se_train = read_data(path, True, 'dt', 'se_train')
 rcc_train.columns
 peek(rcc_train2)
 y_train.dtypes
-train =  rcc_train.merge(censo_train, on="key_value", how='left')
+wwtrain =  rcc_train.merge(censo_train, on="key_value", how='left')
 
 rcc_train.merge(se_train, on='key_value', how='left').merge(sunat_train, on = 'key_valye', how= 'left')
 

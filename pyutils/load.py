@@ -52,13 +52,14 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None, data
                         dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = dt.fread(zf.open(x)).to_pandas()
                     else:
                         dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = pd.read_csv(zf.open(x))
+
+                    keys = list(dfs.keys())
+                    values = list(dfs.values())
+                    for i, k in enumerate(dfs):
+                        print(i + 1, ".", " ", k, " ", "=", " ", "(", f"{values[i].shape[0]:,}", " ", ":", " ",
+                              f"{values[i].shape[1]:,}", ")",
+                              sep="")
                     if return_df:
-                        keys = list(dfs.keys())
-                        values = list(dfs.values())
-                        for i, k in enumerate(dfs):
-                            print(i + 1, ".", " ", k, " ", "=", " ", "(", f"{values[i].shape[0]:,}", " ", ":", " ",
-                                  f"{values[i].shape[1]:,}", ")",
-                                  sep="")
                         return pd.DataFrame.from_dict(values[0])
                 else:
                     files = [x + '.csv' for x in dataframes]
@@ -85,23 +86,23 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None, data
                           sep="")
                 return dfs.values()
             else:
+                if not dataframes:
+                    csv_file_names = [format(re.findall("\w+(?=\.)", zf.namelist()[i])[0]) for i in
+                                      range(len(zf.namelist())) if zf.namelist()[i].endswith('.csv')]
+                    # if dataframes:
+                    #
+                    #     file_pos = [i for i, x in enumerate(csv_file_names)]
 
-                csv_file_names = [format(re.findall("\w+(?=\.)", zf.namelist()[i])[0]) for i in
-                                  range(len(zf.namelist())) if zf.namelist()[i].endswith('.csv')]
-                # if dataframes:
-                #
-                #     file_pos = [i for i, x in enumerate(csv_file_names)]
+                    # else:
+                    file_pos = [i for i, x in enumerate(zf.namelist()) if x.endswith('.csv')]
 
-                # else:
-                file_pos = [i for i, x in enumerate(zf.namelist()) if x.endswith('.csv')]
+                    uncompressed_dir = [f"{(zf.filelist[i].file_size / 1024 ** 2):.2f} Mb" for i in file_pos]
+                    compressed = [f"{(zf.filelist[i].compress_size / 1024 ** 2):.2f} Mb" for i in file_pos]
 
-                uncompressed_dir = [f"{(zf.filelist[i].file_size / 1024 ** 2):.2f} Mb" for i in file_pos]
-                compressed = [f"{(zf.filelist[i].compress_size / 1024 ** 2):.2f} Mb" for i in file_pos]
-
-                print(pd.concat([pd.Series(csv_file_names), pd.Series(uncompressed_dir), pd.Series(compressed)], axis=1,
-                                keys=["file_names", "uncompressed", "compressed"]))
-                print()
-                print(*csv_file_names, sep=",")
+                    print(pd.concat([pd.Series(csv_file_names), pd.Series(uncompressed_dir), pd.Series(compressed)], axis=1,
+                                    keys=["file_names", "uncompressed", "compressed"]))
+                    print()
+                    print(*csv_file_names, sep=",")
         else:
             # SINGLE FILE
             if path_ending_with_filename.endswith(".csv"):
@@ -166,4 +167,3 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None, data
                 print(i + 1, ".", " ", k, " ", "=", " ", "(", f"{values[i].shape[0]:,}", " ", ":", " ",
                       f"{values[i].shape[1]:,}", ")",
                       sep="")
-
