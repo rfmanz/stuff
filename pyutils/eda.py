@@ -20,6 +20,8 @@ from pyutils import *
 def peek(df, rows=3):
     return pd.concat([df.dtypes, df.iloc[:rows, :].T], axis=1)
 
+def dtypes(df):
+    return pd.concat([df.nunique(), df.dtypes], keys=["count_unique", "dtype"], axis=1)
 
 def describe_df(df,floatfmt= '.3f'):
     # Numerical

@@ -48,24 +48,19 @@ def diferent_vals_cat(train,test,varC):
 
 # region /// THIS IS THE WAY ///
 from pyutils import *
-def pd_options():
-    desired_width = 300
-    pd.set_option('display.width', desired_width)
-    pd.set_option('display.max_columns', None)
-    import warnings
-    warnings.filterwarnings('ignore')
 
 pd_options()
 
+path = 'D:/Downloads/interbank20.zip'
 rcc_test,rcc_train = read_data(path, True, 'dt', dataframes="rcc_test,rcc_train")
+rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
+
+reduce_memory_usage(rcc_train)
+reduce_memory_usage(rcc_test)
 # View
 rcc_train.head()
-# ### peek(rcc_train)
-# Change dtypes?
-rcc_train.dtypes
-peek
-rcc_train.nunique()
-describe_df(rcc_train)
+# First thing we want to do is actually check if the columns are in the right dtypes. How do we know that the variables were read in with suitable data dtypes. Well by th number of unique instance that variable has. So any column which has been read in as a numerical variable and has than less than say 50 categories should really be transformed into a categorical value.
+dtypes(rcc_train)
 
 # endregion
 
@@ -83,8 +78,6 @@ list(set(rcc_train.tipo_credito) - set(rcc_test.tipo_credito))
 
 peek(rcc_train)
 peek(rcc_test)
-reduce_memory_usage(rcc_train)
-reduce_memory_usage(rcc_test)
 rcc_train.dtypes
 
 rcc_train.codmes =  rcc_train.codmes.astype(str)
