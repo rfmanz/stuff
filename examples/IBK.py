@@ -22,23 +22,26 @@ y_train = y_train.target*1
 
 # region /// rcc_train ///
 
-def rcc_train():
-    rcc_train,productos = read_data(path, True,'dt',dataframes="rcc_train,productos")
-    reduce_memory_usage(rcc_train)
-    rcc_train_sample = rcc_train.sample(int(len(rcc_train) / 100))
-    rcc_train_sample.columns = rcc_train_sample.columns.str.lower()
 
-    rcc_train_sample = rcc_train_sample.merge(
-        productos, how='left', left_on="producto", right_on="Productos")
+rcc_train,productos = read_data(path, True,'dt',dataframes="rcc_train,productos")
+reduce_memory_usage(rcc_train)
+rcc_train_sample = rcc_train.sample(int(len(rcc_train) / 100))
+rcc_train_sample.columns = rcc_train_sample.columns.str.lower()
 
-    rcc_train_sample.rename(columns={"C0": "productos_nm"}, inplace=True)
-    rcc_train_sample.drop(columns="Productos", inplace=True)
-    rcc_train_sample.productos_nm.fillna("NULL",inplace=True)
-    rcc_train_sample.drop(rcc_train_sample[rcc_train_sample.producto.astype(int).isin([36,41])].index, inplace=True)
-    rcc_train_sample.codmes = rcc_train_sample.codmes.astype(str)
+rcc_train_sample = rcc_train_sample.merge(
+    productos, how='left', left_on="producto", right_on="Productos")
 
-    return rcc_train_sample, productos, rcc_train
+rcc_train_sample.rename(columns={"C0": "productos_nm"}, inplace=True)
+rcc_train_sample.drop(columns="Productos", inplace=True)
+rcc_train_sample.productos_nm.fillna("NULL",inplace=True)
+rcc_train_sample.drop(rcc_train_sample[rcc_train_sample.producto.astype(int).isin([36,41])].index, inplace=True)
+rcc_train_sample.codmes = rcc_train_sample.codmes.astype(str)
 
+return rcc_train_sample, productos, rcc_train
+
+rcc_test = read_data(path, True, 'dt', dataframes="rcc_test")
+rcc_test,rcc_train = read_data(path, True, 'dt', dataframes="rcc_test,rcc_train")
+rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
 
 
 def diferent_vals_cat(train,test,varC):
@@ -50,14 +53,42 @@ def diferent_vals_cat(train,test,varC):
     print("*"*10, varC, "*"*10)
     print(f"Not in test: {diferentes['train']}\nNot in train: {diferentes['test']}")
 
-read_data(path,dataframes="rcc_train")
+# How to decide which dtype you want to conver this too
 
-rcc_test = read_data(path, True, 'dt', dataframes="rcc_test")
-rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
+rcc_train.nunique()
+describe_df(rcc_train)
 
+rcc_train.head()
+uniques_train =  sorted(rcc_train["tipo_credito"].unique())
+uniques_test =  sorted(rcc_test["tipo_credito"].unique())
 
-diferent_vals_cat(rcc_train,rcc_test,'tipo_credito')
+list(j for j in uniques_train if j not in uniques_test)
+[j for j in uniques_test if j not in uniques_train]
+
+uniques_train =  sorted(rcc_train["tipo_credito"].unique())
+
+list(set(rcc_train.tipo_credito) - set(rcc_test.tipo_credito))
+list(set(rcc_train.tipo_credito) - set(rcc_test.tipo_credito))
+
+peek(rcc_train)
 peek(rcc_test)
+reduce_memory_usage(rcc_train)
+reduce_memory_usage(rcc_test)
+rcc_train.dtypes
+
+rcc_train.codmes =  rcc_train.codmes.astype(str)
+rcc_train.dtypes
+
+rcc_train.tipo_credito.value_counts()
+
+rcc_train.nunique()
+describe_df(rcc_train)
+diferent_vals_cat(rcc_train,rcc_test,'tipo_credito')
+diferent_vals_cat(rcc_train,rcc_test,'key_value')
+
+
+rcc_train.dtypes
+rcc_test.dtypes
 
 rcc_train.drop_duplicates(inplace=True)
 rcc_test.drop_duplicates(inplace=True)
@@ -82,13 +113,13 @@ encode(pd.DataFrame(rcc_train_sample[["riesgo_directo"]]))
 #endregion
 
 
-#region /// socio_economico /// 
+#region /// socio_economico ///
 
 se_train = read_data(path, True, 'dt', 'se_train')
 describe_df(se_train)
 se_train.astype("object").describe()
 describe_df(se_train)
-#endregion 
+#endregion
 
 
 

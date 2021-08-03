@@ -66,7 +66,7 @@ def describe_df(df,floatfmt= '.3f'):
     print('-----' * 20)
     print()
     print('CATEGORICAL VARIABLES:')
-    categorical = df.select_dtypes('object')
+    categorical = df.select_dtypes(['object','category'])
     if categorical.shape[1] == 0:
         print("No Categorical Variables")
     else:

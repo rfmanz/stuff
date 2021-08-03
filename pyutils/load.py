@@ -48,11 +48,13 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None, data
                 if len(dataframes) == 1:
                     x = dataframes[0] + '.csv'
                     dfs = {}
+                    start_time = time.monotonic()
                     if method == 'dt':
                         dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = dt.fread(zf.open(x)).to_pandas()
                     else:
                         dfs["{0}".format(re.findall("\w+(?=\.)", x)[0])] = pd.read_csv(zf.open(x))
-
+                    end_time = time.monotonic()
+                    print(timedelta(seconds=end_time - start_time))
                     keys = list(dfs.keys())
                     values = list(dfs.values())
                     for i, k in enumerate(dfs):
