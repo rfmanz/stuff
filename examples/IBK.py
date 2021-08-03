@@ -32,9 +32,6 @@ rcc_train_sample.codmes = rcc_train_sample.codmes.astype(str)
 
 return rcc_train_sample, productos, rcc_train
 
-rcc_test = read_data(path, True, 'dt', dataframes="rcc_test")
-rcc_test,rcc_train = read_data(path, True, 'dt', dataframes="rcc_test,rcc_train")
-rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
 
 def diferent_vals_cat(train,test,varC):
     diferentes = {}
@@ -44,7 +41,6 @@ def diferent_vals_cat(train,test,varC):
     diferentes['test'] = list(j for j in uniques_test if j not in uniques_train)
     print("*"*10, varC, "*"*10)
     print(f"Not in test: {diferentes['train']}\nNot in train: {diferentes['test']}")
-
 
 # region /// THIS IS THE WAY ///
 from pyutils import *
@@ -59,8 +55,35 @@ reduce_memory_usage(rcc_train)
 reduce_memory_usage(rcc_test)
 # View
 rcc_train.head()
+peek(rcc_train)
 # First thing we want to do is actually check if the columns are in the right dtypes. How do we know that the variables were read in with suitable data dtypes. Well by th number of unique instance that variable has. So any column which has been read in as a numerical variable and has than less than say 50 categories should really be transformed into a categorical value.
+rcc_train.nunique()
 dtypes(rcc_train)
+
+
+def convert_dtypes(df,varsN , varsC ):
+
+    df[varsN] = df[varsN].astype(int)
+    df[varsC] = df[varsC].astype('category')
+    #df[varsS] = df[varsS].astype(str)
+
+    return df
+
+varsN = ['condicion','saldo']
+varsC = ['tipo_credito','cod_instit_financiera','PRODUCTO','RIESGO_DIRECTO','COD_CLASIFICACION_DEUDOR',
+         'key_value']
+
+rcc_train = convert_dtypes(rcc_train,varsN,varsC)
+dtypes(rcc_train)
+# Fixing stuff
+
+# FE
+
+bins = [-1, 0, 10, 30, 180, 720, float("inf")]
+rcc_train["condicion_cat"] = pd.cut(rcc_train.condicion, bins).cat.codes
+rcc_test["condicion_cat"] = pd.cut(rcc_test.condicion, bins).cat.codes
+
+
 
 # endregion
 

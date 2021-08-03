@@ -5,6 +5,14 @@ from sklearn.preprocessing import StandardScaler
 import miceforest as mf
 
 
+def convert_dtypes(df,varsN , varsC ):
+
+    df[varsN] = df[varsN].astype(int)
+    df[varsC] = df[varsC].astype('category')
+    #df[varsS] = df[varsS].astype(str)
+
+    return df
+
 def identify_missing(df, missing_threshold, drop=False):
     """Find the features with a fraction of missing values above `missing_threshold`"""
 
