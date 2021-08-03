@@ -8,6 +8,14 @@ from datetime import timedelta
 import sys
 
 
+def pd_options():
+    desired_width = 300
+    pd.set_option('display.width', desired_width)
+    pd.set_option('display.max_columns', None)
+    import warnings
+    warnings.filterwarnings('ignore')
+
+
 def directory(directory_path):
     """Puts you in the right directory. Gives you list of files in path"""
     os.chdir(re.findall("^(.*[\\\/])", directory_path)[0])

@@ -25,7 +25,7 @@ import warnings
 # endregion
 
 # region /// pd.options /// ----
-desired_width = 100
+desired_width = 300
 pd.set_option('display.width', desired_width)
 pd.set_option('max.columns', 20)
 

@@ -3,13 +3,6 @@ from dask.config import set
 
 from pyutils import *
 
-pd.set_option('display.max_columns', None)
-desired_width = 200
-pd.set_option('display.width', desired_width)
-pd.set_option('max.columns', 20)
-import warnings
-warnings.filterwarnings('ignore')
-
 # data: https://www.kaggle.com/c/interbank20/data
 # Probabilidad de default de prestamo
 
@@ -43,7 +36,6 @@ rcc_test = read_data(path, True, 'dt', dataframes="rcc_test")
 rcc_test,rcc_train = read_data(path, True, 'dt', dataframes="rcc_test,rcc_train")
 rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
 
-
 def diferent_vals_cat(train,test,varC):
     diferentes = {}
     uniques_train =  sorted(train[varC].unique())
@@ -53,10 +45,29 @@ def diferent_vals_cat(train,test,varC):
     print("*"*10, varC, "*"*10)
     print(f"Not in test: {diferentes['train']}\nNot in train: {diferentes['test']}")
 
-# How to decide which dtype you want to conver this too
 
+# region /// THIS IS THE WAY ///
+from pyutils import *
+def pd_options():
+    desired_width = 300
+    pd.set_option('display.width', desired_width)
+    pd.set_option('display.max_columns', None)
+    import warnings
+    warnings.filterwarnings('ignore')
+
+pd_options()
+
+rcc_test,rcc_train = read_data(path, True, 'dt', dataframes="rcc_test,rcc_train")
+# View
+rcc_train.head()
+# ### peek(rcc_train)
+# Change dtypes?
+rcc_train.dtypes
+peek
 rcc_train.nunique()
 describe_df(rcc_train)
+
+# endregion
 
 rcc_train.head()
 uniques_train =  sorted(rcc_train["tipo_credito"].unique())
