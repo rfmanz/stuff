@@ -56,8 +56,8 @@ rcc_train = pd.merge(rcc_train, y_train, right_index=True, left_on='key_value' )
 
 
 # newregion ///EDA///
-# So I was initially more clever about this than I thought. Most of the graphing functions in EDA are actually ready to go for any dataset/columns which have a binary classification target.
-
+# So I was initially more clever about this than I thought.
+# Most of the graphing functions in EDA are actually ready to go for any dataset/columns which have a binary classification target.
 # Why did I do make it so? If I'm going to work in data science, most things are going to be a classification problem: will the client buy/ or try to predict this outcome.
 class_hists(rcc_train,"saldo","target")
 plt.show()
