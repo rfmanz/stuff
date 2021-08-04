@@ -18,19 +18,19 @@ y_train = y_train.target*1
 
 rcc_train,productos = read_data(path, True,'dt',dataframes="rcc_train,productos")
 reduce_memory_usage(rcc_train)
-rcc_train_sample = rcc_train.sample(int(len(rcc_train) / 100))
-rcc_train_sample.columns = rcc_train_sample.columns.str.lower()
+rcc_train = rcc_train.sample(int(len(rcc_train) / 100))
+rcc_train.columns = rcc_train.columns.str.lower()
 
-rcc_train_sample = rcc_train_sample.merge(
+rcc_train = rcc_train.merge(
     productos, how='left', left_on="producto", right_on="Productos")
 
-rcc_train_sample.rename(columns={"C0": "productos_nm"}, inplace=True)
-rcc_train_sample.drop(columns="Productos", inplace=True)
-rcc_train_sample.productos_nm.fillna("NULL",inplace=True)
-rcc_train_sample.drop(rcc_train_sample[rcc_train_sample.producto.astype(int).isin([36,41])].index, inplace=True)
-rcc_train_sample.codmes = rcc_train_sample.codmes.astype(str)
+rcc_train.rename(columns={"C0": "productos_nm"}, inplace=True)
+rcc_train.drop(columns="Productos", inplace=True)
+rcc_train.productos_nm.fillna("NULL", inplace=True)
+rcc_train.drop(rcc_train[rcc_train.producto.astype(int).isin([36, 41])].index, inplace=True)
+rcc_train.codmes = rcc_train.codmes.astype(str)
 
-return rcc_train_sample, productos, rcc_train
+return rcc_train, productos, rcc_train
 
 
 def diferent_vals_cat(train,test,varC):
@@ -124,18 +124,18 @@ sunat_test.drop_duplicates(inplace=True)
 censo_train.drop_duplicates(inplace=True)
 censo_test.drop_duplicates(inplace=True)
 
-rcc_train_sample, productos,rcc_train = rcc_train()
-rcc_train_sample.head()
+rcc_train, productos, rcc_train = rcc_train()
+rcc_train.head()
 
-rcc_train_sample[["producto",'productos_nm']].value_counts().sort_values()
-rcc_train_sample.groupby(["productos_nm"]).mean("saldo").sort_values("saldo")
-rcc_train_sample.productos_nm
+rcc_train[["producto", 'productos_nm']].value_counts().sort_values()
+rcc_train.groupby(["productos_nm"]).mean("saldo").sort_values("saldo")
+rcc_train.productos_nm
 rcc_train.loc[(rcc_train.PRODUCTO.astype(int).isin([36,41])),'key_value'].nunique()
 rcc_train.loc[(rcc_train.PRODUCTO.astype(int).isin([36,41]))]
 
-rcc_train_sample.cod_clasificacion_deudor.astype(object)
-rcc_train_sample.riesgo_directo.value_counts()
-encode(pd.DataFrame(rcc_train_sample[["riesgo_directo"]]))
+rcc_train.cod_clasificacion_deudor.astype(object)
+rcc_train.riesgo_directo.value_counts()
+encode(pd.DataFrame(rcc_train[["riesgo_directo"]]))
 
 #endregion
 

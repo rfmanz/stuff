@@ -109,7 +109,8 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None, data
                     uncompressed_dir = [f"{(zf.filelist[i].file_size / 1024 ** 2):.2f} Mb" for i in file_pos]
                     compressed = [f"{(zf.filelist[i].compress_size / 1024 ** 2):.2f} Mb" for i in file_pos]
 
-                    print(pd.concat([pd.Series(csv_file_names), pd.Series(uncompressed_dir), pd.Series(compressed)], axis=1,
+                    print(pd.concat([pd.Series(csv_file_names), pd.Series(uncompressed_dir), pd.Series(compressed)],
+                                    axis=1,
                                     keys=["file_names", "uncompressed", "compressed"]))
                     print()
                     print(*csv_file_names, sep=",")
