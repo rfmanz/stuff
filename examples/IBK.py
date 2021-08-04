@@ -1,6 +1,8 @@
 # region /// THIS IS THE WAY ///
 # data: https://www.kaggle.com/c/interbank20/data
 # Probabilidad de default de prestamo
+import matplotlib.pyplot as plt
+
 from pyutils import *
 
 pd_options()
@@ -38,6 +40,7 @@ varsC = ['tipo_credito','cod_instit_financiera','PRODUCTO','RIESGO_DIRECTO','COD
 rcc_train = convert_dtypes(rcc_train,varsN,varsC)
 dtypes(rcc_train)
 
+
 # Fixing stuff
 rcc_train.columns = rcc_train.columns.str.lower()
 productos = read_data(path,True, 'dt', dataframes="productos")
@@ -49,10 +52,70 @@ rcc_train.drop(columns="Productos", inplace=True)
 rcc_train.productos_nm.fillna("NULL", inplace=True)
 rcc_train.drop(rcc_train[rcc_train.producto.astype(int).isin([36, 41])].index, inplace=True)
 rcc_train.codmes = rcc_train.codmes.astype(str)
+rcc_train = pd.merge(rcc_train, y_train, right_index=True, left_on='key_value' )
+
 
 # FE
+# For weirdly distributed variables
+
+
+plt.figure()
+plot_single_numerical(rcc_train['saldo'])
+class_hists(rcc_train,'saldo','target')
+plt.show()
+plot_univariate_classification(rcc_train[['target','condicion']],'target')
+box_plot_classification(rcc_train[['target','saldo']],'target')
+
+peek(rcc_train)
+rcc_train.key_value.nunique()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+plt.figure(figsize=(10, 10))
+sns.boxplot(rcc_train.condicion)
+ax = sns.boxplot(x="", y="value", hue=target_name, data=data)
+
+pd.cut(rcc_train.condicion, bins=5, right=True).value_counts(normalize=True).sort_index() * 100
+
 bins = [-1, 0, 10, 30, 180, 720, float("inf")]
-rcc_train["condicion_cat"] = pd.cut(rcc_train.condicion, bins).cat.codes
+rcc_train["condicion_cat"] = (pd.cut(rcc_train.condicion, bins).cat.codes).astype('category')
+
+plt.hist(rcc_train['condicion_cat'],bins = 6)
+plt.show()
+dtypes(rcc_train)
+
+plt.style.use('fivethirtyeight')
+plt.hist(rcc_train.sample(int(len(rcc_train)/10))['condicion'],bins=100)
+rcc_train.condicion.value_counts()
+rcc_train.condicion.value_counts(normalize=True)*100
+
+plt.show()
+describe_df(rcc_train[['condicion']])
+
+ordered_barplot(rcc_train,'condicion_cat')
+plot_single_numerical(rcc_train.sample(int(len(rcc_train)/100))['condicion'])
+
+
+
+describe_df(rcc_train[['condicion_cat']])
+rcc_train[['condicion_cat']].value_counts(sort=False)
+rcc_train[['condicion_cat']].value_counts()
+
 rcc_test["condicion_cat"] = pd.cut(rcc_test.condicion, bins).cat.codes
 
 # endregion
