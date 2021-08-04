@@ -1,55 +1,18 @@
-import pandas as pd
-from dask.config import set
-
-from pyutils import *
-
+# region /// THIS IS THE WAY ///
 # data: https://www.kaggle.com/c/interbank20/data
 # Probabilidad de default de prestamo
-
-path = 'D:/Downloads/interbank20.zip'
-read_data(path)
-
-y_train = read_data(path, True,'dt',dataframes="y_train")
-y_train = y_train.target*1
-# y_train.value_counts()
-
-# region /// rcc_train ///
-
-
-rcc_train,productos = read_data(path, True,'dt',dataframes="rcc_train,productos")
-reduce_memory_usage(rcc_train)
-rcc_train = rcc_train.sample(int(len(rcc_train) / 100))
-rcc_train.columns = rcc_train.columns.str.lower()
-
-rcc_train = rcc_train.merge(
-    productos, how='left', left_on="producto", right_on="Productos")
-
-rcc_train.rename(columns={"C0": "productos_nm"}, inplace=True)
-rcc_train.drop(columns="Productos", inplace=True)
-rcc_train.productos_nm.fillna("NULL", inplace=True)
-rcc_train.drop(rcc_train[rcc_train.producto.astype(int).isin([36, 41])].index, inplace=True)
-rcc_train.codmes = rcc_train.codmes.astype(str)
-
-return rcc_train, productos, rcc_train
-
-
-def diferent_vals_cat(train,test,varC):
-    diferentes = {}
-    uniques_train =  sorted(train[varC].unique())
-    uniques_test =  sorted(test[varC].unique())
-    diferentes['train'] = list(j for j in uniques_train if j not in uniques_test)
-    diferentes['test'] = list(j for j in uniques_test if j not in uniques_train)
-    print("*"*10, varC, "*"*10)
-    print(f"Not in test: {diferentes['train']}\nNot in train: {diferentes['test']}")
-
-# region /// THIS IS THE WAY ///
 from pyutils import *
 
 pd_options()
 
 path = 'D:/Downloads/interbank20.zip'
+y_train = read_data(path, True,'dt',dataframes="y_train")
+y_train = y_train.target*1
+
+# region /// rcc_train ///
+
 rcc_test,rcc_train = read_data(path, True, 'dt', dataframes="rcc_test,rcc_train")
-rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
+#rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
 
 reduce_memory_usage(rcc_train)
 reduce_memory_usage(rcc_test)
@@ -59,7 +22,6 @@ peek(rcc_train)
 # First thing we want to do is actually check if the columns are in the right dtypes. How do we know that the variables were read in with suitable data dtypes. Well by th number of unique instance that variable has. So any column which has been read in as a numerical variable and has than less than say 50 categories should really be transformed into a categorical value.
 rcc_train.nunique()
 dtypes(rcc_train)
-
 
 def convert_dtypes(df,varsN , varsC ):
 
@@ -75,17 +37,35 @@ varsC = ['tipo_credito','cod_instit_financiera','PRODUCTO','RIESGO_DIRECTO','COD
 
 rcc_train = convert_dtypes(rcc_train,varsN,varsC)
 dtypes(rcc_train)
+
 # Fixing stuff
+rcc_train.columns = rcc_train.columns.str.lower()
+productos = read_data(path,True, 'dt', dataframes="productos")
+# column added for visualization
+rcc_train = rcc_train.merge(
+    productos, how='left', left_on="producto", right_on="Productos")
+rcc_train.rename(columns={"C0": "productos_nm"}, inplace=True)
+rcc_train.drop(columns="Productos", inplace=True)
+rcc_train.productos_nm.fillna("NULL", inplace=True)
+rcc_train.drop(rcc_train[rcc_train.producto.astype(int).isin([36, 41])].index, inplace=True)
+rcc_train.codmes = rcc_train.codmes.astype(str)
 
 # FE
-
 bins = [-1, 0, 10, 30, 180, 720, float("inf")]
 rcc_train["condicion_cat"] = pd.cut(rcc_train.condicion, bins).cat.codes
 rcc_test["condicion_cat"] = pd.cut(rcc_test.condicion, bins).cat.codes
 
-
-
 # endregion
+
+# rcc_train = rcc_test
+def diferent_vals_cat(train,test,varC):
+    diferentes = {}
+    uniques_train =  sorted(train[varC].unique())
+    uniques_test =  sorted(test[varC].unique())
+    diferentes['train'] = list(j for j in uniques_train if j not in uniques_test)
+    diferentes['test'] = list(j for j in uniques_test if j not in uniques_train)
+    print("*"*10, varC, "*"*10)
+    print(f"Not in test: {diferentes['train']}\nNot in train: {diferentes['test']}")
 
 rcc_train.head()
 uniques_train =  sorted(rcc_train["tipo_credito"].unique())
