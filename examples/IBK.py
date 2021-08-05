@@ -48,17 +48,32 @@ productos = read_data(path,True, 'dt', dataframes="productos")
 rcc_train = rcc_train.merge(
     productos, how='left', left_on="producto", right_on="Productos")
 rcc_train.rename(columns={"C0": "productos_nm"}, inplace=True)
-rcc_train.drop(columns="Productos", inplace=True)
+rcc_train.drop(columns='Productos', inplace=True)
 rcc_train.productos_nm.fillna("NULL", inplace=True)
 rcc_train.drop(rcc_train[rcc_train.producto.astype(int).isin([36, 41])].index, inplace=True)
 rcc_train.codmes = rcc_train.codmes.astype(str)
 rcc_train = pd.merge(rcc_train, y_train, right_index=True, left_on='key_value' )
+bins = [-1, 0, 10, 30, 180, 720, float("inf")]
+rcc_train["condicion_cat"] = pd.cut(rcc_train.condicion, bins).cat.codes.astype('category')
 
+# endregion
 
-# newregion ///EDA///
+# region///EDA///
+from pyutils.eda import class_hists
 # So I was initially more clever about this than I thought.
 # Most of the graphing functions in EDA are actually ready to go for any dataset/columns which have a binary classification target.
-# Why did I do make it so? If I'm going to work in data science, most things are going to be a classification problem: will the client buy/ or try to predict this outcome.
+# Why did I do make it so? If I'm going to work in data science for companies it's going to be about predicting a binary target.
+# Therefore I said: ok I'll make data visualization tools which not only will show me easier to understand representations of the data but also include a group by clause which also compares distributions based on the target.
+# Side note if you're visualizing large data, do yourself a favour and sample it.
+
+
+rcc_train_sample =  rcc_train.sample(int(len(rcc_train)/100))
+plt.figure()
+class_hists(rcc_train_sample,"saldo","target")
+describe_df(rcc_train_sample[['saldo']])
+
+
+plt.show()
 class_hists(rcc_train,"saldo","target")
 plt.show()
 plt.figure()
@@ -66,61 +81,37 @@ plot_single_numerical(rcc_train['saldo'])
 class_hists(rcc_train,'saldo','target')
 plt.show()
 plot_univariate_classification(rcc_train[['target','condicion']],'target')
-box_plot_classification(rcc_train[['target','saldo']],'target')
+box_plot_classification(rcc_train_sample[['target','saldo']],'target')
+violin_plot_classification(rcc_train_sample,'target')
+violin_plot_classification(rcc_train_sample,target_name='target')
+rcc_train_sample.target = rcc_train_sample.target.astype('category')
+
+
+pd.cut(rcc_train.saldo,bins=5).value_counts(normalize=True).sort_index()*100
+bin(rcc_train,column="saldo")
+rcc_train[['producto','productos_nm']].value_counts()
+describe_df(rcc_train[['saldo']])
+peek(rcc_train)
 
 peek(rcc_train)
 rcc_train.key_value.nunique()
 
 
+# endregion
+# region///Data Wrangling///
+rcc_train_sample.groupby(["productos_nm","producto"]).agg(count_product= ("producto","count"),saldo_min = ("saldo","min"), saldo_max = ("saldo","max"),saldo_mean=("saldo","mean")).sort_values("count_product").reset_index()
 
+# endregion
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-plt.figure(figsize=(10, 10))
-sns.boxplot(rcc_train.condicion)
-ax = sns.boxplot(x="", y="value", hue=target_name, data=data)
 
 pd.cut(rcc_train.condicion, bins=5, right=True).value_counts(normalize=True).sort_index() * 100
+pd.cut(rcc_train.condicion, bins=5, right=True).value_counts().sort_index()
+pd.cut(rcc_train.condicion, bins=50, right=True).value_counts().sort_index()
 
 bins = [-1, 0, 10, 30, 180, 720, float("inf")]
 rcc_train["condicion_cat"] = (pd.cut(rcc_train.condicion, bins).cat.codes).astype('category')
-
-plt.hist(rcc_train['condicion_cat'],bins = 6)
-plt.show()
-dtypes(rcc_train)
-
-plt.style.use('fivethirtyeight')
-plt.hist(rcc_train.sample(int(len(rcc_train)/10))['condicion'],bins=100)
-rcc_train.condicion.value_counts()
-rcc_train.condicion.value_counts(normalize=True)*100
-
-plt.show()
-describe_df(rcc_train[['condicion']])
-
-ordered_barplot(rcc_train,'condicion_cat')
-plot_single_numerical(rcc_train.sample(int(len(rcc_train)/100))['condicion'])
-
-
-
-describe_df(rcc_train[['condicion_cat']])
-rcc_train[['condicion_cat']].value_counts(sort=False)
-rcc_train[['condicion_cat']].value_counts()
-
-rcc_test["condicion_cat"] = pd.cut(rcc_test.condicion, bins).cat.codes
-
-# endregion
+rcc_train.condicion_cat.value_counts(normalize=True)*100
+rcc_train.condicion_cat.value_counts()
 
 # rcc_train = rcc_test
 def diferent_vals_cat(train,test,varC):
@@ -131,6 +122,10 @@ def diferent_vals_cat(train,test,varC):
     diferentes['test'] = list(j for j in uniques_test if j not in uniques_train)
     print("*"*10, varC, "*"*10)
     print(f"Not in test: {diferentes['train']}\nNot in train: {diferentes['test']}")
+
+
+# endregion
+
 
 rcc_train.head()
 uniques_train =  sorted(rcc_train["tipo_credito"].unique())
@@ -169,18 +164,6 @@ sunat_test.drop_duplicates(inplace=True)
 censo_train.drop_duplicates(inplace=True)
 censo_test.drop_duplicates(inplace=True)
 
-rcc_train, productos, rcc_train = rcc_train()
-rcc_train.head()
-
-rcc_train[["producto", 'productos_nm']].value_counts().sort_values()
-rcc_train.groupby(["productos_nm"]).mean("saldo").sort_values("saldo")
-rcc_train.productos_nm
-rcc_train.loc[(rcc_train.PRODUCTO.astype(int).isin([36,41])),'key_value'].nunique()
-rcc_train.loc[(rcc_train.PRODUCTO.astype(int).isin([36,41]))]
-
-rcc_train.cod_clasificacion_deudor.astype(object)
-rcc_train.riesgo_directo.value_counts()
-encode(pd.DataFrame(rcc_train[["riesgo_directo"]]))
 
 #endregion
 
@@ -247,6 +230,7 @@ all_inital_columns_sin_productos = [x.strip(" ") for x in all_inital_columns_sin
 
 train_dfs = list(pd.Series(all_inital_columns_sin_productos)[
                      pd.Series(all_inital_columns_sin_productos).str.contains("train").values])
+
 
 test_dfs = list(pd.Series(all_inital_columns_sin_productos)[
                     pd.Series(all_inital_columns_sin_productos).str.contains("test").values])
