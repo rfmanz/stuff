@@ -1,6 +1,12 @@
 # region /// THIS IS THE WAY ///
 # data: https://www.kaggle.com/c/interbank20/data
 # Probabilidad de default de prestamo
+# El reto consiste en desarrollar un algoritmo predictivo que estime la probabilidad de default o un score que ordene en función de la misma, respecto de los emprendedores que han adquirido un préstamo personal o un préstamo de micro o pequeña empresa en el mes de febrero, del año 2018 para entrenamiento y 2019 para evaluación
+# Test is the data which you're going to create your predictions
+
+
+
+# region ///import ///
 import matplotlib.pyplot as plt
 
 from pyutils import *
@@ -10,8 +16,8 @@ pd_options()
 path = 'D:/Downloads/interbank20.zip'
 y_train = read_data(path, True,'dt',dataframes="y_train")
 y_train = y_train.target*1
-
-# region /// rcc_train ///
+# endregion
+# region /// rcc_train: load & fe1 ///
 
 rcc_test,rcc_train = read_data(path, True, 'dt', dataframes="rcc_test,rcc_train")
 #rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
@@ -44,7 +50,7 @@ dtypes(rcc_train)
 # Fixing stuff
 rcc_train.columns = rcc_train.columns.str.lower()
 productos = read_data(path,True, 'dt', dataframes="productos")
-# column added for visualization
+# Product name added for visualization
 rcc_train = rcc_train.merge(
     productos, how='left', left_on="producto", right_on="Productos")
 rcc_train.rename(columns={"C0": "productos_nm"}, inplace=True)
@@ -52,34 +58,52 @@ rcc_train.drop(columns='Productos', inplace=True)
 rcc_train.productos_nm.fillna("NULL", inplace=True)
 rcc_train.drop(rcc_train[rcc_train.producto.astype(int).isin([36, 41])].index, inplace=True)
 rcc_train.codmes = rcc_train.codmes.astype(str)
-rcc_train = pd.merge(rcc_train, y_train, right_index=True, left_on='key_value' )
+# Target added
+rcc_train = pd.merge(rcc_train, y_train.astype("category"), right_index=True, left_on='key_value' )
+# Binned variable condicion
 bins = [-1, 0, 10, 30, 180, 720, float("inf")]
 rcc_train["condicion_cat"] = pd.cut(rcc_train.condicion, bins).cat.codes.astype('category')
 
+
 # endregion
 
+
 # region///EDA///
+
+read_data()
+
 from pyutils.eda import class_hists
 # So I was initially more clever about this than I thought.
 # Most of the graphing functions in EDA are actually ready to go for any dataset/columns which have a binary classification target.
 # Why did I do make it so? If I'm going to work in data science for companies it's going to be about predicting a binary target.
 # Therefore I said: ok I'll make data visualization tools which not only will show me easier to understand representations of the data but also include a group by clause which also compares distributions based on the target.
 # Side note if you're visualizing large data, do yourself a favour and sample it.
-
-
 rcc_train_sample =  rcc_train.sample(int(len(rcc_train)/100))
+rcc_test.head()
+rcc_test.codmes.min()
+rcc_test.codmes.max()
+rcc_train.codmes.min()
+rcc_train.codmes.max()
+
+
+rcc_test.key_value.nunique()
+rcc_train.key_value.nunique()
+
+
 plt.figure()
-class_hists(rcc_train_sample,"saldo","target")
+
+len(rcc_train[rcc_train.key_value==4])
+rcc_train[(rcc_train.key_value==4) & (rcc_train.producto == 0)& (rcc_train.cod_instit_financiera==61)].sort_values("codmes")
+rcc_train.codmes.max()
+rcc_train[rcc_train.key_value==4].sort_values("codmes")
+rcc_train[rcc_train.key_value==4].value_counts(["productos_nm","producto"])
+rcc_train[(rcc_train.key_value==4) & (rcc_train.producto == 0)].sort_values('codmes')
+
+
+class_hists(rcc_train_sample,"condicion","target")
 describe_df(rcc_train_sample[['saldo']])
 
 
-plt.show()
-class_hists(rcc_train,"saldo","target")
-plt.show()
-plt.figure()
-plot_single_numerical(rcc_train['saldo'])
-class_hists(rcc_train,'saldo','target')
-plt.show()
 plot_univariate_classification(rcc_train[['target','condicion']],'target')
 box_plot_classification(rcc_train_sample[['target','saldo']],'target')
 violin_plot_classification(rcc_train_sample,'target')
@@ -104,17 +128,8 @@ rcc_train_sample.groupby(["productos_nm","producto"]).agg(count_product= ("produ
 # endregion
 
 
-pd.cut(rcc_train.condicion, bins=5, right=True).value_counts(normalize=True).sort_index() * 100
-pd.cut(rcc_train.condicion, bins=5, right=True).value_counts().sort_index()
-pd.cut(rcc_train.condicion, bins=50, right=True).value_counts().sort_index()
-
-bins = [-1, 0, 10, 30, 180, 720, float("inf")]
-rcc_train["condicion_cat"] = (pd.cut(rcc_train.condicion, bins).cat.codes).astype('category')
-rcc_train.condicion_cat.value_counts(normalize=True)*100
-rcc_train.condicion_cat.value_counts()
-
 # rcc_train = rcc_test
-def diferent_vals_cat(train,test,varC):
+def different_vals_cat(train,test,varC):
     diferentes = {}
     uniques_train =  sorted(train[varC].unique())
     uniques_test =  sorted(test[varC].unique())

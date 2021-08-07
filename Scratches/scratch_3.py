@@ -184,7 +184,8 @@ csv_file_names = list(set(csv_file_names) - set(dfs_to_read))
 
 test,sample_submission,train = read_data(path3, True)
 violin_plot_classification(train,target_name= "SalePrice")
-from pyutils import eda
+from pyutils import eda, dtypes
+
 peek(train)
 describe_df(train)
 plot_density_numerical_for_whole_dataframe(train)
@@ -368,3 +369,41 @@ for idx, col in enumerate(train_file[catCols_s]):
 fig.delaxes(ax[3, 3])
 plt.tight_layout()
 plt.show()
+
+
+
+def dtypes(df):
+    return pd.concat([df.nunique(), df.dtypes], keys=["count_unique", "dtype"], axis=1)
+
+s = dtypes(rcc_train_sampled)
+s.values[0,0]
+s.dtypes
+s
+s.sort_values(by =['dtype'])
+
+array([[12, dtype('O')],
+       [167698, dtype('int64')],
+       [1923, dtype('int32')],
+       [8,
+        CategoricalDtype(categories=[6, 8, 9, 10, 11, 12, 13, 99], ordered=False)],
+       [98,
+        CategoricalDtype(categories=[  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,
+                          ...
+                           99, 100, 101, 102, 103, 104, 105, 106, 107, 108], ordered=False)],
+       [47, dtype('int32')],
+       [36, dtype('int64')],
+       [5, CategoricalDtype(categories=[-1, 1, 2, 3, 5], ordered=False)],
+       [6,
+        CategoricalDtype(categories=[0, 1, 2, 3, 4, 5], ordered=False)],
+       [36, dtype('O')],
+       [2, dtype('int32')],
+       [6,
+        CategoricalDtype(categories=[0, 1, 2, 3, 4, 5], ordered=False)],
+       [2, CategoricalDtype(categories=[0, 1], ordered=False)]],
+      dtype=object)
+
+
+t = pd.DataFrame(data = {"a":["sdsa","dssd"],"b":["dfd","ASdsa"]})
+t.sort_values("a")
+
+
