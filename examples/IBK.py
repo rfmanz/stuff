@@ -2,12 +2,13 @@
 # data: https://www.kaggle.com/c/interbank20/data
 # Probabilidad de default de prestamo
 # El reto consiste en desarrollar un algoritmo predictivo que estime la probabilidad de default o un score que ordene en función de la misma, respecto de los emprendedores que han adquirido un préstamo personal o un préstamo de micro o pequeña empresa en el mes de febrero, del año 2018 para entrenamiento y 2019 para evaluación
+# Osea un año de data de entrenamiento y un año de data que es el test.
 # Test is the data which you're going to create your predictions
-
-
+# endregion
 
 # region ///import ///
 import matplotlib.pyplot as plt
+from matplotlib import rc_context
 
 from pyutils import *
 
@@ -17,16 +18,27 @@ path = 'D:/Downloads/interbank20.zip'
 y_train = read_data(path, True,'dt',dataframes="y_train")
 y_train = y_train.target*1
 # endregion
+# region///load///
+read_data(path)
+censo_test,censo_train,productos,rcc_test,rcc_train,sample_submission,se_test,se_train,sunat_test,sunat_train,y_train = read_data(path,True,'dt')
+del censo_train
+del censo_test
+import gc
+gc.collect()
+all_dfs = [rcc_test,rcc_train,sample_submission,se_test,se_train,sunat_test,sunat_train]
+for i in all_dfs:
+    reduce_memory_usage(i)
+
+# endregion
 # region /// rcc_train: load & fe1 ///
 
-rcc_test,rcc_train = read_data(path, True, 'dt', dataframes="rcc_test,rcc_train")
-#rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
+#rcc_test,rcc_train = read_data(path, True, 'dt', dataframes="rcc_test,rcc_train")
+rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
 
-reduce_memory_usage(rcc_train)
-reduce_memory_usage(rcc_test)
+#reduce_memory_usage(rcc_test)
 # View
-rcc_train.head()
-peek(rcc_train)
+# rcc_train.head()
+# peek(rcc_train)
 # First thing we want to do is actually check if the columns are in the right dtypes. How do we know that the variables were read in with suitable data dtypes. Well by th number of unique instance that variable has. So any column which has been read in as a numerical variable and has than less than say 50 categories should really be transformed into a categorical value.
 rcc_train.nunique()
 dtypes(rcc_train)
@@ -44,8 +56,6 @@ varsC = ['tipo_credito','cod_instit_financiera','PRODUCTO','RIESGO_DIRECTO','COD
          'key_value']
 
 rcc_train = convert_dtypes(rcc_train,varsN,varsC)
-dtypes(rcc_train)
-
 
 # Fixing stuff
 rcc_train.columns = rcc_train.columns.str.lower()
@@ -64,46 +74,100 @@ rcc_train = pd.merge(rcc_train, y_train.astype("category"), right_index=True, le
 bins = [-1, 0, 10, 30, 180, 720, float("inf")]
 rcc_train["condicion_cat"] = pd.cut(rcc_train.condicion, bins).cat.codes.astype('category')
 
+rcc_train.drop(columns=['key_value_x','key_value_y'],inplace=True)
 
+rcc_train.target = rcc_train.target.astype(bool)*1
 # endregion
+# ///sunat_train///
 
 
+
+
+censo_test, censo_train  = read_data(path,True,'dt',dataframes='censo_test, censo_train')
+# se_test, se_train,
+# sunat_test, sunat_train
+
+dtypes(censo_train)
+censo_train.columns
+peek(censo_train)
 # region///EDA///
 
-read_data()
-
-from pyutils.eda import class_hists
 # So I was initially more clever about this than I thought.
 # Most of the graphing functions in EDA are actually ready to go for any dataset/columns which have a binary classification target.
 # Why did I do make it so? If I'm going to work in data science for companies it's going to be about predicting a binary target.
 # Therefore I said: ok I'll make data visualization tools which not only will show me easier to understand representations of the data but also include a group by clause which also compares distributions based on the target.
 # Side note if you're visualizing large data, do yourself a favour and sample it.
+
 rcc_train_sample =  rcc_train.sample(int(len(rcc_train)/100))
-rcc_test.head()
-rcc_test.codmes.min()
-rcc_test.codmes.max()
-rcc_train.codmes.min()
-rcc_train.codmes.max()
+
+moda = lambda x: pd.Series.mode(x)[0]
+moda.__name__ = 'moda'
+
+varsN = ['key_value','condicion','saldo']
+varsC = ['tipo_credito','cod_instit_financiera','producto','riesgo_directo','cod_clasificacion_deudor',
+         'condicion_cat','key_value']
+
+def agg_rcc(df):
+    global varsN, varsC
+    varsD = ['saldo', 'condicion']
+
+    aggfuncs1 = ['mean', 'std', 'min', 'max']
+    aggfuncs2 = ['moda', 'nunique']
+    aggfuncs3 = ['mean', 'std', 'sum']
+
+    dfN = df[varsN].groupby(['key_value']).agg(aggfuncs1)
+    dfC = df[varsC].groupby(['key_value']).agg(aggfuncs2)
+    dfD = df.groupby(['key_value', 'codmes'])[varsD].sum().reset_index()
+    for i in varsD:
+        dfD[f'{i}_diff'] = dfD.groupby('key_value')[[i]].diff()
+        dfD.drop(columns=i, inplace=True)
+    dfD = dfD.drop(columns='codmes').groupby(['key_value']).agg(aggfuncs3)
+
+    df_agg = pd.concat([dfN, dfC, dfD], axis=1)
+    df_agg.columns = [a + '_' + b for a, b in df_agg.columns]
+    return df_agg
+
+train = agg_rcc(rcc_train_sample)
+dtypes(rcc_train_sample)
 
 
-rcc_test.key_value.nunique()
-rcc_train.key_value.nunique()
 
 
-plt.figure()
-
-len(rcc_train[rcc_train.key_value==4])
-rcc_train[(rcc_train.key_value==4) & (rcc_train.producto == 0)& (rcc_train.cod_instit_financiera==61)].sort_values("codmes")
-rcc_train.codmes.max()
-rcc_train[rcc_train.key_value==4].sort_values("codmes")
-rcc_train[rcc_train.key_value==4].value_counts(["productos_nm","producto"])
-rcc_train[(rcc_train.key_value==4) & (rcc_train.producto == 0)].sort_values('codmes')
 
 
-class_hists(rcc_train_sample,"condicion","target")
-describe_df(rcc_train_sample[['saldo']])
 
 
+
+def makeCt(df, c, aggfunc=sum):
+    try:
+        ct = pd.crosstab(df.key_value, df[c].fillna("N/A"), values=df.saldo, aggfunc=aggfunc)
+    except:
+        ct = pd.crosstab(df.key_value, df[c], values=df.saldo, aggfunc=aggfunc)
+    ct.columns = [f"{c}_{aggfunc.__name__}_{v}" for v in ct.columns]
+    return ct
+
+
+
+train = []
+#test = []
+aggfuncs = [len, sum]
+for c in rcc_train_sample.drop(["codmes", "key_value", "saldo"], axis=1):
+    print("haciendo", c)
+    train.extend([makeCt(rcc_train_sample, c, aggfunc) for aggfunc in aggfuncs])
+    #test.extend([makeCt(rcc_test, c, aggfunc) for aggfunc in aggfuncs])
+train = pd.concat(train, axis=1)
+train
+del rcc_train
+del rcc_test
+import gc
+gc.collect()
+
+rcc_train_sample.shape
+rcc_train_sample.head()
+
+rcc_train_sample
+train.head(1)
+peek(train,10)
 plot_univariate_classification(rcc_train[['target','condicion']],'target')
 box_plot_classification(rcc_train_sample[['target','saldo']],'target')
 violin_plot_classification(rcc_train_sample,'target')
@@ -122,10 +186,21 @@ rcc_train.key_value.nunique()
 
 
 # endregion
+
+
 # region///Data Wrangling///
 rcc_train_sample.groupby(["productos_nm","producto"]).agg(count_product= ("producto","count"),saldo_min = ("saldo","min"), saldo_max = ("saldo","max"),saldo_mean=("saldo","mean")).sort_values("count_product").reset_index()
 
 # endregion
+
+
+
+peek(sunat_train)
+peek(rcc_train)
+
+censo_train.head()
+
+
 
 
 # rcc_train = rcc_test
@@ -239,7 +314,7 @@ pd.Series.rcc_train.key_value.unique().str.match() in set(y_train.key_value)
 
 
 # Unique key values by dataframe ?
-all_inital_columns_sin_productos = 'censo_test, censo_train,  rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train'
+all_inital_scolumns_sin_productos = 'censo_test, censo_train,  rcc_test, rcc_train, sample_submission, se_test, se_train, sunat_test, sunat_train, y_train'
 
 all_inital_columns_sin_productos = [x.strip(" ") for x in all_inital_columns_sin_productos.split(",")]
 
