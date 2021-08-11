@@ -18,7 +18,9 @@ from pyutils import *
 
 
 def peek(df, rows=3):
-    return pd.concat([df.dtypes, df.iloc[:rows, :].T], axis=1)
+concat1 = pd.concat([df.dtypes, df.iloc[:3, :].T], axis=1).reset_index()
+concat1.columns = [''] * len(concat1.columns)
+return concat1
 
 def dtypes(df):
     return pd.concat([df.nunique(), df.dtypes], keys=["count_unique", "dtype"], axis=1)

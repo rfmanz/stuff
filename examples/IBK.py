@@ -12,6 +12,10 @@ from matplotlib import rc_context
 
 from pyutils import *
 
+desired_width = 140
+pd.set_option('display.width', desired_width)
+pd.set_option('display.max_columns', 8)
+pd.set_option('display.max_rows', 20)
 pd_options()
 
 path = 'D:/Downloads/interbank20.zip'
@@ -47,7 +51,7 @@ def convert_dtypes(df,varsN , varsC ):
 
     df[varsN] = df[varsN].astype(int)
     df[varsC] = df[varsC].astype('category')
-    #df[varsS] = df[varsS].astype(str)
+    #df[varsS] = df[varsS].asltype(str)
 
     return df
 
@@ -76,13 +80,41 @@ rcc_train["condicion_cat"] = pd.cut(rcc_train.condicion, bins).cat.codes.astype(
 
 rcc_train.drop(columns=['key_value_x','key_value_y'],inplace=True)
 
+# 08/10/2021
 rcc_train.target = rcc_train.target.astype(bool)*1
+rcc_train_sample =  rcc_train.sample(int(len(rcc_train)/100))
+dtypes(rcc_train)
+rcc_train_sample['producto'].groupby('key_value')
+rcc_train.loc[rcc_train.key_value ==4,'producto'].nunique()
+rcc_train.loc[rcc_train.key_value ==4,[1,2,6,9]
+peek(rcc_train)
+
+index = pd.Series(list(range(len(rcc_train.dtypes)+1))[1:])
+rcc_train.dtypes.
+pd.concat([index, rcc_train.dtypes],axis=1)
+pd.concat([index, rcc_train.dtypes, rcc_train.iloc[:5, :].T], axis=1)
+
+
+concat1 = pd.concat([rcc_train.dtypes, rcc_train.iloc[:3, :].T], axis=1).reset_index()
+concat1.columns = [''] * len(concat1.columns)
+concat1
+print(rcc_train.iloc[:5, :].to_string(index=False))
+
+
+rcc_train.dtypes.index
+rcc_train.dtypes.values
+rcc_train.dtypes
+
+
+
+
+
 # endregion
 # ///sunat_train///
 
-
-
-
+peek(sunat_train)
+sunat_train.shape
+describe_df(sunat_train)
 censo_test, censo_train  = read_data(path,True,'dt',dataframes='censo_test, censo_train')
 # se_test, se_train,
 # sunat_test, sunat_train
@@ -96,10 +128,10 @@ peek(censo_train)
 # Most of the graphing functions in EDA are actually ready to go for any dataset/columns which have a binary classification target.
 # Why did I do make it so? If I'm going to work in data science for companies it's going to be about predicting a binary target.
 # Therefore I said: ok I'll make data visualization tools which not only will show me easier to understand representations of the data but also include a group by clause which also compares distributions based on the target.
-# Side note if you're visualizing large data, do yourself a favour and sample it.
+# Side note if you're visualizing large data, do yourself a favour and
+# it.
 
 rcc_train_sample =  rcc_train.sample(int(len(rcc_train)/100))
-
 moda = lambda x: pd.Series.mode(x)[0]
 moda.__name__ = 'moda'
 
@@ -129,9 +161,6 @@ def agg_rcc(df):
 
 train = agg_rcc(rcc_train_sample)
 dtypes(rcc_train_sample)
-
-
-
 
 
 
