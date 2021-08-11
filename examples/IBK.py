@@ -16,7 +16,7 @@ desired_width = 140
 pd.set_option('display.width', desired_width)
 pd.set_option('display.max_columns', 8)
 pd.set_option('display.max_rows', 20)
-pd_options()
+#pd_options()
 
 path = 'D:/Downloads/interbank20.zip'
 y_train = read_data(path, True,'dt',dataframes="y_train")
@@ -47,6 +47,9 @@ rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
 rcc_train.nunique()
 dtypes(rcc_train)
 
+
+# Fixing stuff
+
 def convert_dtypes(df,varsN , varsC ):
 
     df[varsN] = df[varsN].astype(int)
@@ -61,7 +64,6 @@ varsC = ['tipo_credito','cod_instit_financiera','PRODUCTO','RIESGO_DIRECTO','COD
 
 rcc_train = convert_dtypes(rcc_train,varsN,varsC)
 
-# Fixing stuff
 rcc_train.columns = rcc_train.columns.str.lower()
 productos = read_data(path,True, 'dt', dataframes="productos")
 # Product name added for visualization
@@ -78,33 +80,17 @@ rcc_train = pd.merge(rcc_train, y_train.astype("category"), right_index=True, le
 bins = [-1, 0, 10, 30, 180, 720, float("inf")]
 rcc_train["condicion_cat"] = pd.cut(rcc_train.condicion, bins).cat.codes.astype('category')
 
-rcc_train.drop(columns=['key_value_x','key_value_y'],inplace=True)
+
 
 # 08/10/2021
 rcc_train.target = rcc_train.target.astype(bool)*1
 rcc_train_sample =  rcc_train.sample(int(len(rcc_train)/100))
 dtypes(rcc_train)
+peek(rcc_train_sample)
 rcc_train_sample['producto'].groupby('key_value')
-rcc_train.loc[rcc_train.key_value ==4,'producto'].nunique()
-rcc_train.loc[rcc_train.key_value ==4,[1,2,6,9]
-peek(rcc_train)
 
-index = pd.Series(list(range(len(rcc_train.dtypes)+1))[1:])
-rcc_train.dtypes.
-pd.concat([index, rcc_train.dtypes],axis=1)
-pd.concat([index, rcc_train.dtypes, rcc_train.iloc[:5, :].T], axis=1)
-
-
-concat1 = pd.concat([rcc_train.dtypes, rcc_train.iloc[:3, :].T], axis=1).reset_index()
-concat1.columns = [''] * len(concat1.columns)
-concat1
-print(rcc_train.iloc[:5, :].to_string(index=False))
-
-
-rcc_train.dtypes.index
-rcc_train.dtypes.values
-rcc_train.dtypes
-
+# !!!
+rcc_train.loc[rcc_train[(rcc_train.key_value == 4)].index, rcc_train.iloc[:,[1,2,3,6,9]].columns]
 
 
 
@@ -127,24 +113,35 @@ peek(censo_train)
 # So I was initially more clever about this than I thought.
 # Most of the graphing functions in EDA are actually ready to go for any dataset/columns which have a binary classification target.
 # Why did I do make it so? If I'm going to work in data science for companies it's going to be about predicting a binary target.
-# Therefore I said: ok I'll make data visualization tools which not only will show me easier to understand representations of the data but also include a group by clause which also compares distributions based on the target.
+# Therefore I said: ok I'll make data visualization tools which not only will show me easier to understand representations of the data but also include a group by clause which also compares distributions based on
+#the target.
 # Side note if you're visualizing large data, do yourself a favour and
 # it.
 
-rcc_train_sample =  rcc_train.sample(int(len(rcc_train)/100))
+
+
 moda = lambda x: pd.Series.mode(x)[0]
 moda.__name__ = 'moda'
 
+rcc_train = read_data(path, True, 'dt', dataframes="rcc_train")
+reduce_memory_usage(rcc_train)
+bins = [-1, 0, 10, 30, 180, 720, float("inf")]
+rcc_train["condicion_cat"] = pd.cut(rcc_train.condicion, bins).cat.codes
+
+rcc_train_sample =  rcc_train.sample(int(len(rcc_train)/100))
+
+
 varsN = ['key_value','condicion','saldo']
-varsC = ['tipo_credito','cod_instit_financiera','producto','riesgo_directo','cod_clasificacion_deudor',
+varsC = ['tipo_credito','cod_instit_financiera','PRODUCTO','RIESGO_DIRECTO','COD_CLASIFICACION_DEUDOR',
          'condicion_cat','key_value']
+
 
 def agg_rcc(df):
     global varsN, varsC
     varsD = ['saldo', 'condicion']
 
     aggfuncs1 = ['mean', 'std', 'min', 'max']
-    aggfuncs2 = ['moda', 'nunique']
+    aggfuncs2 = [ 'nunique']
     aggfuncs3 = ['mean', 'std', 'sum']
 
     dfN = df[varsN].groupby(['key_value']).agg(aggfuncs1)
@@ -160,61 +157,10 @@ def agg_rcc(df):
     return df_agg
 
 train = agg_rcc(rcc_train_sample)
-dtypes(rcc_train_sample)
 
 
 
 
-
-
-def makeCt(df, c, aggfunc=sum):
-    try:
-        ct = pd.crosstab(df.key_value, df[c].fillna("N/A"), values=df.saldo, aggfunc=aggfunc)
-    except:
-        ct = pd.crosstab(df.key_value, df[c], values=df.saldo, aggfunc=aggfunc)
-    ct.columns = [f"{c}_{aggfunc.__name__}_{v}" for v in ct.columns]
-    return ct
-
-
-
-train = []
-#test = []
-aggfuncs = [len, sum]
-for c in rcc_train_sample.drop(["codmes", "key_value", "saldo"], axis=1):
-    print("haciendo", c)
-    train.extend([makeCt(rcc_train_sample, c, aggfunc) for aggfunc in aggfuncs])
-    #test.extend([makeCt(rcc_test, c, aggfunc) for aggfunc in aggfuncs])
-train = pd.concat(train, axis=1)
-train
-del rcc_train
-del rcc_test
-import gc
-gc.collect()
-
-rcc_train_sample.shape
-rcc_train_sample.head()
-
-rcc_train_sample
-train.head(1)
-peek(train,10)
-plot_univariate_classification(rcc_train[['target','condicion']],'target')
-box_plot_classification(rcc_train_sample[['target','saldo']],'target')
-violin_plot_classification(rcc_train_sample,'target')
-violin_plot_classification(rcc_train_sample,target_name='target')
-rcc_train_sample.target = rcc_train_sample.target.astype('category')
-
-
-pd.cut(rcc_train.saldo,bins=5).value_counts(normalize=True).sort_index()*100
-bin(rcc_train,column="saldo")
-rcc_train[['producto','productos_nm']].value_counts()
-describe_df(rcc_train[['saldo']])
-peek(rcc_train)
-
-peek(rcc_train)
-rcc_train.key_value.nunique()
-
-
-# endregion
 
 
 # region///Data Wrangling///
