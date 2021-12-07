@@ -1,5 +1,7 @@
 ### Estimador de ingresos
 
+Dates 
 ```python
-data.head
+from datetime import datetime, timedelta, date
+cierre = '2019-01-31'
 ```
