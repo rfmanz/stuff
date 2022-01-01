@@ -6,6 +6,7 @@ setup(name='pyutils',
       description='Basic utilities for data science',
       url='https://github.com/rfmanz/pyutils',
       license='MIT',
+#       install_requires=['numpy', 'pandas', 'datatable', 'zipfile','re'],
       install_requires=['numpy', 'pandas', 'datatable', 'zipfile','re'],
       packages=['pyutils'])
 
