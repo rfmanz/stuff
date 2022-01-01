@@ -36,13 +36,11 @@ def get_csv_names_from_list(paths):
 
 
 def read_data(path_ending_with_filename=None, return_df=False, method=None, dataframes=None):
-    """   
-    
+    """ 
     e.g.
     read_data(path)
     sample_submission, test, train = read_data(path, True)
     ---
-    
     Reads single csv or list of csvs or csvs in zip.
 
     Available methods:
