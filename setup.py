@@ -7,6 +7,6 @@ setup(name='pyutils',
       url='https://github.com/rfmanz/pyutils',
       license='MIT',
 #       install_requires=['numpy', 'pandas', 'datatable', 'zipfile','re'],
-      install_requires=['numpy', 'pandas', 'datatable','sklearn.preprocessing'],
+      install_requires=['numpy', 'pandas', 'datatable','sklearn','miceforest'],
       packages=['pyutils'])
 
