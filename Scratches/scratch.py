@@ -79,5 +79,4 @@ plt.show()
 
 ax.set_ylabel('%', rotation=180, fontsize=10, va='bottom', ha='right')
 
-
 #---
