@@ -75,7 +75,7 @@ rcc_train.productos_nm.fillna("NULL", inplace=True)
 rcc_train.drop(rcc_train[rcc_train.producto.astype(int).isin([36, 41])].index, inplace=True)
 rcc_train.codmes = rcc_train.codmes.astype(str)
 # Target added
-rcc_train = pd.merge(rcc_train, y_train.astype("category"), right_index=True, left_on='key_value' )
+rcc_train = pd.merge(rcc_train, y_train.astype("category"), d_index=True, left_on='key_value' )
 # Binned variable condicion
 bins = [-1, 0, 10, 30, 180, 720, float("inf")]
 rcc_train["condicion_cat"] = pd.cut(rcc_train.condicion, bins).cat.codes.astype('category')
@@ -156,18 +156,54 @@ def agg_rcc(df):
     df_agg.columns = [a + '_' + b for a, b in df_agg.columns]
     return df_agg
 
+
+varsD = ['saldo', 'condicion']
+
+aggfuncs1 = ['mean', 'std', 'min', 'max']
+aggfuncs2 = [ 'nunique']
+aggfuncs3 = ['mean', 'std', 'sum']
+
+dfN = df[varsN].groupby(['key_value']).agg(aggfuncs1)
+dfC = df[varsC].groupby(['key_value']).agg(aggfuncs2)
+dfD = df.groupby(['key_value', 'codmes'])[varsD].sum().reset_index()
+for i in varsD:
+    dfD[f'{i}_diff'] = dfD.groupby('key_value')[[i]].diff()
+    dfD.drop(columns=i, inplace=True)
+dfD = dfD.drop(columns='codmes').groupby(['key_value']).agg(aggfuncs3)
+
+df_agg = pd.concat([dfN, dfC, dfD], axis=1)
+df_agg.columns = [a + '_' + b for a, b in df_agg.columns]
+
+
 train = agg_rcc(rcc_train_sample)
 
 
+diff_mean = lambda x: x.diff().mean()
+diff_mean.__name__ = 'diff_mean'
 
+def product_diff(df):
+    d = df.groupby(['key_value','codmes','PRODUCTO'])[['saldo']].sum().reset_index()
+    base = pd.crosstab(d['key_value'],d['PRODUCTO'],values=d['saldo'],aggfunc=diff_mean)
+    base.columns = [f"Prod_{v}_diff_mean" for v in base.columns]
+    return base
 
+base_train = product_diff(rcc_train_sample)
+base_train.shape
+base_train.head()
+train.head()
+
+base_train.shape
+
+base_train.head()
+train.head()
+train.shape
+peek(train)
 
 
 # region///Data Wrangling///
 rcc_train_sample.groupby(["productos_nm","producto"]).agg(count_product= ("producto","count"),saldo_min = ("saldo","min"), saldo_max = ("saldo","max"),saldo_mean=("saldo","mean")).sort_values("count_product").reset_index()
 
 # endregion
-
 
 
 peek(sunat_train)
@@ -368,3 +404,10 @@ sunat_train[sunat_train.key_value == 126876].duplicated().value_counts()
 peek(sunat_train[sunat_train.key_value == 126876].drop_duplicates())
 
 # TODO: Drop duplicated, then join all the dfs, feature elimination
+
+
+
+train_encoded_empleo_fix = pd.read_csv("D:/Downloads/train_encoded_empleo_fix.csv")
+
+box_plot_classification(train_encoded_empleo_fix, 'MORA60')
+plot_density_numerical_for_whole_dataframe(train_encoded_empleo_fix)
