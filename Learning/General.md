@@ -758,7 +758,12 @@ from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity= "all"
 ```
 
-
+### Show what you're assigning
+```python
+from IPython.core.interactiveshell import InteractiveShell
+InteractiveShell.ast_node_interactivity = 'last_expr_or_assign'
+```
+### Beep when done 
 ```python
 from IPython.display import Audio
 
@@ -768,35 +773,7 @@ wave = np.sin(8*np.pi*500*np.arange(10000*0.15)/10000)
 
 Audio(wave, rate=10000, autoplay=True)
 ```
-
-### Show what you're assigning
-```python
-from IPython.core.interactiveshell import InteractiveShell
-InteractiveShell.ast_node_interactivity = 'last_expr_or_assign'
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
 ### See all session variables
-
-````python
+```python
 %whos
 ```
