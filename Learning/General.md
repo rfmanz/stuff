@@ -501,17 +501,11 @@ https://stackoverflow.com/questions/509211/understanding-slice-notation
 
 
 ```python
-
-
-import pandas as pd
+from IPython.core.interactiveshell import InteractiveShell
+InteractiveShell.ast_node_interactivity = 'last_expr_or_assign'
 
 df = pd.DataFrame({'Playlist':["microhouse","microhouse","attlas","attlas"],"Track Name":["make a move","mango","ryat","further"],"Spotify Uri":["5nUS4bSN0cFZB0knxyM4LZ","2f8eSlsreAHHzJ5SPkpYLf","3McvalY1RDYczyDmixyAwQ","4qEUN1lON8UjnUiOZc39ID"],"Playlist Uri":["1d4gyZxan7lK9KqYU2EJ","1d4gyZxan7lK9KqYU2EJ","2CInjKguWauO29QB21Co","2CInjKguWauO29QB21Co"]})
-
-df
 ```
-
-
-
 
 <div>
 <style scoped>
