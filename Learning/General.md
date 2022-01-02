@@ -32,33 +32,60 @@ And = &    Or= |
 
 
 
-Same
-![image.png](attachment:image.png)
-
-
-Select column 
-```python
-r.filter(regex="DEPARTAMENTO_CONTRA")
-r2.filter(["DEPARTAMENTO_CONTRA","PROVINCIA_CONTRA","DISTRITO_CONTRA"])
-pol_base[(pol_base.DESCPROD.isin(["ACCIDENTES DEVOLUCIÓN PLUS BCP", "VIDA DEVOLUCIÓN PLUS BCP"]))].filter(["DESCPROD"]).shape
-
-.loc is for selecting things by label
-
-# dataframe.loc[whatrowsdoiwant,whatcolumns]
-
-dft["tasa_final"][dft["tasa_final"] <= percentiles[0]] = percentiles[0] 
-dft.loc[dft.index[np.where(dft["tasa_final"]<=percentiles[0])],"tasa_final"]
-dft.loc[dft["tasa_final"]<=percentiles[0],"tasa_final"]
-
-dft.columns.isin(["lgr"]).any()
-
-df_aux.select_dtypes(include=["number"])
-
-df.loc[:, df.columns.str.startswith('foo')]
-
-rcc_test[(rcc_test.PRODUCTO.astype(int).isin([36,41]))]
-rcc_train2[rcc_train2['productos_nm'].str.contains("FORWARDS",na=False)]
-
+Same
+
+![image.png](attachment:image.png)
+
+
+
+
+
+Select column 
+
+```python
+
+r.filter(regex="DEPARTAMENTO_CONTRA")
+
+r2.filter(["DEPARTAMENTO_CONTRA","PROVINCIA_CONTRA","DISTRITO_CONTRA"])
+
+pol_base[(pol_base.DESCPROD.isin(["ACCIDENTES DEVOLUCIÓN PLUS BCP", "VIDA DEVOLUCIÓN PLUS BCP"]))].filter(["DESCPROD"]).shape
+
+
+
+.loc is for selecting things by label
+
+
+
+# dataframe.loc[whatrowsdoiwant,whatcolumns]
+
+
+
+dft["tasa_final"][dft["tasa_final"] <= percentiles[0]] = percentiles[0] 
+
+dft.loc[dft.index[np.where(dft["tasa_final"]<=percentiles[0])],"tasa_final"]
+
+dft.loc[dft["tasa_final"]<=percentiles[0],"tasa_final"]
+
+
+
+dft.columns.isin(["lgr"]).any()
+
+
+
+df_aux.select_dtypes(include=["number"])
+
+
+
+df.loc[:, df.columns.str.startswith('foo')]
+
+
+
+rcc_test[(rcc_test.PRODUCTO.astype(int).isin([36,41]))]
+
+rcc_train2[rcc_train2['productos_nm'].str.contains("FORWARDS",na=False)]
+
+
+
 ```
 
 ## Value Counts
@@ -474,9 +501,12 @@ https://stackoverflow.com/questions/509211/understanding-slice-notation
 
 
 ```python
-
-import pandas as pd
-df = pd.DataFrame({'Playlist':["microhouse","microhouse","attlas","attlas"],"Track Name":["make a move","mango","ryat","further"],"Spotify Uri":["5nUS4bSN0cFZB0knxyM4LZ","2f8eSlsreAHHzJ5SPkpYLf","3McvalY1RDYczyDmixyAwQ","4qEUN1lON8UjnUiOZc39ID"],"Playlist Uri":["1d4gyZxan7lK9KqYU2EJ","1d4gyZxan7lK9KqYU2EJ","2CInjKguWauO29QB21Co","2CInjKguWauO29QB21Co"]})
+
+
+import pandas as pd
+
+df = pd.DataFrame({'Playlist':["microhouse","microhouse","attlas","attlas"],"Track Name":["make a move","mango","ryat","further"],"Spotify Uri":["5nUS4bSN0cFZB0knxyM4LZ","2f8eSlsreAHHzJ5SPkpYLf","3McvalY1RDYczyDmixyAwQ","4qEUN1lON8UjnUiOZc39ID"],"Playlist Uri":["1d4gyZxan7lK9KqYU2EJ","1d4gyZxan7lK9KqYU2EJ","2CInjKguWauO29QB21Co","2CInjKguWauO29QB21Co"]})
+
 df
 ```
 
@@ -590,10 +620,14 @@ You can check, by manually find the mean and stddev for each of the numpy arrays
 
 
 ```python
-from sklearn.preprocessing import StandardScaler
-import pandas as pd
-
-X = [[0, 15],[1, -10]]
+from sklearn.preprocessing import StandardScaler
+
+import pandas as pd
+
+
+
+X = [[0, 15],[1, -10]]
+
 StandardScaler().fit(X).transform(X)
 ```
 
@@ -724,9 +758,12 @@ InteractiveShell.ast_node_interactivity= "all"```
 
 
 ```python
-from IPython.display import Audio
-import numpy as np
-wave = np.sin(8*np.pi*500*np.arange(10000*0.15)/10000)
+from IPython.display import Audio
+
+import numpy as np
+
+wave = np.sin(8*np.pi*500*np.arange(10000*0.15)/10000)
+
 Audio(wave, rate=10000, autoplay=True)
 ```
 
@@ -744,7 +781,9 @@ Audio(wave, rate=10000, autoplay=True)
 
 
 ```python
-
+# Shows assignment
+from IPython.core.interactiveshell import InteractiveShell
+InteractiveShell.ast_node_interactivity = 'last_expr_or_assign'
 ```
 
 

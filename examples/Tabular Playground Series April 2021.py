@@ -5,7 +5,7 @@ from pyutils import *
 import seaborn as sns
 import matplotlib.pyplot as plt
 import miceforest as mf
-mf
+
 from sklearn.model_selection import *
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score, roc_auc_score
@@ -325,7 +325,7 @@ correlated(train_dropped_encoded_nonulls,0.8)
 x_train, x_test, y_train, y_test = train_test_split(train_dropped_encoded_nonulls, y, test_size=.2)
 # endregion
 
-# region// Optuna Parameter Search ///---- 
+# region// Optuna Parameter Search ///----
 
 kf = StratifiedKFold(n_splits=10, shuffle=True)
 params = {
@@ -478,7 +478,6 @@ sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
 sample_submission.to_csv('~/Downloads/tabular_playground_april_15.csv', index=False)
 
 # endregion 
-
 
 
 # region /// boiler_room///
