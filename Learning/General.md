@@ -716,7 +716,8 @@ So (-1,1) is saying convert this array, tensor, matrix, into a one column array/
 with however many rows it originally has. 
 
 ```python
-x.reshape(-1,1)```
+x.reshape(-1,1)
+```
 
 
 
@@ -727,7 +728,6 @@ x.reshape(-1,1)```
 my_slice = train_images[10:100, 0:28, 0:28]
 my_slice.shape
 (90, 28, 28)
-
 ```
 
 ### Dictionaries
@@ -737,7 +737,8 @@ word_index = imdb.get_word_index()
 reverse_word_index = dict(
 [(value, key) for (key, value) in word_index.items()])
 decoded_review = ' '.join(
-[reverse_word_index.get(i - 3, '?') for i in train_data[0]])```
+[reverse_word_index.get(i - 3, '?') for i in train_data[0]])
+```
 
 ### Join
 ```python 
@@ -754,7 +755,8 @@ warnings.filterwarnings("ignore")
 ### Print every line of the cell 
 ```python 
 from IPython.core.interactiveshell import InteractiveShell
-InteractiveShell.ast_node_interactivity= "all"```
+InteractiveShell.ast_node_interactivity= "all"
+```
 
 
 ```python
@@ -766,18 +768,6 @@ wave = np.sin(8*np.pi*500*np.arange(10000*0.15)/10000)
 
 Audio(wave, rate=10000, autoplay=True)
 ```
-
-
-
-
-
-<audio  controls="controls" autoplay="autoplay">
-    <source src="data:audio/wav;base64,UklGRtwLAABXQVZFZm10IBAAAAABAAEAECcAACBOAAACABAAZGF0YbgLAAAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAGAAAD+fxtP5bACgAAA/n8bT+WwAoAAAP5/G0/lsAKAAAD+fxtP5bACgAAA/n8bT+WwAoA=" type="audio/wav" />
-    Your browser does not support the audio element.
-</audio>
-
-
-
 
 
 ```python
