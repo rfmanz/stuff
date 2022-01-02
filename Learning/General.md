@@ -771,3 +771,10 @@ Audio(wave, rate=10000, autoplay=True)
 ```python
 %whos
 ```
+
+```python
+import pyautogui,time
+while True:
+    pyautogui.press('l')
+    time.sleep(0.5) 
+```
