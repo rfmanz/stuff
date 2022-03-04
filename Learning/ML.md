@@ -61,6 +61,26 @@ Types of ensemble methods:
     - A random forest classifier is a specific type of bootstrap aggregating
 ---
 
+
+<br>
+
+## Fraud Detecion 
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+---
 **to use**: <Br><Br>
 lambda, map 
 
