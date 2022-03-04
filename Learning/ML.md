@@ -64,9 +64,9 @@ Types of ensemble methods:
 
 <br>
 
-## Fraud Detecion 
+## Fraud Detection 
 
-
+https://trenton3983.github.io/files/projects/2019-07-19_fraud_detection_python/2019-07-19_fraud_detection_python.html
 
 
 
