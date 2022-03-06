@@ -55,10 +55,11 @@ Ensemble methods use more than one algorithm for prediction.
 
 Types of ensemble methods: 
 - Boosting: <br>
-    Boosting constructs and adds weak models in a stage-wise fashion, one after the other, each one chosen to improve the overall model performance.
+    Boosting constructs and adds weak models in a stage-wise fashion, one after the other, each one chosen to improve the overall model performance.#
+    Boosting is an ensemble technique in which the predictors are not made independently, but sequentially. 
   <br><br>
 - [Bagging](https://blog.mlreview.com/gradient-boosting-from-scratch-1e317ae4587d)
-    - A random forest classifier is a specific type of bootstrap aggregating
+    - Bagging is a simple ensembling technique in which we build many independent predictors/models/learners and combine them using some model averaging techniques. (e.g. weighted average, majority vote or normal average)
 ---
 
 
