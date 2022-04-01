@@ -66,7 +66,53 @@ Types of ensemble methods:
 
 ## Fraud Detection 
 
-https://trenton3983.github.io/files/projects/2019-07-19_fraud_detection_python/2019-07-19_fraud_detection_python.html
+
+<!-- <details> -->
+  <summary>How to break down a predictive modelling solution</summary>
+  
+
+<https://www.youtube.com/watch?v=Mssq4KvSWZM&ab_channel=DataScienceJay>
+<https://www.interviewquery.com/questions/decision-tree-evaluation>
+
+<br>
+
+Let’s say you work as a data scientist at a bank.
+
+You are tasked with building a decision tree model to predict if a borrower will pay back a personal loan they are taking out.
+
+How would you evaluate whether using a decision tree algorithm is the correct model for the problem?
+
+Let’s say you move forward with the decision tree model. How would you evaluate the performance of the model before deployment and after?
+
+1. Context:
+    - Determine banks objective: Growth vs profitability 
+        <br> (If 1 is pay backs loan and 0 is doesn't pay back loan.)
+        - Growth: < 0.50% [decision threshold](Less confident of payback)        
+        - Profitability: > 0.50% (decision threshold) [More confident of payback]
+
+2. Target Metric
+    - How accurate is the current verison of the decision tree? 
+    - Baseline model 
+    - Imbalanced dataset (Absolute accuracy is bad measure):
+        - Precision - Recall AUC score 
+        - F1 Score (Harmonic mean between Precision - Recall)
+        - Accuracy: 
+            1. i.e. 95% 
+            2. 97% (+2% absolute or 2/95 +2.1% relative accuracy improvement)
+            [This might be useful for explaining model accuracy to business. "We've achieved a x% improvement on the baseline model/pre existing model"]
+            
+3. Solution 
+
+
+
+
+
+
+</details>
+<br>
+
+**Resources:**
+chrome://bookmarks/?id=1973
 
 
 
