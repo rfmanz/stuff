@@ -67,7 +67,7 @@ Types of ensemble methods:
 ## Fraud Detection 
 
 
-<!-- <details> -->
+<details>
   <summary>How to break down a predictive modelling solution</summary>
   
 
@@ -100,7 +100,7 @@ Let’s say you move forward with the decision tree model. How would you evaluat
             1. i.e. 95% 
             2. 97% (+2% absolute or 2/95 +2.1% relative accuracy improvement)
             [This might be useful for explaining model accuracy to business. "We've achieved a x% improvement on the baseline model/pre existing model"]
-                        
+
 3. Solution 
     - Interpretability
     - Volume of historical data
