@@ -5,34 +5,6 @@ import source.engine.utils_clv as clv
 import source.engine.utils as ut
 import source.engine.curves_all as curves
 
-'''
-*******************************************************************************************************************************************
-PROYECTO    :   CLV CREDITO EFECTIVO 
-TIPO        :   PYTHON
-
-OBJETIVO    :   CALCULAR LOS INDICADORES DE RENTABILIDAD DE LOS DESEMBOLSOS Y REALIZAR LA ASIGNACIÓN DE TASAS PARA LOS LEADS.
-
-REPROCESABLE:   SI
-
-LISTADO DE MODELOS:
-CÓDIGO MODELO       DESCRIPCIÓN MODELO
-MOD-BCP-0002938     CLV Crédito Efectivo
-MOD-BCP-0000008     Cancelaciones Crédito Efectivo
-MOD-BCP-0000009     Prepagos Crédito Efectivo
-MOD-BCP-0000103     LGD CLV - Crédito Efectivo
-MOD-BCP-0000554     Capital Económico para el Pricing Minorista
-MOD-BCP-0000572     PD CLV - Crédito Efectivo
-
-VERSION     ANALISTA            RESPONSABLE TECNICO      FECHA          ESTADO                  DESCRIPCIÓN
-2.2.2       JUAN JOSE GUILLEN   GONZALO LEZMA            01/01/2021     EN PRODUCCIÓN           PUESTA EN USO DE VERSIÓN CLV VALIDADO.
-2.2.1       DENNIER AGREDA      GONZALO LEZMA            01/03/2021     PENDIENTE VALIDACIÓN    SE INCLUYE FUNCIONALIDAD SHIELD.
-
-
-
-*******************************************************************************************************************************************
-'''
-
-
 class SetPath():
     def __init__(self, path="data"):
         self.path = path
