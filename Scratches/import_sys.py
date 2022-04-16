@@ -16,7 +16,7 @@ class RandomWalker:
 
     def __len__(self):
         return len(self.n)
-    1
+    
     def walk(self):
         self.position = 0        
         for i in range(self.n):
@@ -35,7 +35,6 @@ ax2 = df.B.plot(color='red', grid=True, secondary_y=True, label='Sum')
 
 from itertools import cycle
 from mpl_toolkits.mplot3d import Axes3D
-colors = cycle(‘bgrcmykbgrcmykbgrcmykbgrcmyk’)
 
 dims = 1
 step_n = 10000
@@ -50,8 +49,17 @@ stop = path[-1:]
 # Plot the path
 fig = plt.figure(figsize=(8,4),dpi=200)
 ax = fig.add_subplot(111)
-ax.scatter(np.arange(step_n+1), path, c=’blue’,alpha=0.25,s=0.05);
-ax.plot(path,c=’blue’,alpha=0.5,lw=0.5,ls=’ — ‘,);
-ax.plot(0, start, c=’red’, marker=’+’)
-ax.plot(step_n, stop, c=’black’, marker=’o’)
+ax.scatter(np.arange(step_n+1), path,alpha=0.25,s=0.05);
+ax.plot(path,alpha=0.5,lw=0.5);
+plt.show()
+
+pd.Series(np.ravel(path)).plot()
+plt.show()
+
+slow_time = 15.7
+fast_time = 2.2
+
+
+1-(fast_time/slow_time)
+
 
