@@ -62,4 +62,20 @@ fast_time = 2.2
 
 1-(fast_time/slow_time)
 
+from pyutils import load
+path_ending_with_filename = 'D:/Downloads/tabular-playground-series-apr-2021'
+load.read_data(path_ending_with_filename)
+load.read_data(path_ending_with_filename,dataframes='sample_submission,train,test',return_df=True, method='dt')
+
+dataframes = 'sample_submission,train'
+dataframes = [x.strip(" ") for x in dataframes.split(",")]
+csvs_in_directory = [x for x in os.listdir(path_ending_with_filename) if x.endswith('.csv')]
+files = list(set(csvs_in_directory) & set([x + '.csv' for x in dataframes]))
+
+
+
+
+
+
+
 

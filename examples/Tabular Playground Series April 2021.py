@@ -59,7 +59,7 @@ pd.cut(train.loc[train.Age < 1, 'Age'] * 12, bins=5, right=True).value_counts().
 train[train.Age.between(0.92, 1, inclusive=False)]
 # Babies under the age of 1 who died
 train.loc[(train.Age < 1) & (train.Survived == 0)]
-Babies under the age of 1 who died by class
+#Babies under the age of 1 who died by class
 train.loc[(train.Age < 1) & (train.Survived == 0)].value_counts(train.Pclass).sum()
 # Dead by class global
 train[train.Survived == 0].value_counts(train.Pclass, normalize=True).sort_index() * 100
@@ -584,7 +584,7 @@ stack_gen_model_preds = stack_gen_model.predict(test_dropped_encoded_nonulls)
 #ridge
 #neural net
 
-http://rasbt.github.io/mlxtend/user_guide/classifier/StackingCVClassifier/
+#http://rasbt.github.io/mlxtend/user_guide/classifier/StackingCVClassifier/
 
 
 # endregion

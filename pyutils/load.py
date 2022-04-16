@@ -138,7 +138,7 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None, data
                 if dataframes:
                     dataframes = [x.strip(" ") for x in dataframes.split(",")]
                     csvs_in_directory = [x for x in os.listdir(path_ending_with_filename) if x.endswith('.csv')]
-                    files = list(set(csvs_in_directory) & set([x + '.csv' for x in dataframes]))
+                    files = list(set(csvs_in_directory) & set([x + '.csv' for x in dataframes])) # intersection of two sets
                 else:
                     files = [x for x in os.listdir(path_ending_with_filename) if x.endswith('.csv')]
                 for x in files:
@@ -182,3 +182,5 @@ def read_data(path_ending_with_filename=None, return_df=False, method=None, data
                 print(i + 1, ".", " ", k, " ", "=", " ", "(", f"{values[i].shape[0]:,}", " ", ":", " ",
                       f"{values[i].shape[1]:,}", ")",
                       sep="")
+
+
