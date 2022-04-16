@@ -108,3 +108,5 @@ dmypy.json
 .idea
 .Rhistory
 .vscode
+.extensions.json
+.settings.json
