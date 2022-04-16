@@ -74,8 +74,16 @@ files = list(set(csvs_in_directory) & set([x + '.csv' for x in dataframes]))
 
 
 
+# TODO: Fraud model steps 
 
-
+# Data cleaning: obtain the data and clean it (X, y)
+# Transformations: normalization, scaling
+# Feature extraction
+# Partition data to training and test sets
+    # Feature selection
+    # Train classifier
+    # Evaluate classifier
+# Apply classifier to new data
 
 
 
