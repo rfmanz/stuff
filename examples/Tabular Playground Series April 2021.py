@@ -473,7 +473,7 @@ feature_importances_extra
 
 # region /// Predictions Submission /// ----
 
-sample_submission.iloc[:, 1] = np.where(preds > 0.5, 1, 0)
+sample_submission.iloc[:, 1] = pd.Series(np.where(preds > 0.5, 1, 0)).value_counts()
 
 sample_submission.to_csv('~/Downloads/tabular_playground_april_15.csv', index=False)
 
