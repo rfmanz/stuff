@@ -29,7 +29,6 @@ def bin(df,column, bins = 5):
     return pd.cut(df[column], bins=5, right=True).value_counts(normalize=True).sort_index() * 100
 
 
-
 def describe_df(df,floatfmt= '.3f'):
     # Numerical
     print("--" * 20)
