@@ -96,8 +96,8 @@ def correlated(df, threshold, drop_columns=False, encode_type='dmy'):
 
             # Record the information (need a temp df for now)
             temp_df = pd.DataFrame.from_dict({'drop_feature': drop_features,
-                                              'corr_feature': corr_features,
-                                              'corr_value': corr_values})
+                                            'corr_feature': corr_features,
+                                            'corr_value': corr_values})
             # Add to dataframe
             collinear = collinear.append(temp_df, ignore_index=True)
 
@@ -191,7 +191,7 @@ def target_encode(train, valid, col, target='target', kfold=5, smooth=20, verbos
         df_tmp.columns = col + ['mean', 'count']
         df_tmp['TE_tmp'] = ((df_tmp['mean'] * df_tmp['count']) + (mn * smooth)) / (df_tmp['count'] + smooth)
         df_tmp_m = train[col + ['kfold', 'org_sorting', 'TE_' + col_name]].merge(df_tmp, how='left', left_on=col,
-                                                                                 right_on=col).sort_values(
+                                                                                right_on=col).sort_values(
             'org_sorting')
         df_tmp_m.loc[df_tmp_m['kfold'] == i, 'TE_' + col_name] = df_tmp_m.loc[df_tmp_m['kfold'] == i, 'TE_tmp']
         train['TE_' + col_name] = df_tmp_m['TE_' + col_name].fillna(mn).values
@@ -252,7 +252,7 @@ def reduce_memory_usage(df, deep=True, verbose=True, categories=True):
         diff_mem = start_mem - end_mem
         percent_mem = 100 * diff_mem / start_mem
         print(f"Memory usage decreased from"
-              f" {start_mem:.2f}MB to {end_mem:.2f}MB"
-              f" ({diff_mem:.2f}MB, {percent_mem:.2f}% reduction)")
+            f" {start_mem:.2f}MB to {end_mem:.2f}MB"
+            f" ({diff_mem:.2f}MB, {percent_mem:.2f}% reduction)")
 
 
