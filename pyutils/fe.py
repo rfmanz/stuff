@@ -9,7 +9,7 @@ def convert_dtypes(df,varsN , varsC ):
 
     df[varsN] = df[varsN].astype(int)
     df[varsC] = df[varsC].astype('category')
-    #df[varsS] = df[varsS].astype(str)
+    
 
     return df
 
