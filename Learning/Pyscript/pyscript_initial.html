@@ -10,7 +10,14 @@
 </head>
 
 <body>
-    <py-script>print("Hello, World!")</py-script>
+    <py-script>print(def pd_options():
+        desired_width = 300
+        pd.set_option('display.width', desired_width)
+        pd.set_option('display.max_columns', None)
+        import warnings
+        warnings.filterwarnings('ignore'))</py-script>
 </body>
 
 </html>
+
+
