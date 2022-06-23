@@ -1,2 +1,0 @@
--- Query customers db for customer info.
--- No data from customers db currently being used.
