@@ -1,0 +1,112 @@
+{
+    "data": {
+        "raw": {
+            "banking_accounts": "raw/raw_1640814816/banking_accounts_1640814816.feather",
+            "experian_credit_pull": "raw/raw_1640814816/experian_credit_pull_1640814816.feather",
+            "giact": "raw/raw_1640814816/giact_1640814816.feather",
+            "socure": "raw/raw_1640814816/socure_1640814816.feather",
+            "transactions": "raw/raw_1640814816/transactions_1640814816.feather",
+            "user_metadata_dw": "raw/raw_1640814816/user_metadata_dw_1640814816.feather"
+        },
+        "processed": {
+            "banking_accounts": "processed/processed_1640826096/banking_accounts_1640826096.feather",
+            "experian_credit_pull": "processed/processed_1640826096/experian_credit_pull_1640826096.feather",
+            "giact": "processed/processed_1640826096/giact_1640826096.feather",
+            "socure": "processed/processed_1640826096/socure_1640826096.feather",
+            "transactions": "processed/processed_1640826096/transactions_1640826096.feather",
+            "user_metadata_dw": "processed/processed_1640826096/user_metadata_dw_1640826096.feather"
+        },
+        "joined": {
+            "base": "joined/base_1641532149.feather"
+        },
+        "labeled": {
+            "labeled": "labeled/labeled_1641542717.feather"
+        },
+        "combined": {
+            "combined": "combined/combined_1620538441.feather"
+        },
+        "combined_all_features": {
+            "combined": "combined_all_features/combined_1641542867.feather"
+        }
+    },
+    "s3_base_path": "tboser/money-modeling/money-customer-risk",
+    "s3_bucket": "sofi-data-science",
+    "sql_query_files": {
+        "banking_accounts": {
+            "database": "sofi_profile_reporting",
+            "port": 15556,
+            "query": "sql/banking_accounts.sql"
+        },
+        "experian_credit_pull": {
+            "database": "sofi_dw",
+            "port": 15501,
+            "query": "sql/experian_credit_pull.sql"
+        },
+        "giact": {
+            "database": "sofi_fraud",
+            "port": 15722,
+            "query": "sql/giact.sql"
+        },
+        "socure": {
+            "database": "sofi_fraud",
+            "port": 15722,
+            "query": "sql/socure.sql"
+        },
+        "user_metadata_dw": {
+            "database": "sofi_dw",
+            "port": 15501,
+            "query": "sql/user_metadata_dw.sql"
+        },
+        "transactions": {
+            "database": "sofi_profile_reporting",
+            "port": 15556,
+            "query": "sql/transactions.sql"
+        }
+    },
+    "target_column": "target",
+    "indeterminate_column": "indeterminate",
+    "data_pull_date": "2021-12-29",
+    "date_sample_start": "2019-01-16",
+    "date_sample_end": "2020-12-31",
+    "number_periods_in_sample": 29,
+    "static_sample_dates": [
+        "2021-09-15",
+        "2021-12-29"
+    ],
+    "monitoring_config": {
+        "mmonth": "2021-12",
+        "dev_df_path": "../../data/combined_all_features/combined_1640842189.feather",
+        "monitoring_dates": [
+            "2021-07-01",
+            "2021-08-01",
+            "2021-09-01",
+            "2021-10-01",
+            "2021-11-01",
+            "2021-12-01"
+        ],
+        "prod_data_dates": [
+            "2021-12-31"
+        ],
+        "data_output_path": "s3://sofi-data-science/jxu/monitoring/customer-risk-v1/2021-12/",
+        "artifact_path": "../../artifacts/monitoring-2021Q4/",
+        "date_sample_start": "2019-01-16",
+        "date_sample_end": "2020-12-31",
+        "model_paths": {
+            "incumbent_model": "s3://sofi-data-science/jxu/money-risk-models/customer-risk-model/models/customer_risk_target_no_giact_time_since_last_link.pkl",
+            "customer_refitted_2021Q1": "s3://sofi-data-science/jxu/money-risk-models/models/customer_risk_refit_20201231_wo_ind.pkl"
+        },
+        "prev_test_df_path": "s3://sofi-data-science/jxu/monitoring/customer-risk-v1/2021-12/prev_test_df.parquet",
+        "modeling_df_path": "s3://sofi-data-science/jxu/monitoring/customer-risk-v1/2021-12/modeling_df_2020-12-31.parquet",
+        "test_df_path": "s3://sofi-data-science/jxu/monitoring/customer-risk-v1/2021-12/test_df_2021-12.parquet",
+        "prod_dfs_path": {
+            "2021-12-31": "s3://sofi-data-science/jxu/monitoring/customer-risk-v1/2021-12/prod-data-2021-12-31.parquet"
+        }
+    },
+    "refitting_config": {
+        "artifact_path": "../../artifacts/monitoring-2021Q3/",
+        "data_output_path": "s3://sofi-data-science/jxu/monitoring/customer-risk-v1/2021-09/",
+        "refitted_model_path": "s3://sofi-data-science/jxu/monitoring/customer-risk-v1/2021-09/refitted_model_2020-12-31.pkl",
+        "modeling_df_scored_path": "s3://sofi-data-science/jxu/monitoring/customer-risk-v1/2021-09/modeling_df_2020-12-31_scored.parquet",
+        "test_df_scored_path": "s3://sofi-data-science/jxu/monitoring/customer-risk-v1/2021-09/test_df_2021-09_scored.parquet"
+    }
+}

@@ -1,0 +1,266 @@
+Collecting package metadata (current_repodata.json): ...working... done
+Solving environment: ...working... done
+
+## Package Plan ##
+
+  environment location: /home/ec2-user/anaconda3/envs/customer_risk
+
+  added / updated specs:
+    - python=3.7
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    ld_impl_linux-64-2.36.1    |       hea4e1c9_0         670 KB  conda-forge
+    pip-21.1.3                 |     pyhd8ed1ab_0         1.1 MB  conda-forge
+    python_abi-3.7             |          2_cp37m           4 KB  conda-forge
+    ------------------------------------------------------------
+                                           Total:         1.7 MB
+
+The following NEW packages will be INSTALLED:
+
+  _libgcc_mutex      conda-forge/linux-64::_libgcc_mutex-0.1-conda_forge
+  _openmp_mutex      conda-forge/linux-64::_openmp_mutex-4.5-1_gnu
+  ca-certificates    conda-forge/linux-64::ca-certificates-2021.5.30-ha878542_0
+  certifi            conda-forge/linux-64::certifi-2021.5.30-py37h89c1867_0
+  ld_impl_linux-64   conda-forge/linux-64::ld_impl_linux-64-2.36.1-hea4e1c9_0
+  libffi             conda-forge/linux-64::libffi-3.3-h58526e2_2
+  libgcc-ng          conda-forge/linux-64::libgcc-ng-9.3.0-h2828fa1_19
+  libgomp            conda-forge/linux-64::libgomp-9.3.0-h2828fa1_19
+  libstdcxx-ng       conda-forge/linux-64::libstdcxx-ng-9.3.0-h6de172a_19
+  ncurses            conda-forge/linux-64::ncurses-6.2-h58526e2_4
+  openssl            conda-forge/linux-64::openssl-1.1.1k-h7f98852_0
+  pip                conda-forge/noarch::pip-21.1.3-pyhd8ed1ab_0
+  python             conda-forge/linux-64::python-3.7.10-hffdb5ce_100_cpython
+  python_abi         conda-forge/linux-64::python_abi-3.7-2_cp37m
+  readline           conda-forge/linux-64::readline-8.1-h46c0cb4_0
+  setuptools         conda-forge/linux-64::setuptools-49.6.0-py37h89c1867_3
+  sqlite             conda-forge/linux-64::sqlite-3.36.0-h9cd32fc_0
+  tk                 conda-forge/linux-64::tk-8.6.10-h21135ba_1
+  wheel              conda-forge/noarch::wheel-0.36.2-pyhd3deb0d_0
+  xz                 conda-forge/linux-64::xz-5.2.5-h516909a_1
+  zlib               conda-forge/linux-64::zlib-1.2.11-h516909a_1010
+
+
+
+Downloading and Extracting Packages
+python_abi-3.7       | 4 KB      |                                                                      |   0% python_abi-3.7       | 4 KB      | #################################################################### | 100% python_abi-3.7       | 4 KB      | #################################################################### | 100% 
+pip-21.1.3           | 1.1 MB    |                                                                      |   0% pip-21.1.3           | 1.1 MB    | #################################################################### | 100% 
+ld_impl_linux-64-2.3 | 670 KB    |                                                                      |   0% ld_impl_linux-64-2.3 | 670 KB    | #################################################################### | 100% ld_impl_linux-64-2.3 | 670 KB    | #################################################################### | 100% 
+
+==> WARNING: A newer version of conda exists. <==
+  current version: 4.8.4
+  latest version: 4.10.1
+
+Please update conda by running
+
+    $ conda update -n base -c defaults conda
+
+
+
+InvalidArchiveError("Error with archive /home/ec2-user/anaconda3/pkgs/pip-21.1.3-pyhd8ed1ab_0.tar.bz2.  You probably need to delete and re-download or re-create this file.  Message from libarchive was:\n\nFailed to create dir 'site-packages'")
+
+
+
+EnvironmentLocationNotFound: Not a conda environment: /home/ec2-user/anaconda3/envs/customer_risk
+
+Could not find conda environment: customer_risk
+You can list all discoverable environments with `conda info --envs`.
+
+Looking in indexes: https://build.sofi.com/artifactory/api/pypi/pypi/simple
+Collecting boto3==1.17.12
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/d7/53/001f30958e799a1635dfd062f94af2b16b836fc4366ff231fe2f2c7c8b50/boto3-1.17.12-py2.py3-none-any.whl (130 kB)
+Collecting botocore==1.20.12
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/85/78/b71baa2fa2dac70638a360ec6fdb00960134a1b68e895acc12b8f6916da2/botocore-1.20.12-py2.py3-none-any.whl (7.2 MB)
+Collecting lightgbm==3.1.1
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/70/cd/2b7783e8c250f8191b72e9a0010e0429a799d3305c27764d7bf113dfd078/lightgbm-3.1.1-py2.py3-none-manylinux1_x86_64.whl (1.8 MB)
+Requirement already satisfied: sqlalchemy==1.3.23 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from -r requirements.txt (line 4)) (1.3.23)
+Requirement already satisfied: matplotlib in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from -r requirements.txt (line 5)) (3.3.4)
+Requirement already satisfied: seaborn in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from -r requirements.txt (line 6)) (0.11.1)
+Requirement already satisfied: numpy in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from -r requirements.txt (line 7)) (1.19.2)
+Requirement already satisfied: pandas in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from -r requirements.txt (line 8)) (1.2.2)
+Collecting pandas-profiling
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/3b/a3/34519d16e5ebe69bad30c5526deea2c3912634ced7f9b5e6e0bb9dbbd567/pandas_profiling-3.0.0-py2.py3-none-any.whl (248 kB)
+Collecting pyarrow
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/37/e6/6e2fa17dcac1c9f9122676e2472bbc6fc3b5c1bf512cb21a16663dec6b31/pyarrow-4.0.1-cp37-cp37m-manylinux2014_x86_64.whl (21.8 MB)
+Collecting rdsutils
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/rdsutils/0.0.11/rdsutils-0.0.11-py3-none-any.whl (60 kB)
+Collecting ml4risk
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/ml4risk/0.0.9/ml4risk-0.0.9-py3-none-any.whl (5.3 kB)
+Requirement already satisfied: tqdm in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from -r requirements.txt (line 13)) (4.46.0)
+Requirement already satisfied: scikit-learn in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from -r requirements.txt (line 14)) (0.23.2)
+Collecting s3fs
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/f7/d0/d6b9a3d989bc3515e03ff38fa3eb2a49e12e3c5e609972bc672764f32b6d/s3fs-2021.6.1-py3-none-any.whl (25 kB)
+Collecting mdsutils
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/mdsutils/0.2.5/mdsutils-0.2.5-py3-none-any.whl (5.3 kB)
+Collecting shap
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/b9/f4/c5b95cddae15be80f8e58b25edceca105aa83c0b8c86a1edad24a6af80d3/shap-0.39.0.tar.gz (356 kB)
+Collecting scikit-plot
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/7c/47/32520e259340c140a4ad27c1b97050dd3254fdc517b1d59974d47037510e/scikit_plot-0.3.7-py3-none-any.whl (33 kB)
+Collecting read_protobuf
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/3c/27/1f2995cf2f06251faa917f87ce642673f820fd0d89cde379523ab34a0af7/read_protobuf-0.1.1-py3-none-any.whl (7.3 kB)
+Collecting sofiproto==release-1703
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/sofiproto/release-1703/sofiproto-release-1703.tar.gz (24 kB)
+Collecting s3transfer<0.4.0,>=0.3.0
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/00/89/0cb4e92c239e6425b9b0035227b8cdf9d3d098a5c9e95632c3815df63a09/s3transfer-0.3.7-py2.py3-none-any.whl (73 kB)
+Requirement already satisfied: jmespath<1.0.0,>=0.7.1 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from boto3==1.17.12->-r requirements.txt (line 1)) (0.10.0)
+Requirement already satisfied: python-dateutil<3.0.0,>=2.1 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from botocore==1.20.12->-r requirements.txt (line 2)) (2.8.1)
+Requirement already satisfied: urllib3<1.27,>=1.25.4 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from botocore==1.20.12->-r requirements.txt (line 2)) (1.26.5)
+Requirement already satisfied: wheel in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from lightgbm==3.1.1->-r requirements.txt (line 3)) (0.34.2)
+Requirement already satisfied: scipy in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from lightgbm==3.1.1->-r requirements.txt (line 3)) (1.6.1)
+Requirement already satisfied: cycler>=0.10 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from matplotlib->-r requirements.txt (line 5)) (0.10.0)
+Requirement already satisfied: pyparsing!=2.0.4,!=2.1.2,!=2.1.6,>=2.0.3 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from matplotlib->-r requirements.txt (line 5)) (2.4.7)
+Requirement already satisfied: kiwisolver>=1.0.1 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from matplotlib->-r requirements.txt (line 5)) (1.3.1)
+Requirement already satisfied: pillow>=6.2.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from matplotlib->-r requirements.txt (line 5)) (8.2.0)
+Requirement already satisfied: pytz>=2017.3 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from pandas->-r requirements.txt (line 8)) (2021.1)
+Requirement already satisfied: joblib in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from pandas-profiling->-r requirements.txt (line 9)) (1.0.1)
+Collecting phik>=0.11.1
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/b7/ce/193e8ddf62d4be643b9b4b20e8e9c63b2f6a20f92778c0410c629f89bdaa/phik-0.11.2.tar.gz (1.1 MB)
+Requirement already satisfied: jinja2>=2.11.1 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from pandas-profiling->-r requirements.txt (line 9)) (2.11.3)
+Collecting htmlmin>=0.1.12
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/b3/e7/fcd59e12169de19f0131ff2812077f964c6b960e7c09804d30a7bf2ab461/htmlmin-0.1.12.tar.gz (19 kB)
+Requirement already satisfied: PyYAML>=5.0.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from pandas-profiling->-r requirements.txt (line 9)) (5.4.1)
+Collecting visions[type_image_path]==0.7.1
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/80/96/01e4ba22cef96ae5035dbcf0451c2f4f859f8f17393b98406b23f0034279/visions-0.7.1-py3-none-any.whl (102 kB)
+Collecting pydantic>=1.8.1
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/9f/f2/2d5425efe57f6c4e06cbe5e587c1fd16929dcf0eb90bd4d3d1e1c97d1151/pydantic-1.8.2-cp37-cp37m-manylinux2014_x86_64.whl (10.1 MB)
+Collecting tangled-up-in-unicode==0.1.0
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/93/3e/cb354fb2097fcf2fd5b5a342b10ae2a6e9363ba435b64e3e00c414064bc7/tangled_up_in_unicode-0.1.0-py3-none-any.whl (3.1 MB)
+Collecting missingno>=0.4.2
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/2b/de/6e4dd6d720c49939544352155dc06a08c9f7e4271aa631a559dfbeaaf9d4/missingno-0.4.2-py3-none-any.whl (9.7 kB)
+Requirement already satisfied: requests>=2.24.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from pandas-profiling->-r requirements.txt (line 9)) (2.25.1)
+Requirement already satisfied: colorama in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from rdsutils->-r requirements.txt (line 11)) (0.4.3)
+Collecting psycopg2-binary
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/5b/62/5f8eae172230141a53305150637fbdda7a535618d5dfa976dc013396837f/psycopg2_binary-2.9.1-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.4 MB)
+Requirement already satisfied: boto>=2.48.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from ml4risk->-r requirements.txt (line 12)) (2.49.0)
+Requirement already satisfied: dill>=0.3.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from ml4risk->-r requirements.txt (line 12)) (0.3.3)
+Requirement already satisfied: dask>=0.17.5 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from ml4risk->-r requirements.txt (line 12)) (2021.2.0)
+Requirement already satisfied: statsmodels>=0.9.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from ml4risk->-r requirements.txt (line 12)) (0.12.2)
+Requirement already satisfied: plotly>=2.7.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from ml4risk->-r requirements.txt (line 12)) (4.14.3)
+Collecting twine>=1.13.0
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/42/ad/713372978a8de58a43c507bf62b9c30c3d7b5cda4e972d563b881620a511/twine-3.4.1-py3-none-any.whl (34 kB)
+Requirement already satisfied: scikit-image>=0.13.1 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from ml4risk->-r requirements.txt (line 12)) (0.17.2)
+Requirement already satisfied: networkx>=2.5 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from ml4risk->-r requirements.txt (line 12)) (2.5)
+Requirement already satisfied: bokeh>=2.0.1 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from ml4risk->-r requirements.txt (line 12)) (2.2.3)
+Requirement already satisfied: threadpoolctl>=2.0.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from scikit-learn->-r requirements.txt (line 14)) (2.1.0)
+Collecting fsspec==2021.06.1
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/0e/3a/666e63625a19883ae8e1674099e631f9737bd5478c4790e5ad49c5ac5261/fsspec-2021.6.1-py3-none-any.whl (115 kB)
+Collecting aiobotocore>=1.0.1
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/e6/e3/767e29c93bf7d222168ece841e3e1cfe13945aab300c31787f8299d9abf0/aiobotocore-1.3.1.tar.gz (48 kB)
+Collecting smart-open>=1.8.4
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/e9/90/6ca525991e281ecdf204c5c1de854da6334068e44121c384b68c6a838e14/smart_open-5.1.0-py3-none-any.whl (57 kB)
+Collecting slicer==0.0.7
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/78/c2/b3f55dfdb8af9812fdb9baf70cacf3b9e82e505b2bd4324d588888b81202/slicer-0.0.7-py3-none-any.whl (14 kB)
+Requirement already satisfied: numba in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from shap->-r requirements.txt (line 17)) (0.51.2)
+Requirement already satisfied: cloudpickle in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from shap->-r requirements.txt (line 17)) (1.6.0)
+Requirement already satisfied: protobuf>=3.5 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from read_protobuf->-r requirements.txt (line 19)) (3.15.2)
+Requirement already satisfied: six>=1.5 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from python-dateutil<3.0.0,>=2.1->botocore==1.20.12->-r requirements.txt (line 2)) (1.14.0)
+Requirement already satisfied: MarkupSafe>=0.23 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from jinja2>=2.11.1->pandas-profiling->-r requirements.txt (line 9)) (1.1.1)
+Requirement already satisfied: bottleneck in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from visions[type_image_path]==0.7.1->pandas-profiling->-r requirements.txt (line 9)) (1.3.2)
+Requirement already satisfied: attrs>=19.3.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from visions[type_image_path]==0.7.1->pandas-profiling->-r requirements.txt (line 9)) (20.3.0)
+Collecting multimethod==1.4
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/7a/d0/ce5ad0392aa12645b7ad91a5983d6b625b704b021d9cd48c587630c1a9ac/multimethod-1.4-py2.py3-none-any.whl (7.3 kB)
+Collecting imagehash; extra == "type_image_path"
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/8e/18/9dbb772b5ef73a3069c66bb5bf29b9fb4dd57af0d5790c781c3f559bcca6/ImageHash-4.2.0-py2.py3-none-any.whl (295 kB)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from pydantic>=1.8.1->pandas-profiling->-r requirements.txt (line 9)) (3.7.4.3)
+Requirement already satisfied: idna<3,>=2.5 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from requests>=2.24.0->pandas-profiling->-r requirements.txt (line 9)) (2.9)
+Requirement already satisfied: certifi>=2017.4.17 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from requests>=2.24.0->pandas-profiling->-r requirements.txt (line 9)) (2021.5.30)
+Requirement already satisfied: chardet<5,>=3.0.2 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from requests>=2.24.0->pandas-profiling->-r requirements.txt (line 9)) (3.0.4)
+Requirement already satisfied: patsy>=0.5 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from statsmodels>=0.9.0->ml4risk->-r requirements.txt (line 12)) (0.5.1)
+Requirement already satisfied: retrying>=1.3.3 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from plotly>=2.7.0->ml4risk->-r requirements.txt (line 12)) (1.3.3)
+Collecting importlib-metadata>=3.6
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/de/25/37646ca4b30781793b71d8282ed44c11cd506d42a0e985238d4f35218169/importlib_metadata-4.6.0-py3-none-any.whl (17 kB)
+Collecting readme-renderer>=21.0
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/39/a5/459adfa22ea237f6e8d0fa95ad29d7369579a5eec26f016ab34bb7f8359c/readme_renderer-29.0-py2.py3-none-any.whl (15 kB)
+Collecting rfc3986>=1.4.0
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/c4/e5/63ca2c4edf4e00657584608bee1001302bbf8c5f569340b78304f2f446cb/rfc3986-1.5.0-py2.py3-none-any.whl (31 kB)
+Requirement already satisfied: keyring>=15.1 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from twine>=1.13.0->ml4risk->-r requirements.txt (line 12)) (22.0.1)
+Collecting requests-toolbelt!=0.9.0,>=0.8.0
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/60/ef/7681134338fc097acef8d9b2f8abe0458e4d87559c689a8c306d0957ece5/requests_toolbelt-0.9.1-py2.py3-none-any.whl (54 kB)
+Requirement already satisfied: pkginfo>=1.4.2 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from twine>=1.13.0->ml4risk->-r requirements.txt (line 12)) (1.7.0)
+Requirement already satisfied: imageio>=2.3.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from scikit-image>=0.13.1->ml4risk->-r requirements.txt (line 12)) (2.9.0)
+Requirement already satisfied: tifffile>=2019.7.26 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from scikit-image>=0.13.1->ml4risk->-r requirements.txt (line 12)) (2021.1.14)
+Requirement already satisfied: PyWavelets>=1.1.1 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from scikit-image>=0.13.1->ml4risk->-r requirements.txt (line 12)) (1.1.1)
+Requirement already satisfied: decorator>=4.3.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from networkx>=2.5->ml4risk->-r requirements.txt (line 12)) (4.4.2)
+Requirement already satisfied: tornado>=5.1 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from bokeh>=2.0.1->ml4risk->-r requirements.txt (line 12)) (6.1)
+Requirement already satisfied: packaging>=16.8 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from bokeh>=2.0.1->ml4risk->-r requirements.txt (line 12)) (20.9)
+Collecting aiohttp>=3.3.1
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/88/c0/5890b4c8b04a79b7360e8fe4490feb0bb3ab179743f199f0e6220cebd568/aiohttp-3.7.4.post0-cp37-cp37m-manylinux2014_x86_64.whl (1.3 MB)
+Requirement already satisfied: wrapt>=1.10.10 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from aiobotocore>=1.0.1->s3fs->-r requirements.txt (line 15)) (1.12.1)
+Collecting aioitertools>=0.5.1
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/32/0b/3260ac050de07bf6e91871944583bb8598091da19155c34f7ef02244709c/aioitertools-0.7.1-py3-none-any.whl (20 kB)
+Requirement already satisfied: llvmlite<0.35,>=0.34.0.dev0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from numba->shap->-r requirements.txt (line 17)) (0.34.0)
+Requirement already satisfied: setuptools in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from numba->shap->-r requirements.txt (line 17)) (46.4.0.post20200518)
+Requirement already satisfied: zipp>=0.5 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from importlib-metadata>=3.6->twine>=1.13.0->ml4risk->-r requirements.txt (line 12)) (3.4.0)
+Requirement already satisfied: docutils>=0.13.1 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from readme-renderer>=21.0->twine>=1.13.0->ml4risk->-r requirements.txt (line 12)) (0.15.2)
+Requirement already satisfied: Pygments>=2.5.1 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from readme-renderer>=21.0->twine>=1.13.0->ml4risk->-r requirements.txt (line 12)) (2.8.0)
+Requirement already satisfied: bleach>=2.1.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from readme-renderer>=21.0->twine>=1.13.0->ml4risk->-r requirements.txt (line 12)) (3.3.0)
+Requirement already satisfied: jeepney>=0.4.2; sys_platform == "linux" in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from keyring>=15.1->twine>=1.13.0->ml4risk->-r requirements.txt (line 12)) (0.6.0)
+Requirement already satisfied: SecretStorage>=3.2; sys_platform == "linux" in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from keyring>=15.1->twine>=1.13.0->ml4risk->-r requirements.txt (line 12)) (3.3.1)
+Collecting async-timeout<4.0,>=3.0
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/e1/1e/5a4441be21b0726c4464f3f23c8b19628372f606755a9d2e46c187e65ec4/async_timeout-3.0.1-py3-none-any.whl (8.2 kB)
+Collecting multidict<7.0,>=4.5
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/7c/a6/4123b8165acbe773d1a8dc8e3f0d1edea16d29f7de018eda769abb56bd30/multidict-5.1.0-cp37-cp37m-manylinux2014_x86_64.whl (142 kB)
+Collecting yarl<2.0,>=1.0
+  Downloading https://build.sofi.com/artifactory/api/pypi/pypi/packages/packages/f1/62/046834c5fc998c88ab2ef722f5d42122230a632212c8afa76418324f53ff/yarl-1.6.3-cp37-cp37m-manylinux2014_x86_64.whl (294 kB)
+Requirement already satisfied: webencodings in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from bleach>=2.1.0->readme-renderer>=21.0->twine>=1.13.0->ml4risk->-r requirements.txt (line 12)) (0.5.1)
+Requirement already satisfied: cryptography>=2.0 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from SecretStorage>=3.2; sys_platform == "linux"->keyring>=15.1->twine>=1.13.0->ml4risk->-r requirements.txt (line 12)) (3.4.7)
+Requirement already satisfied: cffi>=1.12 in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from cryptography>=2.0->SecretStorage>=3.2; sys_platform == "linux"->keyring>=15.1->twine>=1.13.0->ml4risk->-r requirements.txt (line 12)) (1.14.0)
+Requirement already satisfied: pycparser in /home/ec2-user/anaconda3/lib/python3.7/site-packages (from cffi>=1.12->cryptography>=2.0->SecretStorage>=3.2; sys_platform == "linux"->keyring>=15.1->twine>=1.13.0->ml4risk->-r requirements.txt (line 12)) (2.20)
+Building wheels for collected packages: shap, sofiproto, phik, htmlmin, aiobotocore
+  Building wheel for shap (setup.py): started
+  Building wheel for shap (setup.py): finished with status 'done'
+  Created wheel for shap: filename=shap-0.39.0-cp37-cp37m-linux_x86_64.whl size=481544 sha256=7907cdd2b0b24687fa949bb895e9dc73836c3665cca5c0551917493b4f400463
+  Stored in directory: /home/ec2-user/.cache/pip/wheels/68/ad/cf/a3fc768bfadc2a4116f95675790ae8ca0a08f82310183b7122
+  Building wheel for sofiproto (setup.py): started
+  Building wheel for sofiproto (setup.py): finished with status 'done'
+  Created wheel for sofiproto: filename=sofiproto-release_1703-py3-none-any.whl size=44914 sha256=119f27bec6c62cd07758f2c2d11c5c816759d72fb4626022502769202a4f9e7f
+  Stored in directory: /home/ec2-user/.cache/pip/wheels/5e/2b/1c/6d591bb65f7c7ada6aa3fdfbce652d637566adb0ab2d289ef5
+  WARNING: Built wheel for sofiproto is invalid: Metadata 1.2 mandates PEP 440 version, but 'release-1703' is not
+  Building wheel for phik (setup.py): started
+  Building wheel for phik (setup.py): finished with status 'done'
+  Created wheel for phik: filename=phik-0.11.2-py3-none-any.whl size=1107412 sha256=0b1520e6dc8d4395a3d38675b3caa965502248e855833a6eefb39c6f95ed7531
+  Stored in directory: /home/ec2-user/.cache/pip/wheels/1d/75/78/237a665bf72b75e96db787f0758f8f6c6e834b8bb0163a7667
+  Building wheel for htmlmin (setup.py): started
+  Building wheel for htmlmin (setup.py): finished with status 'done'
+  Created wheel for htmlmin: filename=htmlmin-0.1.12-py3-none-any.whl size=27084 sha256=df7f899d8dd039fdba73cb82e104b53c0fcf116c00cd9e64c748c15160c1a3e4
+  Stored in directory: /home/ec2-user/.cache/pip/wheels/ed/60/cd/124ae81395ff16c5ce07d19001b3c5be715ec646e2991e7ad1
+  Building wheel for aiobotocore (setup.py): started
+  Building wheel for aiobotocore (setup.py): finished with status 'done'
+  Created wheel for aiobotocore: filename=aiobotocore-1.3.1-py3-none-any.whl size=46611 sha256=983c90c7209ff6a7bc74781be261cb5396f5a80022007b66f9759681a6d6cffa
+  Stored in directory: /home/ec2-user/.cache/pip/wheels/ae/4d/d6/4e5d3731e23a1647df78bfdff482437f3fd500f2e093b1f653
+Successfully built shap phik htmlmin aiobotocore
+Failed to build sofiproto
+Installing collected packages: botocore, s3transfer, boto3, lightgbm, phik, htmlmin, tangled-up-in-unicode, multimethod, imagehash, visions, pydantic, missingno, pandas-profiling, pyarrow, psycopg2-binary, rdsutils, importlib-metadata, readme-renderer, rfc3986, requests-toolbelt, twine, fsspec, async-timeout, multidict, yarl, aiohttp, aioitertools, aiobotocore, s3fs, ml4risk, smart-open, mdsutils, slicer, shap, scikit-plot, read-protobuf, sofiproto
+  Attempting uninstall: botocore
+    Found existing installation: botocore 1.20.99
+    Uninstalling botocore-1.20.99:
+      Successfully uninstalled botocore-1.20.99
+  Attempting uninstall: s3transfer
+    Found existing installation: s3transfer 0.4.2
+    Uninstalling s3transfer-0.4.2:
+      Successfully uninstalled s3transfer-0.4.2
+  Attempting uninstall: boto3
+    Found existing installation: boto3 1.17.99
+    Uninstalling boto3-1.17.99:
+      Successfully uninstalled boto3-1.17.99
+  Attempting uninstall: importlib-metadata
+    Found existing installation: importlib-metadata 2.0.0
+    Uninstalling importlib-metadata-2.0.0:
+      Successfully uninstalled importlib-metadata-2.0.0
+  Attempting uninstall: fsspec
+    Found existing installation: fsspec 0.8.3
+    Uninstalling fsspec-0.8.3:
+      Successfully uninstalled fsspec-0.8.3
+    Running setup.py install for sofiproto: started
+    Running setup.py install for sofiproto: finished with status 'done'
+  DEPRECATION: sofiproto was installed using the legacy 'setup.py install' method, because a wheel could not be built for it. A possible replacement is to fix the wheel build issue reported above. You can find discussion regarding this at https://github.com/pypa/pip/issues/8368.
+ERROR: pip's legacy dependency resolver does not consider dependency conflicts when selecting packages. This behaviour is the source of the following dependency conflicts.
+awscli 1.19.99 requires botocore==1.20.99, but you'll have botocore 1.20.12 which is incompatible.
+awscli 1.19.99 requires s3transfer<0.5.0,>=0.4.0, but you'll have s3transfer 0.3.7 which is incompatible.
+pandas-profiling 3.0.0 requires tqdm>=4.48.2, but you'll have tqdm 4.46.0 which is incompatible.
+aiobotocore 1.3.1 requires botocore<1.20.50,>=1.20.49, but you'll have botocore 1.20.12 which is incompatible.
+Successfully installed aiobotocore-1.3.1 aiohttp-3.7.4.post0 aioitertools-0.7.1 async-timeout-3.0.1 boto3-1.17.12 botocore-1.20.12 fsspec-2021.6.1 htmlmin-0.1.12 imagehash-4.2.0 importlib-metadata-4.6.0 lightgbm-3.1.1 mdsutils-0.2.5 missingno-0.4.2 ml4risk-0.0.9 multidict-5.1.0 multimethod-1.4 pandas-profiling-3.0.0 phik-0.11.2 psycopg2-binary-2.9.1 pyarrow-4.0.1 pydantic-1.8.2 rdsutils-0.0.11 read-protobuf-0.1.1 readme-renderer-29.0 requests-toolbelt-0.9.1 rfc3986-1.5.0 s3fs-2021.6.1 s3transfer-0.3.7 scikit-plot-0.3.7 shap-0.39.0 slicer-0.0.7 smart-open-5.1.0 sofiproto-release-1703 tangled-up-in-unicode-0.1.0 twine-3.4.1 visions-0.7.1 yarl-1.6.3
+Installed kernelspec customer_risk in /home/ec2-user/.local/share/jupyter/kernels/customer_risk
