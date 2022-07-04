@@ -1,5 +1,7 @@
 -- get data at a banking account level.
 WITH primary_account_holders AS
+
+    
     (SELECT cif.zsofiid AS user_id,
             dep.cid AS business_account_number,
             dao AS date_account_opened,

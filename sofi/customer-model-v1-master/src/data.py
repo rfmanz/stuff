@@ -23,6 +23,8 @@ from rdsutils.query import query_postgres
 
 src_base = os.path.dirname(os.path.realpath(__file__))
 config_file_path = os.path.abspath(os.path.join(src_base, "../config.json"))
+
+
 with open(config_file_path, "r") as f:
     CONFIG_FILE = json.load(f)
 

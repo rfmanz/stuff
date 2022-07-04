@@ -63,7 +63,7 @@
             "query": "sql/user_metadata_dw.sql"
         },
         "banking_account_restrictions": {
-            "database": "sofi_dw",
+            "database": "P",
             "port": 15501,
             "query": "sql/banking_account_restrictions.sql"
         }
