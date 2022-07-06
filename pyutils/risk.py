@@ -122,5 +122,7 @@ x3
 
 
 # TODO:
-# PROTOBUF
-# start to think about ways to automate stuff
+# READ about PROTOBUF
+# READ unittests
+# proto utils - download the folder
+# start to think about things that come up a lot and ways to automate stuff
