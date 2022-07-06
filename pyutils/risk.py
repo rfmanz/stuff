@@ -20,8 +20,16 @@ Position(name, lon, lat)
 Position.__delattr__(self, name)
 
 
+# https://khuyentran1401.github.io/Efficient_Python_tricks_and_tools_for_data_scientists/Chapter2/dataclasses.html
+
 from dataclasses import dataclass
 from typing import List
+
+
+@dataclass
+class Dog:
+    names: str
+    age: int
 
 
 @dataclass
@@ -29,14 +37,18 @@ class Dogs:
     names: List[str]
     ages: List[int]
 
+    # def __post_init__(self):
+    #     self.info = [(name, age) for name, age in zip(self.names, self.ages)]
     def __post_init__(self):
-        self.info = [Dog(name, age) for name, age in zip(self.names, self.ages)]
+        self.info = [(name, age) for name, age in dict(zip(self.names, self.ages))]
 
 
-a = Dogs()
-a.names = "Fido"
-a.age = 3
-a.info
+names = ["Bim", "Pepper"]
+ages = [5, 6]
+dogs = Dogs(names, ages)
+dogs.names
+dogs.info
+type(dogs.info)
 
 
 class Building(object):
@@ -126,3 +138,32 @@ x3
 # READ unittests
 # proto utils - download the folder
 # start to think about things that come up a lot and ways to automate stuff
+
+
+def pipe(first, *args):
+    for fn in args:
+        first = fn(first)
+    return first
+
+
+from math import sqrt
+from datetime import datetime
+
+
+def as_date(s):
+    return datetime.strptime(s, "%Y-%m-%d")
+
+
+def as_character(value):
+    # Do whatever as.character does
+    return value
+
+
+pipe("2014-01-01", as_date)
+pipe(12, sqrt, lambda x: x**2, as_character)
+
+
+from rich import pretty
+
+pretty.install()
+["Rich and pretty", True]
