@@ -133,9 +133,9 @@ x3 = np.random.randint(10, size=(3, 4, 5))
 x3
 
 
+# Pipes
 
-# Pipes 
- 
+
 def pipe(first, *args):
     for fn in args:
         first = fn(first)
@@ -171,15 +171,12 @@ import rdsutils
 from rdsutils.datasets import Dataset, StructuredDataset, DataLoader, DataDumper
 
 
-
-
-
 # TODO:
+# Understand dataloader
 # start to think about things that come up a lot and ways to automate stuff
-    # config files with queries you're always going to use 
+# config files with queries you're always going to use
 
 
-# pd.clip 
-# pd.str.slice(stop=10) # get first characters of string 
-# 
-
+# pd.clip
+# pd.str.slice(stop=10) # get first characters of string
+#
