@@ -179,4 +179,12 @@ from rdsutils.datasets import Dataset, StructuredDataset, DataLoader, DataDumper
 
 # pd.clip
 # pd.str.slice(stop=10) # get first characters of string
-#
+# df['MOB']=((df.BUCKET_SCORING_DATE - df.DATE_FUND)/np.timedelta64(1, 'M')).astype(int)
+# class DataWrangler:
+# FeatureSelector
+
+# import os
+
+# print("Hello World")
+# src_base = os.path.dirname(os.path.realpath(__file__))
+# print(src_base)
