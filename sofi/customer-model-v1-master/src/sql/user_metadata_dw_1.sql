@@ -4,8 +4,8 @@ WITH
     AS
     (
         SELECT DISTINCT badf.borrower_id
-        FROM sofi_dw.sofidw.banking_account_daily_facts badf
-            JOIN sofi_dw.sofidw.banking_accounts ba ON badf.banking_account_id = ba.banking_account_id
+        FROM TDM_RISK_MGMT_HUB.modeled.banking_account_daily_facts badf
+            JOIN TDM_RISK_MGMT_HUB.modeled.banking_accounts ba ON badf.banking_account_id = ba.banking_account_id
         WHERE product_type='SoFi Money Cash Account'
             AND ba.active_flag=TRUE
     )
@@ -17,4 +17,4 @@ SELECT bid.borrower_id,
     b.last_name,
     b.current_addr_line_1
 FROM bid
-    JOIN borrowers b ON b.borrower_id = bid.borrower_id
+    JOIN TDM_RISK_MGMT_HUB.modeled.borrowers b ON b.borrower_id = bid.borrower_id

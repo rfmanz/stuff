@@ -1,0 +1,221 @@
+{
+    "model_name": "ach_deposit_v2",
+    "data": {
+        "raw": {
+            "banking": "raw/raw_1634184783/banking_1634184783.parquet",
+            "experian_credit_pull": "raw/raw_1634184783/experian_credit_pull_1634184783.parquet",
+            "giact": "raw/raw_1634184783/giact_1634184783.parquet",
+            "socure": "raw/raw_1634184783/socure_1634184783.parquet",
+            "transactions": "raw/raw_1634184783/transactions_1634184783.parquet",
+            "user_metadata_dw": "raw/raw_1634184783/user_metadata_dw_1634184783.parquet",
+            "banking_account_restrictions": "raw/raw_1634184783/banking_account_restrictions_1634184783.parquet",
+            "plaid": "raw/raw_1634184783/plaid_1634184783.parquet"
+        },
+        "processed": {
+            "banking": "processed/banking_1634192557.parquet",
+            "experian_credit_pull": "processed/experian_credit_pull_1634192557.parquet",
+            "giact": "processed/giact_1634192557.parquet",
+            "socure": "processed/socure_1634192557.parquet",
+            "transactions": "processed/transactions_1634192557.parquet",
+            "user_metadata_dw": "processed/user_metadata_dw_1634192557.parquet",
+            "banking_account_restrictions": "processed/banking_account_restrictions_1634192557.parquet",
+            "plaid": "processed/plaid_1634192557.parquet"
+        },
+        "joined": {
+            "joined_0": "joined/joined_1634192891/joined_0_1634192891.parquet",
+            "joined_1": "joined/joined_1634192891/joined_1_1634192891.parquet",
+            "joined_2": "joined/joined_1634192891/joined_2_1634192891.parquet",
+            "joined_3": "joined/joined_1634192891/joined_3_1634192891.parquet",
+            "joined_4": "joined/joined_1634192891/joined_4_1634192891.parquet",
+            "joined_5": "joined/joined_1634192891/joined_5_1634192891.parquet"
+        },
+        "features": {
+            "features_0": "features/features_1634195927/features_0_1634195927.parquet",
+            "features_1": "features/features_1634195927/features_1_1634195927.parquet",
+            "features_2": "features/features_1634195927/features_2_1634195927.parquet",
+            "features_3": "features/features_1634195927/features_3_1634195927.parquet",
+            "features_4": "features/features_1634195927/features_4_1634195927.parquet",
+            "features_5": "features/features_1634195927/features_5_1634195927.parquet"
+        },
+        "labeled": {
+            "labeled": "labeled/labeled_1634233508/labeled_1634233508.parquet"
+        }
+    },
+    "data_pull_date": "2021-10-14",
+    "s3_base_path": null,
+    "s3_bucket": null,
+    "base_path": "data",
+    "log_path": "log",
+    "chunk_size": 10000000,
+    "debug_ids_path": "artifacts/debug_ids.csv",
+    "sql_query_files": {
+        "banking": {
+            "database": "sofi_profile_reporting",
+            "port": 15556,
+            "query": "sql/banking.sql",
+            "query_by_id": "sql-by-id/banking.sql"
+        },
+        "experian_credit_pull": {
+            "database": "sofi_dw",
+            "port": 15501,
+            "query": "sql/experian_credit_pull.sql",
+            "query_by_id": "sql-by-id/experian_credit_pull.sql"
+        },
+        "giact": {
+            "database": "sofi_fraud",
+            "port": 15722,
+            "query": "sql/giact.sql",
+            "query_by_id": "sql-by-id/giact.sql"
+        },
+        "socure": {
+            "database": "sofi_fraud",
+            "port": 15722,
+            "query": "sql/socure.sql",
+            "query_by_id": "sql-by-id/socure.sql"
+        },
+        "transactions": {
+            "database": "sofi_profile_reporting",
+            "port": 15556,
+            "query": "sql/transactions.sql",
+            "query_by_id": "sql-by-id/transactions.sql"
+        },
+        "user_metadata_dw": {
+            "database": "sofi_dw",
+            "port": 15501,
+            "query": "sql/user_metadata_dw.sql",
+            "query_by_id": "sql-by-id/user_metadata_dw.sql"
+        },
+        "banking_account_restrictions": {
+            "database": "sofi_dw",
+            "port": 15501,
+            "query": "sql/banking_account_restrictions.sql",
+            "query_by_id": "sql-by-id/banking_account_restrictions.sql"
+        },
+        "plaid": {
+            "database": "sofi_tartan",
+            "port": 15524,
+            "query": "sql/plaid.sql",
+            "query_by_id": "sql-by-id/plaid.sql"
+        }
+    },
+    "modeling_data_path": "s3://sofi-data-science/jxu/money-risk-models/deposit-risk-v2-ach/data/2021-05-19/modeling_df_refit.parquet",
+    "validation_data_paths": {
+        "test_df": "s3://sofi-data-science/jxu/money-risk-models/deposit-risk-v2-ach/data/2021-05-19/test_df_refit.parquet"
+    },
+    "inference_data_paths": {
+        "test_df": "s3://sofi-data-science/jxu/money-risk-models/deposit-risk-v2-ach/data/2021-05-19/test_df_refit.parquet"
+    },
+    "model_params": {
+        "boosting_type": "gbdt",
+        "colsample_bytree": 1.0,
+        "learning_rate": 0.1,
+        "max_depth": 5,
+        "min_child_samples": 20,
+        "min_child_weight": 0.001,
+        "min_split_gain": 0.0,
+        "n_jobs": -1,
+        "num_leaves": 52,
+        "random_state": 12345,
+        "subsample": 1.0,
+        "subsample_for_bin": 200000,
+        "subsample_freq": 0,
+        "verbose": -1,
+        "boosting": "gbdt",
+        "tree_learner": "feature",
+        "boost_from_average": "false",
+        "lambda_l1": 30.0,
+        "lambda_l2": 50.0,
+        "min_data_in_leaf": 121,
+        "feature_fraction": 0.8,
+        "scale_pos_weight": 20.34585956416465,
+        "seed": 12345,
+        "seed_value": 12345,
+        "objective": "binary",
+        "metric": [
+            "auc"
+        ],
+        "num_iterations": 215,
+        "early_stopping_round": 300,
+        "monotone_constraints": [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            -1,
+            1,
+            1,
+            -1,
+            -1,
+            -1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            -1,
+            1,
+            -1,
+            1
+        ],
+        "mc_method": "basic"
+    },
+    "features": [
+        "vantage_score",
+        "first_deposit_amount",
+        "bcc7120",
+        "credit_card_loan_amount",
+        "plaid_max_avail_bal",
+        "total_tradelines_open",
+        "plaid_days_since_first_link",
+        "nr_transactions_30d_div_nr_past_transactions",
+        "plaid_min_avail_bal",
+        "nr_transactions_per_day",
+        "max_deposits_10d_div_mean_account_balance_30d",
+        "fico_score",
+        "sum_deposits_10d",
+        "total_outstanding_balance",
+        "rolling_trns_as_pct_of_bal",
+        "phone_risk_score",
+        "email_risk_score",
+        "deposits_ratio",
+        "fraud_score_1",
+        "mean_deposits_10d_div_mean_deposits",
+        "fraud_score_2",
+        "nr_past_deposits",
+        "address_risk_score"
+    ],
+    "target_col": "is_returned",
+    "indeterminate_col": null,
+    "meta_cols": [
+        "business_account_number",
+        "borrower_id",
+        "user_id",
+        "transaction_datetime"
+    ],
+    "models_base_path": "models",
+    "time_id": "1634233508",
+    "baseline_models": {
+        "deposit_v1": {
+            "bucket": "sofi-data-science",
+            "key": "jxu/money-risk-models/models/money-deposit-risk-1567033961.pkl"
+        },
+        "customer": {
+            "bucket": "sofi-data-science",
+            "key": "jxu/money-risk-models/models/customer_risk_target_no_giact_time_since_last_link.pkl"
+        },
+        "deposit_v2_ach_dev_final": {
+            "bucket": "sofi-data-science",
+            "key": "jxu/money-risk-models/models/money-deposit-risk-v2-ach-dev.pkl"
+        },
+        "customer_refit_2021Q1": {
+            "bucket": "sofi-data-science",
+            "key": "jxu/money-risk-models/models/customer_risk_refit_20201231_wo_ind.pkl"
+        }
+    },
+    "base_dir": "/home/ec2-user/SageMaker/projects-model/deposit-risk-model-v2-ach",
+    "artifact_path": "artifacts/ach-mc-refit"
+}

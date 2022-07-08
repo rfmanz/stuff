@@ -1,0 +1,114 @@
+html:
+    style:
+        primary_color: '#2c3e50'
+        theme: flatly
+        logo: ''
+        full_width: no
+    minify_html: yes
+    use_local_assets: yes
+    inline: yes
+    navbar_show: yes
+    file_name: None
+memory_deep: yes
+n_freq_table_max: 25
+n_extreme_obs: 10
+n_obs_unique: 10
+vars:
+    image:
+        active: yes
+        exif: no
+        hash: no
+    file:
+        active: yes
+    cat:
+        unicode: yes
+        length: no
+        cardinality_threshold: 50
+        n_obs: 5
+        chi_squared_threshold: 0.0
+        coerce_str_to_date: no
+        redact: no
+    num:
+        quantiles:
+        - 0.05
+        - 0.25
+        - 0.5
+        - 0.75
+        - 0.95
+        skewness_threshold: 20
+        low_categorical_threshold: 5
+        chi_squared_threshold: 0.0
+    bool:
+        n_obs: 3
+title: Pandas Profiling Report
+dataset:
+    description: ''
+    creator: ''
+    author: ''
+    copyright_holder: ''
+    copyright_year: ''
+    url: ''
+variables:
+    descriptions: {}
+show_variable_description: yes
+pool_size: 0
+progress_bar: yes
+sort: None
+missing_diagrams:
+    bar: no
+    matrix: no
+    heatmap: no
+    dendrogram: no
+correlations:
+    pearson:
+        calculate: no
+        warn_high_correlations: yes
+        threshold: 0.9
+    spearman:
+        calculate: no
+        warn_high_correlations: no
+    kendall:
+        calculate: no
+        warn_high_correlations: no
+    phi_k:
+        calculate: no
+        warn_high_correlations: no
+    cramers:
+        calculate: no
+        warn_high_correlations: yes
+        threshold: 0.9
+    recoded:
+        calculate: no
+        warn_high_correlations: no
+        threshold: 0.0
+interactions:
+    targets: []
+    continuous: no
+categorical_maximum_correlation_distinct: 100
+plot:
+    image_format: svg
+    dpi: 800
+    scatter_threshold: 1000
+    correlation:
+        cmap: RdBu
+        bad: '#000000'
+    missing:
+        cmap: RdBu
+        force_labels: yes
+    pie:
+        max_unique: 0
+    histogram:
+        x_axis_labels: yes
+        bins: 50
+        max_bins: 250
+duplicates:
+    head: 0
+samples:
+    head: 0
+    tail: 0
+reject_variables: yes
+notebook:
+    iframe:
+        height: 800px
+        width: 100%
+        attribute: srcdoc

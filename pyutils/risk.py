@@ -207,16 +207,113 @@ def my_sum(*args):
 
 print(my_sum(1, 2, 3))
 
-import pandas as pd 
+import pandas as pd
 
 
-pl_base =  pd.read_parquet("C:/Users/rfrancis/Downloads/df_final2.parquet.gzip")
+pl_base = pd.read_parquet(
+    "C:/Users/rfrancis/Downloads/df_final2.parquet.gzip", engine="pyarrow"
+)
 
-reduce_memory_usage(pl_base)
+data_dir = "C:/Users/rfrancis/Downloads/"
+
+pl_base2 = pl_base.iloc[:, 1:50].copy()
+del pl_base
+import gc
+
+gc.collect()
+
+print(list(pl_base2), end="")
+
+from pathlib import Path
 
 
+class DataLoader:
+    """
+    Purpose
+    * provide a path and return a generator of dfs to be loaded
+    * process the df
+    * method to save the df
+
+    files are loaded in the order of file name
+    """
+
+    def __init__(self, path, suffix="parquet", **kwargs):
+        self.i = 0
+
+        p = Path(path)
+        self.files = sorted(list(p.glob(f"*.{suffix}")))
+        self.kwargs = kwargs
+
+        try:
+            self.load_fn = getattr(pd, f"read_{suffix}")
+        except:
+            raise ValueError(
+                f"trying read_{suffix}, suppported read type - must be one from pd.read_* "
+            )
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return self.next()
+
+    def next(self):
+
+        if self.i < len(self.files):
+            fpath = self.files[self.i]
+            fname = fpath.stem
+            df = self.load_fn(fpath, **self.kwargs)
+            self.i += 1
+
+            return fname, df
+
+        raise StopIteration()
+
+    def get_paths(self):
+        return list(map(lambda fpath: str(fpath.absolute()), self.files))
+
+    def get_full(self):
+        dfs = [self.load_fn(fpath, **self.kwargs) for fpath in self.files]
+        return pd.concat(dfs, axis=0)
 
 
+COLS = [
+    "dw_application_id",
+    "application_type",
+    "requested_amount",
+    "initial_term",
+    "interest_rate",
+    "fraud_type",
+    "applied_city",
+    "applied_state",
+    "applied_zip",
+    "applied_cbsa_name",
+    "applied_cbsa_code",
+    "employer_name",
+    "loan_purpose",
+    "tier",
+    "credit_score",
+    "fico",
+    "vantage",
+    "gross_income",
+    "initial_decision",
+    "sofi_score",
+    "pl_custom_score",
+    "reason",
+]
 
+dl = DataLoader(data_dir, suffix="csv")
+dl.files
+from IPython.display import display
 
+dl.__dict__
+df = dl.get_full()
+df.shape
+dl.get_paths()
+dl.next()
+for fname, df__ in dl:
+    print(fname, df__.shape)
 
+read_data(data_dir)
+
+display(dl.get_paths())
