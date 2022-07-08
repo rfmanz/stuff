@@ -176,6 +176,10 @@ from rdsutils.datasets import Dataset, StructuredDataset, DataLoader, DataDumper
 # start to think about things that come up a lot and ways to automate stuff
 # config files with queries you're always going to use
 
+# !! a dataloader which already has all the sql connections abstracted away 
+#   ## but what you really want here is basically to call something like rdsutils, and then have a function called run_query which then loads all the snowflake connections and postgress connections, you'd write the query and then perhaps can have a save as parquet parameter
+    # initially perhaps run_query can 
+
 
 # pd.clip
 # pd.str.slice(stop=10) # get first characters of string

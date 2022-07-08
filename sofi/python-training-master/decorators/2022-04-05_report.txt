@@ -1,0 +1,10 @@
+AdaBoostClassifier
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00        14
+           1       0.77      1.00      0.87        10
+           2       1.00      0.79      0.88        14
+
+    accuracy                           0.92        38
+   macro avg       0.92      0.93      0.92        38
+weighted avg       0.94      0.92      0.92        38
