@@ -1,4 +1,3 @@
-
 def headline(text: str, align: bool = True) -> str:
     if align:
         return f"{text.title()}\n{'-' * len(text)}"
@@ -7,4 +6,4 @@ def headline(text: str, align: bool = True) -> str:
 
 
 print(headline("python type checking"))
-print(headline("use mypy", align="center"))
+print(headline("use mypy", align=True))

@@ -172,17 +172,10 @@ from rdsutils.datasets import Dataset, StructuredDataset, DataLoader, DataDumper
 
 
 # TODO:
-# Understand dataloader
-# start to think about things that come up a lot and ways to automate stuff
-# config files with queries you're always going to use
 
-# !! a dataloader which already has all the sql connections abstracted away
-#   ## but what you really want here is basically to call something like rdsutils, and then have a function called run_query which then loads all the snowflake connections and postgress connections, you'd write the query and then perhaps can have a save as parquet parameter
-# initially perhaps run_query can
-
-
-# set up gitlab
-
+# !!!! understand unittests 
+## !!! decoratoes |  attrs 
+## !! tox 
 
 # pd.clip
 # pd.str.slice(stop=10) # get first characters of string
@@ -190,14 +183,7 @@ from rdsutils.datasets import Dataset, StructuredDataset, DataLoader, DataDumper
 # class DataWrangler:
 # FeatureSelector
 
-# import os
 
-# print("Hello World")
-# src_base = os.path.dirname(os.path.realpath(__file__))
-# print(src_base)
-
-# mypy 
-# attrs 
 
 
 def my_sum(*args):
@@ -350,7 +336,25 @@ import functools
 functools.
 
 
+add15.__call__(10)
+add15.__getattribute__()
 
 
+from time import time
+
+def timeit(func):
+    def wrapper(*args, **kwargs):
+        start = time()
+        value = func(*args, **kwargs)
+        print(f'Elapsed time is {time() - start} ms')
+        return value 
+    return wrapper
+
+@timeit
+def any_func():
+    count = 0
+    for number in range(10000):
+        count += number
 
 
+from attrs import asdict, define, make_class, Factory
