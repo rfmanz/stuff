@@ -173,17 +173,25 @@ from rdsutils.datasets import Dataset, StructuredDataset, DataLoader, DataDumper
 
 # TODO:
 
-# !!!! understand unittests 
-## !!! decoratoes |  attrs 
-## !! tox 
+# !!!! understand unittests
+## !!! decoratoes |  attrs
+# __next__, __iter__
+## !! tox
+
+#### Data loader class
+        # Sql from json
+        # Load with different methods
+        # Process function
+
+  
+
+
 
 # pd.clip
 # pd.str.slice(stop=10) # get first characters of string
 # df['MOB']=((df.BUCKET_SCORING_DATE - df.DATE_FUND)/np.timedelta64(1, 'M')).astype(int)
 # class DataWrangler:
 # FeatureSelector
-
-
 
 
 def my_sum(*args):
@@ -200,16 +208,55 @@ import pandas as pd
 
 
 pl_base = pd.read_parquet(
-    "C:/Users/rfrancis/Downloads/df_final2.parquet.gzip", engine="pyarrow"
-)
-
-data_dir = "C:/Users/rfrancis/Downloads/"
+    "C:/Users/rfrancis/Downloads/df_final2.parquet.gzip", engine="pyarrow")
 
 pl_base2 = pl_base.iloc[:, 1:50].copy()
 del pl_base
 import gc
 
+hyperparams = {}
+
+from dataclasses import dataclass
+@dataclass
+class SetPath():
+    def __init__(self):
+        self.hyperparams = {}
+
+    def read_csv(self):                    
+        pl_base = pd.read_parquet(
+    "C:/Users/rfrancis/Downloads/df_final2.parquet.gzip", engine="pyarrow")
+        pl_base2 = pl_base.iloc[:, 1:50].copy()
+        del pl_base
+        import gc
+        gc.collect()
+        hyperparams = {
+                    "param_mapInst":pl_base2,
+                    "pp" : pl_base2.iloc[1:50]
+                }
+        self.hyperparams['MAPS_INST'] = hyperparams
+
+    def get_hyperparam(self):
+        return(self.hyperparams)
+
+
+p = SetPath()
+
+p.read_csv()
+p.hyperparams['MAPS_INST']['param_mapInst']
+p.hyperparams['MAPS_INST']['pp'].head()
+
+person = {}
+person['pets'] = {'dog': {'Fido','asdsasd'}, 'cat': 'Sox'}
+person
+
+SetPath().__dataclass_fields__
+self.hyperparams['MAPS_INST'] = hyperparams
+
 gc.collect()
+
+
+data_dir = "C:/Users/rfrancis/Downloads/"
+
 
 print(list(pl_base2), end="")
 
@@ -308,32 +355,31 @@ read_data(data_dir)
 display(dl.get_paths())
 
 import numpy as np
-a = np.arange(10)
-np.where(a<5)
 
+a = np.arange(10)
+np.where(a < 5)
 
 
 a = 2
-b = [1,2,3]
+b = [1, 2, 3]
 c = b
 a.__add__(2)
 (2).__add__(3)
 
 
-def outer(x): 
-    def inner(y): 
-        return x + y 
+def outer(x):
+    def inner(y):
+        return x + y
+
     return inner
+
 
 outer(15)
 
-add15 = outer(15) 
-add15(10)    
+add15 = outer(15)
+add15(10)
 add15.__closure__[0].cell_contents
 add15.__closure__[0].cell_contents
-
-import functools
-functools.
 
 
 add15.__call__(10)
@@ -341,20 +387,61 @@ add15.__getattribute__()
 
 
 from time import time
+import time
+time.perf_counter()
+import functools
+
 
 def timeit(func):
     def wrapper(*args, **kwargs):
         start = time()
         value = func(*args, **kwargs)
-        print(f'Elapsed time is {time() - start} ms')
-        return value 
+        print(f"Elapsed time is {time() - start} ms")
+        return value
+
     return wrapper
 
+
+
+
+
+
+@debug
 @timeit
+@timer
 def any_func():
     count = 0
     for number in range(10000):
         count += number
+    return count    
+
+any_func()
+
+count = 0
+for number in range(10):
+        count += number
+        print(number, count)
+
+    
+for number in range(10):
+    print(number)        
 
 
 from attrs import asdict, define, make_class, Factory
+import functools
+
+
+@define
+class SomeClass:
+    a_number: int = 42
+    list_of_numbers: list[int] = Factory(list)
+
+    def hard_math(self, another_number):
+        return self.a_number + sum(self.list_of_numbers) * another_number
+
+
+sc = SomeClass(1, [1, 2, 3])
+sc.hard_math(3)
+
+dir(SomeClass())
+dir(outer(1)(2))

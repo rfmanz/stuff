@@ -128,7 +128,7 @@ class SetPath():
         return(self.hyperparams)
 
 class CLVEngine():
-    def __init__(self, hyperparams=SetPath().get_hyperparam()):
+    def __init__(self, hyperparams=SetPath().gket_hyperparam()):
         self.hyperparams = hyperparams
         self.m, self.param, self.ingresos, self.score = None, None, None, None
         self.curves = {
