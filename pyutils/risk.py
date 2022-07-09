@@ -196,6 +196,9 @@ from rdsutils.datasets import Dataset, StructuredDataset, DataLoader, DataDumper
 # src_base = os.path.dirname(os.path.realpath(__file__))
 # print(src_base)
 
+# mypy 
+# attrs 
+
 
 def my_sum(*args):
     result = 0
