@@ -317,3 +317,37 @@ for fname, df__ in dl:
 read_data(data_dir)
 
 display(dl.get_paths())
+
+import numpy as np
+a = np.arange(10)
+np.where(a<5)
+
+
+
+a = 2
+b = [1,2,3]
+c = b
+a.__add__(2)
+(2).__add__(3)
+
+
+def outer(x): 
+    def inner(y): 
+        return x + y 
+    return inner
+
+outer(15)
+
+add15 = outer(15) 
+add15(10)    
+add15.__closure__[0].cell_contents
+add15.__closure__[0].cell_contents
+
+import functools
+functools.
+
+
+
+
+
+
