@@ -124,19 +124,19 @@ def process_raw_data(base_path, prefix_in, prefix_out):
     gc.collect()
 
     # 6. Process threat metrix data
-#     tmx_df = load_dataframe(prefix_in, "threat_metrix", base_path)
+    #     tmx_df = load_dataframe(prefix_in, "threat_metrix", base_path)
 
-#     tmx_df = processing.process_threat_metrix(tmx_df)
+    #     tmx_df = processing.process_threat_metrix(tmx_df)
 
-#     save_dataframes(
-#         {"threat_metrix": tmx_df},
-#         base_path,
-#         prefix_out,
-#         timestamp_str,
-#         include_subdir=True,
-#     )
-#     del tmx_df
-#     gc.collect()
+    #     save_dataframes(
+    #         {"threat_metrix": tmx_df},
+    #         base_path,
+    #         prefix_out,
+    #         timestamp_str,
+    #         include_subdir=True,
+    #     )
+    #     del tmx_df
+    #     gc.collect()
 
     # 7. Process transactions data
     transactions_df = load_dataframe(prefix_in, "transactions", base_path)
@@ -484,25 +484,25 @@ def join_processed_data(base_path, prefix_in, prefix_out, static_sample_dates=No
     gc.collect()
 
     # 8. Join threat metrix data
-#     tmx_df = load_dataframe(prefix_in, "threat_metrix", base_path)
-#     tmx_df = tmx_df.sort_values(by=["created_dt"])
+    #     tmx_df = load_dataframe(prefix_in, "threat_metrix", base_path)
+    #     tmx_df = tmx_df.sort_values(by=["created_dt"])
 
-#     tmx_cols = [
-#         "user_id",
-#         "tmx_created_dt",
-#         "os",
-#         "dns_ip_region",
-#         "tmx_risk_rating",
-#         "time_zone",
-#         "page_time_on",
-#     ]
+    #     tmx_cols = [
+    #         "user_id",
+    #         "tmx_created_dt",
+    #         "os",
+    #         "dns_ip_region",
+    #         "tmx_risk_rating",
+    #         "time_zone",
+    #         "page_time_on",
+    #     ]
 
-#     base_df = pd.merge_asof(
-#         base_df, tmx_df, left_on="sample_date", right_on="tmx_created_dt", by="user_id"
-#     )
-#     print("5", len(base_df))
-#     del tmx_df
-#     gc.collect()
+    #     base_df = pd.merge_asof(
+    #         base_df, tmx_df, left_on="sample_date", right_on="tmx_created_dt", by="user_id"
+    #     )
+    #     print("5", len(base_df))
+    #     del tmx_df
+    #     gc.collect()
 
     save_dataframes({"base": base_df}, base_path, prefix_out, timestamp_str)
 
@@ -777,87 +777,87 @@ def get_labels(df_sampled, transactions_df):
         sampled_df["chg_wrt_off_date"] - sampled_df["sample_date"]
     ).dt.days <= 90
 
-#     def get_target(df):   # kept this for record keeping
-#         """
-#         BAD WHEN:
-#             - Account charges/writes off in next 90 days
-#             - Account closed by risk in next 90 days
-#             - Account restricted (no outbound trns/no trns activity) in next 90 days
-#             - Account balance after 90 days is negative
-#             - Account has an ACH or Check chargeback in next 90 days (and bal after 90 days is 0 or less)
-#         """
-#         df["target"] = (
-#             (df["is_chg_wrt_off_in_90d"])
-#             | (df["account_closed_by_risk_in_next_90d"])
-#             | (
-#                 df["last_unrestricted_date_in_next_90d"]
-#                 & df["restricted_reason"].str.startswith("No")
-#             )
-#             | (df["bal_after_90d"] < 0)
-#             | ((df["nr_returns_in_next_90d"] > 0) & (df["bal_after_90d"] <= 0))
-#         )
+    #     def get_target(df):   # kept this for record keeping
+    #         """
+    #         BAD WHEN:
+    #             - Account charges/writes off in next 90 days
+    #             - Account closed by risk in next 90 days
+    #             - Account restricted (no outbound trns/no trns activity) in next 90 days
+    #             - Account balance after 90 days is negative
+    #             - Account has an ACH or Check chargeback in next 90 days (and bal after 90 days is 0 or less)
+    #         """
+    #         df["target"] = (
+    #             (df["is_chg_wrt_off_in_90d"])
+    #             | (df["account_closed_by_risk_in_next_90d"])
+    #             | (
+    #                 df["last_unrestricted_date_in_next_90d"]
+    #                 & df["restricted_reason"].str.startswith("No")
+    #             )
+    #             | (df["bal_after_90d"] < 0)
+    #             | ((df["nr_returns_in_next_90d"] > 0) & (df["bal_after_90d"] <= 0))
+    #         )
 
-#         df["target_with_restriction"] = (
-#             (df["is_chg_wrt_off_in_90d"])
-#             | (df["account_closed_by_risk_in_next_90d"])
-#             | (
-#                 df["last_unrestricted_date_in_next_90d"]
-#                 & df["restricted_reason"].str.startswith("No")
-#             )
-#             | (df["bal_after_90d"] < 0)
-#             | ((df["nr_returns_in_next_90d"] > 0) & (df["bal_after_90d"] <= 0))
-#         )
-        
-#         df["indeterminate"] = (  # why is it defined like this?
-#             (pd.to_datetime(df["dtc"]) <= df["sample_date"])
-#             | (df["last_unrestricted_date"] <= df["sample_date"])
-#             | (df["chg_wrt_off_date"] <= df["sample_date"])
-#             | (df["target"] & (df["latest_acc_bal"] > 0))
-#             | (
-#                 ~df["target"] & (~df["chg_wrt_off_date"].isna())
-#                 | (df["latest_acc_bal"] < 0)
-#                 | (
-#                     df["closed_reason"].isin(
-#                         [
-#                             "Closed by SoFi - Risk Request",
-#                             "Closed by SoFi - Charge-Off / Write-Off",
-#                         ]
-#                     )
-#                 )
-#                 | (df["restricted_reason"].str.startswith("No"))
-#             )
-#         )
-        
-        
-#         df["indeterminate"] = (  # why is it defined like this?
-#             (df["nr_transactions_next_60d"] == 0)
-#             | (pd.to_datetime(df["dtc"]) <= df["sample_date"])
-#             | (df["last_unrestricted_date"] <= df["sample_date"])
-#             | (df["chg_wrt_off_date"] <= df["sample_date"])
-#             | (df["target"] & (df["latest_acc_bal"] > 0))
-#             | (
-#                 ~df["target"] & (~df["chg_wrt_off_date"].isna())
-#                 | (df["latest_acc_bal"] < 0)
-#                 | (
-#                     df["closed_reason"].isin(
-#                         [
-#                             "Closed by SoFi - Risk Request",
-#                             "Closed by SoFi - Charge-Off / Write-Off",
-#                         ]
-#                     )
-#                 )
-#                 | (df["restricted_reason"].str.startswith("No"))
-#             )
-#         )
+    #         df["target_with_restriction"] = (
+    #             (df["is_chg_wrt_off_in_90d"])
+    #             | (df["account_closed_by_risk_in_next_90d"])
+    #             | (
+    #                 df["last_unrestricted_date_in_next_90d"]
+    #                 & df["restricted_reason"].str.startswith("No")
+    #             )
+    #             | (df["bal_after_90d"] < 0)
+    #             | ((df["nr_returns_in_next_90d"] > 0) & (df["bal_after_90d"] <= 0))
+    #         )
 
-        # add indeterminate_reason_components and recreated indeterminate
+    #         df["indeterminate"] = (  # why is it defined like this?
+    #             (pd.to_datetime(df["dtc"]) <= df["sample_date"])
+    #             | (df["last_unrestricted_date"] <= df["sample_date"])
+    #             | (df["chg_wrt_off_date"] <= df["sample_date"])
+    #             | (df["target"] & (df["latest_acc_bal"] > 0))
+    #             | (
+    #                 ~df["target"] & (~df["chg_wrt_off_date"].isna())
+    #                 | (df["latest_acc_bal"] < 0)
+    #                 | (
+    #                     df["closed_reason"].isin(
+    #                         [
+    #                             "Closed by SoFi - Risk Request",
+    #                             "Closed by SoFi - Charge-Off / Write-Off",
+    #                         ]
+    #                     )
+    #                 )
+    #                 | (df["restricted_reason"].str.startswith("No"))
+    #             )
+    #         )
 
-#         return df
+    #         df["indeterminate"] = (  # why is it defined like this?
+    #             (df["nr_transactions_next_60d"] == 0)
+    #             | (pd.to_datetime(df["dtc"]) <= df["sample_date"])
+    #             | (df["last_unrestricted_date"] <= df["sample_date"])
+    #             | (df["chg_wrt_off_date"] <= df["sample_date"])
+    #             | (df["target"] & (df["latest_acc_bal"] > 0))
+    #             | (
+    #                 ~df["target"] & (~df["chg_wrt_off_date"].isna())
+    #                 | (df["latest_acc_bal"] < 0)
+    #                 | (
+    #                     df["closed_reason"].isin(
+    #                         [
+    #                             "Closed by SoFi - Risk Request",
+    #                             "Closed by SoFi - Charge-Off / Write-Off",
+    #                         ]
+    #                     )
+    #                 )
+    #                 | (df["restricted_reason"].str.startswith("No"))
+    #             )
+    #         )
+
+    # add indeterminate_reason_components and recreated indeterminate
+
+    #         return df
 
     sampled_df["target"] = get_target(sampled_df)
     sampled_df["indeterminate"] = get_indeterminate_static(sampled_df)
-    
+
     return sampled_df
+
 
 def get_target(df):
     """
@@ -880,7 +880,7 @@ def get_target(df):
     )
     return targets
 
-    
+
 def get_indeterminate_static(df):
     """
     indeterminate definitions
@@ -912,8 +912,6 @@ def get_indeterminate_static(df):
         )
     )
     return ind
-
-
 
 
 def save_dataframes(
@@ -1191,9 +1189,12 @@ def main():
         static_full = load_dataframe("labeled", "labeled", "data", args.debug)
         combined_data = {
             "combined": combine.combine_data(
-                dynamic_full, static_full, 
-                CONFIG_FILE["date_sample_start"], CONFIG_FILE["date_sample_end"],
-                args.all_features, args.no_filtering
+                dynamic_full,
+                static_full,
+                CONFIG_FILE["date_sample_start"],
+                CONFIG_FILE["date_sample_end"],
+                args.all_features,
+                args.no_filtering,
             )
         }
         save_dataframes(
