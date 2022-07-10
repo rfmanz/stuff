@@ -181,10 +181,10 @@ class dataloader:
             )
 
 
-def pandas_df_to_s3(df, bucket, path_s3, file_format='parquet', **kwargs):
+def pandas_df_to_s3(df, bucket, path_s3, file_format="parquet", **kwargs):
     """
     Upload Pandas DataFrame to S3
-    
+
     Parameters
     ----------
     df: pd.DataFrame
@@ -199,15 +199,65 @@ def pandas_df_to_s3(df, bucket, path_s3, file_format='parquet', **kwargs):
     -------
     """
     import s3fs, boto3
+
     boto3.setup_default_session()
     s3 = s3fs.S3FileSystem(anon=False)
-    
-    if file_format in ['feather', 'parquet']:
-        with s3.open(f'{bucket}/{path_s3}', 'wb') as f:
-            getattr(df, f'to_{file_format}')(f, **kwargs)
-    elif file_format in ['csv']:
-        with s3.open(f'{bucket}/{path_s3}', 'w') as f:
-            getattr(df, f'to_{file_format}')(f, **kwargs)
+
+    if file_format in ["feather", "parquet"]:
+        with s3.open(f"{bucket}/{path_s3}", "wb") as f:
+            getattr(df, f"to_{file_format}")(f, **kwargs)
+    elif file_format in ["csv"]:
+        with s3.open(f"{bucket}/{path_s3}", "w") as f:
+            getattr(df, f"to_{file_format}")(f, **kwargs)
     else:
         raise NotImplemented
-        
+
+
+from sagemaker import get_execution_role
+import pandas as pd
+
+
+def s3_to_pandas_df(fname):
+
+    role = get_execution_role()
+    bucket = "sofi-data-science"
+    key = "rarevalo/numerical2.parquet"
+    data_location = f"s3://{bucket}/{key}"
+    df = pd.read_parquet(data_location)
+    return df
+
+
+class DataDumper:
+    def __init__(self, dir_path):
+        """
+        dir_path (str): path to directory
+        """
+        self.dir_path = dir_path
+        os.makedirs(dir_path, exist_ok=True)
+
+    def to_parquet(self, df, fname, suffix="parquet", **kwargs):
+        """
+        df (pd.DataFrame): dataframe to save
+        fname (str): saved file will take form "{self.dir_path}/{fname}{suffix}"
+        suffix (str): saved file will take form "{self.dir_path}/{fname}{suffix}"
+        kwargs: to be passed into df.to_parquet(**kwargs)
+        """
+        fpath = os.path.join(self.dir_path, f"{fname}.{suffix}")
+        df.to_parquet(fpath, **kwargs)
+
+    def to_parquets(
+        self, dfs, fname, append_timestamp=True, suffix="parquet", **kwargs
+    ):
+        if not append_timestamp:
+            raise NotImplementedError("Currently only supports append_timestamp=True")
+
+        for df_ in tqdm.tqdm(dfs):
+            dt_str = str(dt.datetime.now().timestamp())
+            fname_ = f"{fname}_{dt_str}"
+            self.to_parquet(df_, fname_, suffix=suffix, **kwargs)
+
+    @staticmethod
+    def get_timestamp_str(round=True):
+        if round:
+            return str(int(dt.datetime.now().timestamp()))
+        return str(dt.datetime.now().timestamp())
