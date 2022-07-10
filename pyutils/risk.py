@@ -179,16 +179,16 @@ from rdsutils.datasets import Dataset, StructuredDataset, DataLoader, DataDumper
 ## !! tox
 # @abstractmethod
 #### Data loader class
-        # Sql from json
-        # Load with different methods
-        # Process function
+# Sql from json
+# Load with different methods
+# Process function
 
 import os
+
 os.getcwd()
 from datasets.dataloader import DataLoader
 
 DataLoader()
-
 
 
 # pd.clip
@@ -212,7 +212,8 @@ import pandas as pd
 
 
 pl_base = pd.read_parquet(
-    "C:/Users/rfrancis/Downloads/df_final2.parquet.gzip", engine="pyarrow")
+    "C:/Users/rfrancis/Downloads/df_final2.parquet.gzip", engine="pyarrow"
+)
 
 pl_base2 = pl_base.iloc[:, 1:50].copy()
 del pl_base
@@ -221,40 +222,41 @@ import gc
 hyperparams = {}
 
 from dataclasses import dataclass
+
+
 @dataclass
-class SetPath():
+class SetPath:
     def __init__(self):
         self.hyperparams = {}
 
-    def read_csv(self):                    
+    def read_csv(self):
         pl_base = pd.read_parquet(
-    "C:/Users/rfrancis/Downloads/df_final2.parquet.gzip", engine="pyarrow")
+            "C:/Users/rfrancis/Downloads/df_final2.parquet.gzip", engine="pyarrow"
+        )
         pl_base2 = pl_base.iloc[:, 1:50].copy()
         del pl_base
         import gc
+
         gc.collect()
-        hyperparams = {
-                    "param_mapInst":pl_base2,
-                    "pp" : pl_base2.iloc[1:50]
-                }
-        self.hyperparams['MAPS_INST'] = hyperparams
+        hyperparams = {"param_mapInst": pl_base2, "pp": pl_base2.iloc[1:50]}
+        self.hyperparams["MAPS_INST"] = hyperparams
 
     def get_hyperparam(self):
-        return(self.hyperparams)
+        return self.hyperparams
 
 
 p = SetPath()
 
 p.read_csv()
-p.hyperparams['MAPS_INST']['param_mapInst']
-p.hyperparams['MAPS_INST']['pp'].head()
+p.hyperparams["MAPS_INST"]["param_mapInst"]
+p.hyperparams["MAPS_INST"]["pp"].head()
 
 person = {}
-person['pets'] = {'dog': {'Fido','asdsasd'}, 'cat': 'Sox'}
+person["pets"] = {"dog": {"Fido", "asdsasd"}, "cat": "Sox"}
 person
 
 SetPath().__dataclass_fields__
-self.hyperparams['MAPS_INST'] = hyperparams
+self.hyperparams["MAPS_INST"] = hyperparams
 
 gc.collect()
 
@@ -392,6 +394,7 @@ add15.__getattribute__()
 
 from time import time
 import time
+
 time.perf_counter()
 import functools
 
@@ -406,10 +409,6 @@ def timeit(func):
     return wrapper
 
 
-
-
-
-
 @debug
 @timeit
 @timer
@@ -417,18 +416,19 @@ def any_func():
     count = 0
     for number in range(10000):
         count += number
-    return count    
+    return count
+
 
 any_func()
 
 count = 0
 for number in range(10):
-        count += number
-        print(number, count)
+    count += number
+    print(number, count)
 
-    
+
 for number in range(10):
-    print(number)        
+    print(number)
 
 
 from attrs import asdict, define, make_class, Factory
