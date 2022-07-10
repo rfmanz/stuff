@@ -16,12 +16,13 @@ import math
 
 
 class Dataloader:
-    
+
     def __init__(
         self,
         config_path: str = "config.json",
         debug: bool = False,
     ):
+        
         """
         An extendable data loader class for Money Transactions data
         ---

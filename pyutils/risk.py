@@ -179,6 +179,7 @@ from rdsutils.datasets import Dataset, StructuredDataset, DataLoader, DataDumper
 ## !! tox
 # @abstractmethod
 #### Data loader class
+# query in attributes
 # Sql from json
 # Load with different methods
 # Process function
@@ -449,3 +450,14 @@ sc.hard_math(3)
 
 dir(SomeClass())
 dir(outer(1)(2))
+
+
+class Point3D(object):
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+    def __repr__(self):
+        return (self.__class__.__name__ +
+                ("(x={}, y={}, z={})".format(self.x, self.y, self.z)))
+

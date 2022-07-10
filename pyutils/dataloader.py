@@ -4,10 +4,11 @@ import pandas as pd
 import numpy as np
 from time import time
 import snowflake.connector
-
+import sys
 from attrs import asdict, define, make_class, Factory
 import functools
 from typing import Optional, Tuple, NamedTuple, Union, Any, List, Dict, Type
+from tabulate import tabulate
 
 
 # @define
@@ -17,15 +18,20 @@ class dataloader:
 
     # path: None
     def __init__(
-        self, config_file_path: str = ("config.json",), debug: bool = (False,)
+        self,
+        config_file_path: str = ("config.json",),
+        debug: bool = (False,),
+        sql: str = None,
     ):
-        self.df = None
 
-    """@params: config...."""
+        self.sql = sql
+        self.allthedata = None
 
-    # if config_file_path:
-    #   with open(config_file_path, "r") as f:
-    #     CONFIG_FILE = json.load(f)
+        # self.df = None
+
+        # if config_file_path:
+        #   with open(config_file_path, "r") as f:
+        #     CONFIG_FILE = json.load(f)
 
     def get_snowflake_connection(self):
 
@@ -41,17 +47,18 @@ class dataloader:
         )
         return ctx
 
-    def run_query(self, sql):
+    def run_query(self, query=None):
+        if self.sql is None:
+            self.sql = query
         with self.get_snowflake_connection() as ctx:
             with ctx.cursor() as cs:
-                cs.execute(sql)
-                allthedata = cs.fetch_pandas_all()
-                self.df = allthedata
-                return self.df
+                cs.execute(self.sql)
+                self.allthedata = cs.fetch_pandas_all()
+                return self.allthedata
 
     def describe_df(self, floatfmt=".3f"):
         # Numerical
-        df = self.df
+        df = self.allthedata
         print("--" * 20)
         print("Columns:", df.shape[1])
         print("Rows:", df.shape[0])
