@@ -26,6 +26,8 @@ class dataloader:
 
         self.sql = sql
         self.allthedata = None
+        self.categorical = None
+        self.numerical = None
 
         # self.df = None
 
@@ -56,9 +58,9 @@ class dataloader:
                 self.allthedata = cs.fetch_pandas_all()
                 return self.allthedata
 
-    def describe_df(self, floatfmt=".3f"):
+    def describe_df(self, query=None, floatfmt=".3f"):
         # Numerical
-        df = self.allthedata
+        df = self.run_query(query)
         print("--" * 20)
         print("Columns:", df.shape[1])
         print("Rows:", df.shape[0])
@@ -169,3 +171,6 @@ class dataloader:
                     colalign=("left"),
                 )
             )
+            self.categorical = concatenated_categorical
+            self.numerical = concatenated_numerical
+            return concatenated_categorical, concatenated_numerical
