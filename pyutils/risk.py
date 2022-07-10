@@ -177,7 +177,7 @@ from rdsutils.datasets import Dataset, StructuredDataset, DataLoader, DataDumper
 ## !!! decoratoes |  attrs
 # __next__, __iter__
 ## !! tox
-
+# @abstractmethod
 #### Data loader class
         # Sql from json
         # Load with different methods

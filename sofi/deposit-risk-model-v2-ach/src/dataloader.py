@@ -16,6 +16,7 @@ import math
 
 
 class Dataloader:
+    
     def __init__(
         self,
         config_path: str = "config.json",
@@ -94,8 +95,8 @@ class Dataloader:
             )
         else:
             self._query_dw(self.base_path, prefix=prefix, by_id=None, source=source)
-            
-        self.config["data_pull_date"] = pd.datetime.today().strftime('%Y-%m-%d')
+
+        self.config["data_pull_date"] = pd.datetime.today().strftime("%Y-%m-%d")
         self.set_config(self.config)
 
     def _query_dw(
@@ -147,7 +148,7 @@ class Dataloader:
         """
         Takes a dictionary of dataframes with format: {name: dataframe, ...}
         Saves them as base_path/prefix-path/name-timestamp.parquet
-        
+
         TODO:
         - add chunk functionality
         - if provided chunking parameters, save data by chunks.
@@ -168,7 +169,7 @@ class Dataloader:
     def load_dataframes(self, prefix, base_path="data", use_dask=False):
         """
         Load all dataframes from paths in config
-        
+
         TODO:
         - add chunk functionality
         - if provide by some logic, we load and dump by chunks
@@ -282,109 +283,112 @@ class Dataloader:
         self.config = processor.run()
         self.set_config(self.config)
 
-
     def join(
         self,
         prefix_in: str = "processed",
         prefix_out: str = "joined",
         debug: bool = False,
-        use_dask = False,
+        use_dask=False,
     ):
         # equally sliced method using sklearn
         from sklearn.model_selection import GroupKFold
         from src.join import Joiner
-        
+
         chunk_size = self.config["chunk_size"]
         dfs = self.load_dataframes(prefix_in, self.base_path, use_dask=use_dask)
         joiner = Joiner(self.config, prefix_in, prefix_out, self.logger)
-        assert("business_account_number" in self.config["meta_cols"])
-        
+        assert "business_account_number" in self.config["meta_cols"]
+
         tdf = dfs["transactions"]
         n = math.ceil(len(tdf) / chunk_size)
         gkf = GroupKFold(n_splits=n)
         ids = []
         splits = gkf.split(X=tdf.index, groups=tdf["business_account_number"])
         self.config["data"][prefix_out] = {}
-        
+
         def get_chunked_dfs(dfs: dict, idx):
-            """ chunk transactions df """
+            """chunk transactions df"""
             dfs_ = {}
-            assert("transactions" in dfs)
+            assert "transactions" in dfs
             for fname, df in dfs.items():
                 if fname == "transactions":
                     dfs_[fname] = df.iloc[idx]
                 else:
                     dfs_[fname] = df
-            return dfs_ 
-            
+            return dfs_
+
         chunk_size_tot = 0
-        
+
         for i, (_, idx) in tqdm(enumerate(splits)):
-            dfs_ = get_chunked_dfs(dfs, idx) # chunk transactions_df by index
+            dfs_ = get_chunked_dfs(dfs, idx)  # chunk transactions_df by index
             dfs_, self.config = joiner.run(dfs_)
             # to resolve memory issue, we store by chunks
             # make sure the returned df has the right structure
             # convert to multiple file storage structure
-            assert(len(dfs_)==1 and "joined" in dfs_)  
+            assert len(dfs_) == 1 and "joined" in dfs_
             df = dfs_["joined"]
-            chunk_size_tot += df.shape[0] # make sure combined chunk have the same size as tdf
+            chunk_size_tot += df.shape[
+                0
+            ]  # make sure combined chunk have the same size as tdf
             self.logger.info(f"chunk {i} - joined df shape: {df.shape}")
-            
+
             dfs_ = {f"{prefix_out}_{i}": df}
             ids.extend(idx)
-            
-            self.save_dataframes(dfs_, self.base_path, prefix_out, self.time_id, include_subdir=True)
-            
+
+            self.save_dataframes(
+                dfs_, self.base_path, prefix_out, self.time_id, include_subdir=True
+            )
+
             del dfs_, df
             gc.collect()
-        
+
         self.logger.info(f"total output chunk size: {chunk_size_tot}")
         self.logger.info(f"ALL rows are included: {len(set(ids))} vs. {len(tdf)}")
-        assert(len(set(ids)) == len(tdf))
-    
+        assert len(set(ids)) == len(tdf)
+
         self.set_config(self.config)
-        
 
     def join_(
         self,
         prefix_in: str = "processed",
         prefix_out: str = "joined",
         debug: bool = False,
-        use_dask = False,
+        use_dask=False,
     ):
-        """ deprecated join method
+        """deprecated join method
         - join all data at once - which may explode memory...
         - modified so it will join by id chunks
         """
         chunk_size = self.config["chunk_size"]
         dfs = self.load_dataframes(prefix_in, self.base_path, use_dask=use_dask)
         from src.join import Joiner
+
         joiner = Joiner(self.config, prefix_in, prefix_out, self.logger)
         dfs, self.config = joiner.run(dfs)
 
         # to resolve memory issue, we store by chunks
         # make sure the returned df has the right structure
         # convert to multiple file storage structure
-        assert(len(dfs)==1 and "joined" in dfs)  
+        assert len(dfs) == 1 and "joined" in dfs
         df = dfs["joined"]
         self.logger.info(f"joined df shape: {df.shape}")
-        assert("business_account_number" in self.config["meta_cols"])
-        
+        assert "business_account_number" in self.config["meta_cols"]
+
         # unevenly sliced method!
-#         ids = sorted(list(df["business_account_number"].unique()))
-#         dfs = {}
-        
-#         ids_copy = set()
-#         for i in range(math.ceil(len(ids)/chunk_size)):
-#             id_group = set(ids[i*chunk_size: min((i+1)*chunk_size, len(ids))])
-#             dfs[f"{prefix_out}_{i}"] = df[df["business_account_number"].isin(id_group)]
-#             ids_copy = ids_copy.union(id_group)
-        
-#         assert(len(ids_copy) == len(ids))
-        
+        #         ids = sorted(list(df["business_account_number"].unique()))
+        #         dfs = {}
+
+        #         ids_copy = set()
+        #         for i in range(math.ceil(len(ids)/chunk_size)):
+        #             id_group = set(ids[i*chunk_size: min((i+1)*chunk_size, len(ids))])
+        #             dfs[f"{prefix_out}_{i}"] = df[df["business_account_number"].isin(id_group)]
+        #             ids_copy = ids_copy.union(id_group)
+
+        #         assert(len(ids_copy) == len(ids))
+
         # equally sliced method using sklearn
         from sklearn.model_selection import GroupKFold
-        
+
         n = math.ceil(len(df) / chunk_size)
         gkf = GroupKFold(n_splits=n)
         ids = []
@@ -393,30 +397,36 @@ class Dataloader:
         for i, (_, idx) in enumerate(splits):
             dfs[f"{prefix_out}_{i}"] = df.iloc[idx]
             ids.extend(idx)
-        
-        assert(len(set(ids)) == len(df))
+
+        assert len(set(ids)) == len(df)
         self.logger.info(f"ALL rows are included: {len(set(ids))} vs. {len(df)}")
-        
+
         self.config["data"][prefix_out] = {}
-        utils._save_dataframes(self.config, dfs, self.base_path, prefix_out, self.time_id,
-                               include_subdir=True)
+        utils._save_dataframes(
+            self.config,
+            dfs,
+            self.base_path,
+            prefix_out,
+            self.time_id,
+            include_subdir=True,
+        )
         self.set_config(self.config)
 
-        
     def features(
         self,
         prefix_in: str = "joined",
         prefix_out: str = "features",
         debug: bool = False,
-        use_dask=False
+        use_dask=False,
     ):
         from src.feature import FeatureEngineering
+
         features = FeatureEngineering(self.config, prefix_in, prefix_out, self.logger)
 
         # new iterative feature engineering module
         # load
         from rdsutils.datasets import DataLoader, DataDumper
-        
+
         # get the file list..
         self.config["data"][prefix_out] = {}
         for i, (name, path) in enumerate(self.config["data"][prefix_in].items()):
@@ -426,15 +436,16 @@ class Dataloader:
             dfs_, self.config = features.run({f"{prefix_out}_{i}": df_})
             print(f"{prefix_out}_{i}", dfs_[f"{prefix_out}_{i}"].shape)
             self.logger.info(os.path.join(self.base_path, prefix_out))
-            self.save_dataframes(dfs_, self.base_path, prefix_out, self.time_id, include_subdir=True)
-            
+            self.save_dataframes(
+                dfs_, self.base_path, prefix_out, self.time_id, include_subdir=True
+            )
+
             # TODO: make sure this works. gc is newly added.
             del dfs_, df_
             gc.collect()
-            
+
         self.set_config(self.config)
-        
-        
+
     def labels(
         self,
         prefix_in: str = "features",
@@ -443,28 +454,29 @@ class Dataloader:
     ):
         from rdsutils.datasets import DataLoader
         from src.utils import drop_non_ach
-        
+
         dir_path = utils.get_data_dir(self.config, self.config["base_path"], prefix_in)
         dl = DataLoader(dir_path)
         df = dl.get_full()
         self.logger.info(f"labeled df shape: {df.shape}")
-        
+
         df = drop_non_ach(df)
         df.reset_index(drop=True, inplace=True)
-        df.columns = utils.remove_prefixs(df.columns)  # see function detail to see which prefixs are removed
+        df.columns = utils.remove_prefixs(
+            df.columns
+        )  # see function detail to see which prefixs are removed
         self.logger.info(f"dropped indeterminate: {df.shape}")
         gc.collect()
         dfs = {prefix_out: df}
-        
+
         self.logger.info(f"saving data: , {self.base_path}, {prefix_out}")
         self.logger.warning("Combining the data may explode memory!")
         # this may explode memory...
-        
+
         self.save_dataframes(
             dfs, self.base_path, prefix_out, self.time_id, include_subdir=True
         )
-        
-        
+
     def postprocess(
         self,
         prefix_in: str = "labeled",
@@ -472,7 +484,6 @@ class Dataloader:
         debug: bool = False,
     ):
         raise NotImplemented
-
 
     def all_data_to_s3(self, base_path="data"):
         """
@@ -487,4 +498,3 @@ class Dataloader:
                     path_local=path,
                     path_s3=s3_path,
                 )
-
