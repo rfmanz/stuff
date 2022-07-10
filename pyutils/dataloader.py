@@ -173,4 +173,41 @@ class dataloader:
             )
             self.categorical = concatenated_categorical
             self.numerical = concatenated_numerical
-            return concatenated_categorical, concatenated_numerical
+            return (
+                # print("concatenated_numerical"),
+                # print("concatenated_categorical"),
+                concatenated_numerical,
+                concatenated_categorical,
+            )
+
+
+def pandas_df_to_s3(df, bucket, path_s3, file_format='parquet', **kwargs):
+    """
+    Upload Pandas DataFrame to S3
+    
+    Parameters
+    ----------
+    df: pd.DataFrame
+        The DataFrame to upload
+    bucket: string
+        Bucket from which to upload the file: e.g. sofi-data-science
+    path_s3: string
+        path_s3 to file in s3 bucket
+    file_format: string
+        Format to store the df in, currently supports feather, parquet, and csv.
+    Returns
+    -------
+    """
+    import s3fs, boto3
+    boto3.setup_default_session()
+    s3 = s3fs.S3FileSystem(anon=False)
+    
+    if file_format in ['feather', 'parquet']:
+        with s3.open(f'{bucket}/{path_s3}', 'wb') as f:
+            getattr(df, f'to_{file_format}')(f, **kwargs)
+    elif file_format in ['csv']:
+        with s3.open(f'{bucket}/{path_s3}', 'w') as f:
+            getattr(df, f'to_{file_format}')(f, **kwargs)
+    else:
+        raise NotImplemented
+        
