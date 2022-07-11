@@ -1,4 +1,5 @@
-# https://github.com/bloomberg/attrs-strict
+
+# 
 
 import pandas as pd
 import numpy as np

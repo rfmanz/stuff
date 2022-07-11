@@ -184,6 +184,8 @@ from rdsutils.datasets import Dataset, StructuredDataset, DataLoader, DataDumper
 # Load with different methods
 # Process function
 
+# https://github.com/bloomberg/attrs-strict
+
 import os
 
 os.getcwd()
