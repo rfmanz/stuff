@@ -1,0 +1,59 @@
+{
+    "data": {
+        "raw": {
+            "banking": "raw/raw_1640821059/banking_1640821059.feather",
+            "experian_credit_pull": "raw/raw_1640821059/experian_credit_pull_1640821059.feather",
+            "giact": "raw/raw_1640821059/giact_1640821059.feather",
+            "socure": "raw/raw_1640821059/socure_1640821059.feather",
+            "transactions": "raw/raw_1640821059/transactions_1640821059.feather",
+            "user_metadata_dw": "raw/raw_1640821059/user_metadata_dw_1640821059.feather",
+            "banking_account_restrictions": "raw/raw_1640821059/banking_account_restrictions_1640821059.feather"
+        },
+        "processed": {
+            "banking": "processed/processed_1640826493/banking_1640826493.feather",
+            "experian_credit_pull": "processed/processed_1640826493/experian_credit_pull_1640826493.feather",
+            "giact": "processed/processed_1640826493/giact_1640826493.feather",
+            "socure": "processed/processed_1640826493/socure_1640826493.feather",
+            "transactions": "processed/processed_1640826493/transactions_1640826493.feather",
+            "user_metadata_dw": "processed/processed_1640826493/user_metadata_dw_1640826493.feather",
+            "banking_account_restrictions": "processed/processed_1640826493/banking_account_restrictions_1640826493.feather"
+        },
+        "joined": {
+            "base": "joined/base_1640827030.feather"
+        },
+        "features": {
+            "features": "features/features_1641542122.feather"
+        },
+        "labeled": {
+            "labeled": "labeled/labeled_1640840917.feather"
+        }
+    },
+    "data_pull_date": "2021-12-30",
+    "s3_base_path": "jxu/money-risk-models/customer-risk-model",
+    "s3_bucket": "sofi-data-science",
+    "sql_query_files": {
+        "banking": {
+            "query": "sql/banking.sql"
+        },
+        "experian_credit_pull": {
+            "query": "sql/experian_credit_pull.sql"
+        },
+        "giact": {
+            "query": "sql/giact.sql"
+        },
+        "socure": {
+            "query": "sql/socure.sql"
+        },
+        "transactions": {
+            "query": "sql/transactions.sql"
+        },
+        "user_metadata_dw": {
+            "query": "sql/user_metadata_dw.sql"
+        },
+        "banking_account_restrictions": {
+            "query": "sql/banking_account_restrictions.sql"
+        }
+    },
+    "target_column": "target_1",
+    "indeterminate_column": "indeterminate_1"
+}
