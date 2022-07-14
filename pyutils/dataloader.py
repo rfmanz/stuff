@@ -5,12 +5,10 @@ import numpy as np
 from time import time
 import snowflake.connector
 import sys
-from attrs import asdict, define, make_class, Factory
+# from attrs import asdict, define, make_class, Factory
 import functools
 from typing import Optional, Tuple, NamedTuple, Union, Any, List, Dict, Type
 from tabulate import tabulate
-from sagemaker import get_execution_role
-import s3fs, boto3
 
 
 # @define
@@ -61,6 +59,7 @@ class dataloader:
                 return self.allthedata
 
     def describe_df(self, query=None, floatfmt=".3f"):
+
         # Numerical
         df = self.run_query(query)
         print("--" * 20)
@@ -182,6 +181,17 @@ class dataloader:
                 concatenated_categorical,
             )
 
+    @staticmethod
+    def load_df(path, **kwargs):
+        if str(path).endswith(".parquet"):
+            return pd.read_parquet(path, **kwargs)
+        elif str(path).endswith(".feather"):
+            return pd.read_parquet(path, **kwargs)
+        elif str(path).endswith(".csv"):
+            return pd.read_csv(path, **kwargs)
+        else:
+            ValueError("Unknown input types")
+
 
 # def _load(self, df, fname, suffix="parquet", **kwargs):
 #     """
@@ -198,7 +208,7 @@ class dataloader:
 def pandas_df_to_s3(
     df,
     bucket: str = "sofi-data-science",
-    s3_path: str = 'rarevalo',
+    s3_path: str = "rarevalo",
     file_name: str = None,
     file_format: str = "parquet",
     **kwargs,
@@ -213,16 +223,16 @@ def pandas_df_to_s3(
     bucket: string
         Bucket from which to upload the file: e.g. sofi-data-science
     s3_path: string
-        Your S3 folder 
+        Your S3 folder
     file_name: string
-        Name of the file        
+        Name of the file
     file_format: string
         Format to store the df in, currently supports feather, parquet, and csv.
     Returns
     -------
     """
     import s3fs, boto3
-    
+
     boto3.setup_default_session()
     s3 = s3fs.S3FileSystem(anon=False)
 

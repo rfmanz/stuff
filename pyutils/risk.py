@@ -174,9 +174,10 @@ from rdsutils.datasets import Dataset, StructuredDataset, DataLoader, DataDumper
 # TODO:
 
 # !!!! understand unittests
-## !!! decoratoes |  attrs
-# __next__, __iter__
 ## !! tox
+
+## !!! decoratoes |  attrs
+
 # @abstractmethod
 #### Data loader class
 # query in attributes
@@ -459,7 +460,11 @@ class Point3D(object):
         self.x = x
         self.y = y
         self.z = z
-    def __repr__(self):
-        return (self.__class__.__name__ +
-                ("(x={}, y={}, z={})".format(self.x, self.y, self.z)))
 
+    def __repr__(self):
+        return self.__class__.__name__ + (
+            "(x={}, y={}, z={})".format(self.x, self.y, self.z)
+        )
+
+
+time.asctime(time.localtime(t))

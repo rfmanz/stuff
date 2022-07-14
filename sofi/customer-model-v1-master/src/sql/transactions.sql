@@ -1,4 +1,4 @@
--- banking transactions by business account.
+""-- banking transactions by business account.
 SELECT tjd,
        dtj.time,
        dtj.cid AS business_account_number,
@@ -22,3 +22,4 @@ LEFT JOIN trn on dtj.etc = trn.etc
 WHERE endbal IS NOT NULL
       and tamt IS NOT NULL
       and tamt NOT LIKE '%%#%%'
+"
