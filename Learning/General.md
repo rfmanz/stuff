@@ -1,7 +1,5 @@
 # Data Exploration
 
-
-
 ## Check dataframe
 
 ```python
@@ -14,33 +12,22 @@ data.shape```
 ## Dataframe Columns
 
 ```
+
 data.columns
 list(data.columns.values)```
 
-
-
-
-
-
- ## Filter or Select Column
+## Filter or Select Column
 
 ```data['education'].unique()```
 
-And = &    Or= | 
+And = &    Or= |
 ![image.png](attachment:image.png)
-
-
-
 
 Same
 
 ![image.png](attachment:image.png)
 
-
-
-
-
-Select column 
+Select column
 
 ```python
 
@@ -95,11 +82,10 @@ df['y'].value_counts()
 asesor['NOMBRECANAL'].value_counts() 
 df.key_value.astype("str").duplicated().value_counts()
 ```
+
 This is the same as R table
 
-
 ## Dataframe in New Window
-
 
 <span class="mark">data</span> is your dataframe
 
@@ -141,7 +127,6 @@ data.groupby(data['y']).mean()
 
 .sum
 
-
 ## Describe data
 
 ```python
@@ -175,18 +160,22 @@ df.columns=['age','sex','cp','trestbps','chol','fbs','restecg','thalach','exang'
 ```python 
 df1.isnull()
 ```
+
 Count
+
 ```python
 unexpected.isnull().sum()
 ```
 
 By column
+
 ```python
 df['ST_NUM'].isnull()
 ```
+
 For all columns
 
-```python 
+```python
 null_columns=unexpected.columns[unexpected.isnull().any()]
 unexpected[null_columns].isnull().sum()
 
@@ -196,21 +185,17 @@ print (train.apply(num_missing, axis=0))
 
 ```
 
-Sum all Nulls 
-```python 
+Sum all Nulls
+
+```python
 df.isnull().sum().sum()
 ```
 
 ## Memory size
 
-
 ```python
 print(f"{(sys.getsizeof(df)/1024**2):.2f} Mb")
 ```
-
-
-
-
 
 ## Drop rows with NULLs
 
@@ -219,6 +204,7 @@ df=df.dropna()
 ```
 
 ## Replace Values of a Column
+
 ```python
 df[['sex']] = df[['sex']].replace(['M'], [1]) 
 ```
@@ -227,34 +213,44 @@ df[['sex']] = df[['sex']].replace(['M'], [1])
 df['sex'][df['sex']==0]='F'
 ```
 
-## Make weird characters into NULL 
+## Make weird characters into NULL
 
 ```python
 df=df.replace("?",np.nan)
 ```
 
 ## Find all Rows with Nans
+
 ```python
 df[df.isnull().any(axis=1)]
 ```
+
 ### Columns with Nans
-```python 
+
+```python
 df[df.isnull().any(axis=1)][null_columns]
 ```
+
 ### Specific Column
+
 ```python
 train[train["Electrical"].isnull()][null_columns])
 ```
 
 ## Count whatever within whole dataframe
+
 ```python
 df.iloc[:][df[:]=="?"].count()
 ```
+
 ### Value Counts
-```python 
+
+```python
 df.iloc[:,1].value_counts()
 ```
+
 Value counts over the whole dataframe
+
 ```python
 flg_dft.apply(pd.Series.value_counts)
 flg_dft.apply(pd.Series.value_counts).transpose()
@@ -267,10 +263,9 @@ train.date.unique().value_counts().value_counts()
 
 ```
 
-
 ## Lambda
 
-```python 
+```python
 df['hd'] = df['hd'].apply(lambda x: 'Healhty' if x == 0 else 'Unhealthy')
 ```
 
@@ -293,7 +288,6 @@ pd.crosstab(df.hd, df.sex)
 
 ```
 
-
 ## Qgrid
 
 ```python
@@ -307,7 +301,7 @@ qgrid_widget
 jt -t monokai -cellw 97% -f roboto -fs 11 -ofs 11 -T
 
 ## Logistic Regression
-http://www.science.smith.edu/~jcrouser/SDS293/labs/lab4-py.html
+<http://www.science.smith.edu/~jcrouser/SDS293/labs/lab4-py.html>
 
 ```python
 model = smf.glm(formula = formula, data=df, family=sm.families.Binomial())
@@ -322,20 +316,25 @@ res.summary()
 
 ## Unique
 
-```python 
+```python
 pd.unique(df['Country'])
 ```
-```python 
+
+```python
 pd.unique(df.Country)
 ```
-```python 
+
+```python
 df.Country.unique()
 ```
-```python 
+
+```python
 df.Country.nunique()
 ```
+
 ### Unique for every column
-```python 
+
+```python
 def unique_counts(df1):
    for i in df1.columns:
        count = df1[i].nunique()
@@ -347,8 +346,6 @@ unique_counts(df1)def unique_counts(df1):
 unique_counts(df1)
 ```
 
-
-
 ## Find Duplicates & Drop Duplicates
 
 ```python
@@ -358,16 +355,19 @@ df[df['CustomerID'].duplicated()]
 ```python
 customer_country=df[['Country','CustomerID']].drop_duplicates()
 ```
+
 ```python
 df.loc[df.CustomerID.duplicated(),:]
 ```
 
 Count duplicates
+
 ```python
 df.CustomerID.duplicated().shape
 ```
 
 Count duplicates by columns
+
 ```python
 df.duplicated(subset=['age','w']).sum
 ```
@@ -392,6 +392,7 @@ r.Base_sin_ape.loc[r.Base_sin_ape["MONTO_PAGO_NETO_USD"].idxmin()]["MONTO_PAGO_N
 ```
 
 ## ILOC
+
 ```python
 >>> df.iloc[[0, 2], [1, 3]]
       b     d
@@ -430,7 +431,9 @@ pd.set_option('display.max_columns', 500)
 ```
 
 ## Get Size of Dataframe in Mb
-The f thing is str.format, https://docs.python.org/3/library/string.html#formatstrings, in this case to two decimal places
+
+The f thing is str.format, <https://docs.python.org/3/library/string.html#formatstrings>, in this case to two decimal places
+
 ```python
 print(f"{(sys.getsizeof(df)/1024**2):.2f} Mb")
 ```
@@ -485,7 +488,7 @@ def memory_usage_mb(df, *args, **kwargs):
 s1.drop(columns=['Disc Number', 'Track Number', 'Added By'])
 ```
 
-## Array Slices 
+## Array Slices
 
 ```python
 a[start:stop]  # items start through stop-1
@@ -494,11 +497,9 @@ a[:stop]       # items from the beginning through stop-1
 a[:]           # a copy of the whole array
 ```
 
-https://stackoverflow.com/questions/509211/understanding-slice-notation
+<https://stackoverflow.com/questions/509211/understanding-slice-notation>
 
-## Create Datraframes from Lists/Arrays 
-
-
+## Create Datraframes from Lists/Arrays
 
 ```python
 from IPython.core.interactiveshell import InteractiveShell
@@ -564,13 +565,12 @@ df = pd.DataFrame({'Playlist':["microhouse","microhouse","attlas","attlas"],"Tra
 </table>
 </div>
 
-
-
 ### Pandas category types
 
-https://pbpython.com/pandas_dtypes_cat.html
+<https://pbpython.com/pandas_dtypes_cat.html>
 
-### Groupby, aggregate, sort 
+### Groupby, aggregate, sort
+
 ```python
 df_matriz_2.groupby("sgt_cem").ing_bruto.agg("mean").nlargest()
 df_matriz_2.groupby("ing_bruto").cem_2.agg({"cem_2_mean" : "mean"}).sort_index(ascending=False)
@@ -583,8 +583,10 @@ df[df.codmes.astype('str').str[0:4]=="2019"].groupby("codmes").ing_bruto.agg("ma
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 pd.options.display.float_format = '{:,}'.format
 ```
-So after having trouble rounding decimals to two places for float32, this worked. 
-```python 
+
+So after having trouble rounding decimals to two places for float32, this worked.
+
+```python
 X  = round(X.astype(float),2)```
 
 ```python 
@@ -596,22 +598,19 @@ __Get rid of scientific notation in numpy__:
 np.set_printoptions(suppress=True)
 ```
 
-
-
 ### SKL: StandardScaler
 
 Substracts by the mean and divides by the standard deviation. Only undestands numpy arrays.
+
 - scaler= StandardScaler() - Assign the function to a variable
 - scaler.fit(X) - Gives it the data and its creates estimates.
-- scaler.mean_ 
+- scaler.mean_
 - scaler.scale_ = Stddev
 
-You can check, by manually find the mean and stddev for each of the numpy arrays. 
+You can check, by manually find the mean and stddev for each of the numpy arrays.
+
 - np.std()
 - np.mean()
-
-
-
 
 ```python
 from sklearn.preprocessing import StandardScaler
@@ -625,29 +624,27 @@ X = [[0, 15],[1, -10]]
 StandardScaler().fit(X).transform(X)
 ```
 
-
-
-
     array([[-1.,  1.],
            [ 1., -1.]])
 
-
-
-### Scatter plots 
-https://jakevdp.github.io/PythonDataScienceHandbook/04.02-simple-scatter-plots.html
+### Scatter plots
+<https://jakevdp.github.io/PythonDataScienceHandbook/04.02-simple-scatter-plots.html>
 
 ### DF.plot()
-```python 
+
+```python
 X.plot(kind="scatter",x="monto_ec",y="tea_ec",marker="o",s=3,figsize= (18,15)) 
 xplot = X.plot(x = "monto_ec", y = "tea_ec", style="o", ms=2, figsize= (18,15), legend = False)
 xplot.set(xlabel="monto_ec",ylabel="tea_ec")
 xplot
 ```
+
 - S = size
-- https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.scatter.html
+- <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.scatter.html>
 
 ### Plotly
-```python 
+
+```python
 import plotly as plotly
 plotly.offline.init_notebook_mode(connected=True)
 import plotly.express as px
@@ -655,13 +652,12 @@ px.scatter(X, x="monto_ec",y = "tea_ec")
 
 ```
 
-
 ### SKL: KMeans
 
 Kmeans is a unsupervised machine learning algorithm which attempts to cluster. <br>
 It starts by creating centroids randomly and then trying to reduce the distance to each data point. <br>
 The tricky part is finding the right number of clusters.<br>
-Inertia: Inertia is the sum of the squared distances between each training instance and its closest centroid:<br> 
+Inertia: Inertia is the sum of the squared distances between each training instance and its closest centroid:<br>
 "To select the best model, we will need a way to evaluate a K-Mean model's performance. Unfortunately, clustering is an unsupervised task, so we do not have the targets. But at least we can measure the distance between each instance and its centroid. This is the idea behind the inertia metric".<br>
 K: Clusters <br>
 As you can see, the inertia drops very quickly as we increase k up to 4, but then it
@@ -672,8 +668,6 @@ not help much, and we might just be splitting perfectly good clusters in half fo
 good reason.
 ![caption](kmeans_elbow.png)
 
- 
-
 #### Optimal Number of Clusters: Plotting # clusters as function of inertia = Elbow Curve
 
 The major drawback of the K-Means algorithm is that it
@@ -681,6 +675,7 @@ often gets stuck at local minima and the result is largely dependent on the
 choice of the initial cluster centers.
 
 This is just a visualisation of the the clusters are segmenting the data
+
 ```python
 kmeans = KMeans(n_clusters=2).fit(X.values)
 centroids = kmeans.cluster_centers_
@@ -700,21 +695,18 @@ f2 = X['monto_ec'].values
  
 plt.scatter(f1, f2, c=asignar, s=70)
 plt.show()                
-``` 
+```
 
 ### Numpy Reshape
 
--1 : Unkown dimension, numpy figure it out. 
+-1 : Unkown dimension, numpy figure it out.
 
-So (-1,1) is saying convert this array, tensor, matrix, into a one column array/vector 
-with however many rows it originally has. 
+So (-1,1) is saying convert this array, tensor, matrix, into a one column array/vector
+with however many rows it originally has.
 
 ```python
 x.reshape(-1,1)
 ```
-
-
-
 
 ### Manipulating tensors with Numpy
 
@@ -726,7 +718,7 @@ my_slice.shape
 
 ### Dictionaries
 
-```python 
+```python
 word_index = imdb.get_word_index()
 reverse_word_index = dict(
 [(value, key) for (key, value) in word_index.items()])
@@ -735,29 +727,35 @@ decoded_review = ' '.join(
 ```
 
 ### Join
-```python 
+
+```python
 ' '.join(
 [reverse_word_index.get(i - 3, '?') 
 ```
 
-### Warnings 
+### Warnings
+
 ```python
 import warnings
 warnings.filterwarnings("ignore")
 ```
 
-### Print every line of the cell 
-```python 
+### Print every line of the cell
+
+```python
 from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity= "all"
 ```
 
 ### Show what you're assigning
+
 ```python
 from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = 'last_expr_or_assign'
 ```
-### Beep when done 
+
+### Beep when done
+
 ```python
 from IPython.display import Audio
 
@@ -767,7 +765,9 @@ wave = np.sin(8*np.pi*500*np.arange(10000*0.15)/10000)
 
 Audio(wave, rate=10000, autoplay=True)
 ```
+
 ### See all session variables
+
 ```python
 %whos
 ```
@@ -778,3 +778,5 @@ while True:
     pyautogui.press('l')
     time.sleep(0.5) 
 ```
+
+<https://cheatography.com/weidadeyue/cheat-sheets/jupyter-notebook/pdf/>
