@@ -4,45 +4,41 @@ from time import time
 import snowflake.connector
 import sys
 from typing import Optional, Tuple, NamedTuple, Union, Any, List, Dict, Type
-from tabulate import tabulate
+from tabulate import tabulate    
 from IPython.core.interactiveshell import InteractiveShell
-
-InteractiveShell.ast_node_interactivity = "all"
-InteractiveShell.ast_node_interactivity = "last_expr_or_assign"
+InteractiveShell.ast_node_interactivity= "all"
+InteractiveShell.ast_node_interactivity = 'last_expr_or_assign'
 
 # desired_width = 300
 # pd.set_option('display.width', desired_width)
-pd.set_option("display.max_colwidth", 50)
-pd.set_option("display.max_columns", None)
-pd.set_option("display.max_rows", 500)
+pd.set_option('display.max_colwidth', 50)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', 500)
 import warnings
-
-warnings.filterwarnings("ignore")
+warnings.filterwarnings('ignore')
 
 rmh_m = "tdm_risk_mgmt_hub.modeled."
 rmh_c = "tdm_risk_mgmt_hub.cleansed."
 tdm_bank_m = "tdm_bank.modeled."
 tdm_bank_c = "tdm_bank.cleansed."
-tdm_risk_c = "TDM_RISK.CLEANSED."
-tdm_risk_m = "TDM_RISK.modeled."
+tdm_risk_c = 'TDM_RISK.CLEANSED.'
+tdm_risk_m = 'TDM_RISK.modeled.'
 
-s3_bucket = "s3://sofi-data-science/rarevalo/"
+s3_bucket = 's3://sofi-data-science/rarevalo/'
 
-# s3_bucket =
-
+# pl_guardinex = pd.read_parquet('s3://sofi-data-science/rarevalo/guardinex_data_pull/pl_guardinex.parquet')
 
 # t.filter(regex='(?i)banking')
 
+# peek(run_query(check_table(tdm_bank_c,'profile_deposits')))
 
 def peek(df, rows=3):
     concat1 = pd.concat([df.dtypes, df.iloc[:3, :].T], axis=1).reset_index()
-    concat1.columns = [""] * len(concat1.columns)
+    concat1.columns = [''] * len(concat1.columns)
     return concat1
 
-
-def check_table(data_source: object = None, table_name: str = None) -> str:
-    return f"select * from {data_source}{table_name} limit 5;"
-
+def check_table(data_source: object  = None, table_name : str = None )  -> str :
+    return (f'select * from {data_source}{table_name} limit 5;')
 
 def size_in_memory(df):
     return print(f"{(sys.getsizeof(df)/1024**2):.2f} Mb")
@@ -76,6 +72,7 @@ def view_tables(sql):
             cs.execute(sql)
             allthedata = cs.fetchall()
             return [allthedata[i][1] for i in range(len(allthedata))]
+           
 
 
 def pandas_df_to_s3(
@@ -87,22 +84,7 @@ def pandas_df_to_s3(
     **kwargs,
 ):
     """
-    Upload Pandas DataFrame to S3
-
-    Parameters
-    ----------
-    df: pd.DataFrame
-        The DataFrame to upload
-    bucket: string
-        Bucket from which to upload the file: e.g. sofi-data-science
-    s3_path: string
-        Your S3 folder
-    file_name: string
-        Name of the file
-    file_format: string
-        Format to store the df in, currently supports feather, parquet, and csv.
-    Returns
-    -------
+    pandas_df_to_s3(df=df, file_name ='guardinex_data_pull/pl_guardinex.parquet')
     """
     import s3fs, boto3
 
@@ -117,23 +99,21 @@ def pandas_df_to_s3(
             getattr(df, f"to_{file_format}")(f, **kwargs)
     else:
         raise NotImplemented
-
-
+        
+        
 def pd_options():
     desired_width = 300
-    pd.set_option("display.width", desired_width)
-    pd.set_option("display.max_columns", None)
+    pd.set_option('display.width', desired_width)
+    pd.set_option('display.max_columns', None)
     import warnings
-
-    warnings.filterwarnings("ignore")
-
+    warnings.filterwarnings('ignore')
 
 def plot_single_numerical(df):
     plt.figure()
     sns.kdeplot(df, color="black", shade="gray")
     return plt.show()
-
-
+    
+    
 def memory_usage_mb(df, *args, **kwargs):
     """Dataframe memory usage in MB."""
     return df.memory_usage(*args, **kwargs).sum()
@@ -171,3 +151,4 @@ def reduce_memory_usage(df, deep=True, verbose=True, categories=True):
             f" {start_mem:.2f}MB to {end_mem:.2f}MB"
             f" ({diff_mem:.2f}MB, {percent_mem:.2f}% reduction)"
         )
+    
