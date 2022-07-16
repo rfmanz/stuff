@@ -40,6 +40,8 @@ s3_bucket = 's3://sofi-data-science/rarevalo/'
 # eval `ssh-agent -s`
 # ssh-add
 
+# git commit -a -m '.'
+
 
 def peek(df, rows=3):
     concat1 = pd.concat([df.dtypes, df.iloc[:3, :].T], axis=1).reset_index()
