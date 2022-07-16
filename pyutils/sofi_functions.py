@@ -32,6 +32,11 @@ s3_bucket = 's3://sofi-data-science/rarevalo/'
 
 # peek(run_query(check_table(tdm_bank_c,'profile_deposits')))
 
+# time.asctime( time.localtime(1655996157) )
+
+# find . -name "*1657*" -type d -exec rm -r {} \;
+
+
 def peek(df, rows=3):
     concat1 = pd.concat([df.dtypes, df.iloc[:3, :].T], axis=1).reset_index()
     concat1.columns = [''] * len(concat1.columns)
@@ -151,4 +156,3 @@ def reduce_memory_usage(df, deep=True, verbose=True, categories=True):
             f" {start_mem:.2f}MB to {end_mem:.2f}MB"
             f" ({diff_mem:.2f}MB, {percent_mem:.2f}% reduction)"
         )
-    
