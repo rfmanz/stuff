@@ -17,24 +17,28 @@ pd.set_option('display.max_rows', 500)
 import warnings
 warnings.filterwarnings('ignore')
 
-rmh_m = "tdm_risk_mgmt_hub.modeled."
-rmh_c = "tdm_risk_mgmt_hub.cleansed."
-tdm_bank_m = "tdm_bank.modeled."
-tdm_bank_c = "tdm_bank.cleansed."
-tdm_risk_c = 'TDM_RISK.CLEANSED.'
-tdm_risk_m = 'TDM_RISK.modeled.'
+rmh_m = "tdm_risk_mgmt_hub.modeled"
+rmh_c = "tdm_risk_mgmt_hub.cleansed"
+tdm_bank_m = "tdm_bank.modeled"
+tdm_bank_c = "tdm_bank.cleansed"
+tdm_risk_c = 'TDM_RISK.CLEANSED'
+tdm_risk_m = 'TDM_RISK.modeled'
 
 s3_bucket = 's3://sofi-data-science/rarevalo/'
 
-# pl_guardinex = pd.read_parquet('s3://sofi-data-science/rarevalo/guardinex_data_pull/pl_guardinex.parquet')
+#Read from s3 bucket 
+# pl_guardinex = pd.read_parquet(os.path.join(s3_bucket,'guardinex_data_pull/pl_guardinex.parquet'))
 
 # t.filter(regex='(?i)banking')
 
 # peek(run_query(check_table(tdm_bank_c,'profile_deposits')))
 
+#Go from timestamo to real time 
 # time.asctime( time.localtime(1655996157) )
 
+# Find and delete alls files containing string match. -type f for folders 
 # find . -name "*1657*" -type d -exec rm -r {} \;
+
 
 # chmod 0600 ~/.ssh/id_rsa
 # eval `ssh-agent -s`
@@ -42,14 +46,35 @@ s3_bucket = 's3://sofi-data-science/rarevalo/'
 
 # git commit -a -m '.'
 
+#import sys
+# sys.path.insert(1, '/home/ec2-user/SageMaker/Rafael/pyutils/pyutils/')
+# from sofi_functions import *
+
+# Reload kernal 
+# import os 
+# os._exit(00)
+
+# import importlib
+# importlib.reload(nameOfModule)
+
 
 def peek(df, rows=3):
     concat1 = pd.concat([df.dtypes, df.iloc[:3, :].T], axis=1).reset_index()
     concat1.columns = [''] * len(concat1.columns)
     return concat1
 
-def check_table(data_source: object  = None, table_name : str = None )  -> str :
-    return (f'select * from {data_source}{table_name} limit 5;')
+def check_table(data_source: object  = None, table_name : str = None, cols : List[Optional[str]]=None, t = True, print_sql = False) -> str :
+    """'select {cols} from {data_source}.{table_name} limit 5"""
+    if cols:        
+        if isinstance(cols,list):
+            cols = ','.join(cols).replace(',',",\n")      
+        _tbl = f'select {cols} from {data_source}.{table_name} limit 5;'        
+    else:
+        _tbl = f'select * from {data_source}.{table_name} limit 5;'
+                
+    return print(_tbl) if print_sql else peek(run_query(_tbl)) if t else run_query(_tbl)
+
+
 
 def size_in_memory(df):
     return print(f"{(sys.getsizeof(df)/1024**2):.2f} Mb")
@@ -77,12 +102,15 @@ def run_query(sql):
             return allthedata
 
 
-def view_tables(sql):
+def show_tables(dw = None, like_tbl_name :str = None):
     with get_snowflake_connection() as ctx:
         with ctx.cursor() as cs:
-            cs.execute(sql)
+            if like_tbl_name is None:              
+                cs.execute(f'show tables in {dw}')
+            else:
+                cs.execute(f"show tables like '{like_tbl_name}' in {dw}")
             allthedata = cs.fetchall()
-            return [allthedata[i][1] for i in range(len(allthedata))]
+            return f'{dw}',[allthedata[i][1] for i in range(len(allthedata))]
            
 
 
