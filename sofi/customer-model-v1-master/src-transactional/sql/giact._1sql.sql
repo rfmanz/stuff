@@ -6,7 +6,7 @@ with
         select distinct thirdparty_raw_id, event_id
         from TDM_RISK_MGMT_HUB.CLEANSED.decision
     )
-select e.user_id, 
+select e.user_id as user_id, 
        tpr.created_dt,
        parse_json(tpr.request):sofiAccountNumber as business_account_number,
        parse_json(tpr.response):bankName as giact_bank_name,
