@@ -26,14 +26,12 @@ tdm_risk_m = 'TDM_RISK.modeled'
 
 s3_bucket = 's3://sofi-data-science/rarevalo/'
 
-#Read from s3 bucket 
 # pl_guardinex = pd.read_parquet(os.path.join(s3_bucket,'guardinex_data_pull/pl_guardinex.parquet'))
 
 # t.filter(regex='(?i)banking')
 
 # time.asctime( time.localtime(1655996157) )
 
-# Find and delete alls files containing string match. -type f for folders 
 # find . -name "*1657*" -type d -exec rm -r {} \;
 
 # chmod 0600 ~/.ssh/id_rsa
