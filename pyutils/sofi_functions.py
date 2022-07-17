@@ -31,14 +31,10 @@ s3_bucket = 's3://sofi-data-science/rarevalo/'
 
 # t.filter(regex='(?i)banking')
 
-# peek(run_query(check_table(tdm_bank_c,'profile_deposits')))
-
-#Go from timestamo to real time 
 # time.asctime( time.localtime(1655996157) )
 
 # Find and delete alls files containing string match. -type f for folders 
 # find . -name "*1657*" -type d -exec rm -r {} \;
-
 
 # chmod 0600 ~/.ssh/id_rsa
 # eval `ssh-agent -s`
