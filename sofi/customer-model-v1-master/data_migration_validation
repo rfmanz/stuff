@@ -2,13 +2,25 @@
 # write something that automates data validation
 # do in own workspace
 # from cinfig file with queries pull data, then descirbe describe_df
+import json
+import snowflake.connector
+import pandas as pd
 
+
+src_base = "sofi/customer-model-v1-master"
+
+os.path.join(src_base)
+
+os.getcwd()
+# !sdm login
 
 src_base = os.path.dirname(os.path.realpath(__file__))
 
-config_file_path = os.path.abspath(os.path.join(src_base, "../config.json"))
+config_file_path = os.path.abspath(os.path.join(src_base, "config.json"))
 
-config_file_path_postgres = os.path.abspath(os.path.join(src_base, "../config_postgres.json"))
+config_file_path_postgres = os.path.abspath(
+    os.path.join(src_base, "../config_postgres.json")
+)
 
 
 with open(config_file_path, "r") as f:
@@ -45,8 +57,6 @@ def query_data(base_path="data", prefix=None):
     """
     Get raw data with one or more queries.
     """
-    timestamp_str = str(int(time.time()))
-
     for name, qinf in CONFIG_FILE["sql_query_files"].items():
         with open(os.path.join(src_base, qinf["query"])) as f:
             query = f.read()
