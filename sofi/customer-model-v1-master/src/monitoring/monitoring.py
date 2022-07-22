@@ -135,7 +135,7 @@ def get_binary_metrics(y_true, y_pred):
     ap = round(average_precision_score(y_true=y_true, y_score=y_pred) * 100, 2)
     _, _, _, ks, _, _ = binary_ks_curve(y_true=y_true, y_probas=y_pred)
     ks = round(ks * 100, 2)
-
+    
     metrics = {"auc": auc, "ap": ap, "ks": ks}
 
     return metrics

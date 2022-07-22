@@ -200,7 +200,7 @@ def reduce_memory_usage(df, deep=True, verbose=True, categories=True):
         )
 
 
-def describe_df(df, return_df=None, floatfmt=".3f"):
+def describe_df(df, return_df=False, floatfmt=".3f"):
     # Numerical
     print("--" * 20)
     print("Columns:", df.shape[1])
