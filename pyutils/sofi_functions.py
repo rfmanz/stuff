@@ -51,12 +51,14 @@ s3_bucket = "s3://sofi-data-science/rarevalo/"
 # import os
 # os._exit(00)
 
+# !source ~/anaconda3/bin/activate customer_risk
+
 # import importlib
 # importlib.reload(nameOfModule)
 
-df = pd.read_parquet(
-    os.path.join("C:/Users/rfrancis/Downloads/", "df_final2.parquet.gzip")
-)
+# df = pd.read_parquet(
+#     os.path.join("C:/Users/rfrancis/Downloads/", "df_final2.parquet.gzip")
+# )
 
 
 def peek(df, rows=3):
