@@ -18,7 +18,11 @@ import pandas as pd
 from multiprocessing import Pool, cpu_count
 
 from rdsutils.aws import upload_s3
-from rdsutils.query import query_postgres
+
+# from rdsutils.query import query_postgres
+
+import snowflake.connector
+from sdp_snowflake_utils.oauth import SnowflakeOAuth
 
 
 src_base = os.path.dirname(os.path.realpath(__file__))
@@ -27,30 +31,52 @@ config_file_path = os.path.abspath(os.path.join(src_base, "../config.json"))
 
 with open(config_file_path, "r") as f:
     CONFIG_FILE = json.load(f)
-
-
+   
+       
 def query_data(base_path="data", prefix=None):
+    
+    user = "rarevalo".upper()
+    role = "SNOWFLAKE_SOFI_PRD_RISK_MGMT_HUB_RO".upper()
+    warehouse = "TDM_RISK_MGMT_HUB"
+    database = "TDM_RISK_MGMT_HUB"
+    schema = "MODELED"
+
+    credentials = SnowflakeOAuth.fetch(user, role)
+
+    connection_parameters = {
+        'account': 'sofi',
+        'authenticator': 'oauth',
+        'user': credentials.user,
+        'role': credentials.role,
+        'token':credentials.access_token,
+        'warehouse': warehouse,
+        'database': database,
+        'schema': schema
+    }
+
+    conn = snowflake.connector.connect(**connection_parameters)    
+    
     """
     Get raw data with one or more queries.
     """
-    timestamp_str = str(int(time.time()))
-
+    timestamp_str = str(int(time.time()))    
+    
     for name, qinf in CONFIG_FILE["sql_query_files"].items():
         with open(os.path.join(src_base, qinf["query"])) as f:
             query = f.read()
-
         print("Running query {}.".format(name))
-        df = query_postgres(query=query, port=qinf["port"], database=qinf["database"])
+        cursor = conn.cursor()
+        cursor.execute(query)
+        df = cursor.fetch_pandas_all()
         save_dataframes(
             {name: df}, base_path, prefix, timestamp_str, include_subdir=True
         )
-
         # clear memory when running several queries
         del df
         gc.collect()
-
-    _set_config_file_field("data_pull_date", pd.datetime.today().strftime("%Y-%m-%d"))
-
+        
+    _set_config_file_field("data_pull_date", datetime.datetime.today().strftime("%Y-%m-%d"))
+    conn.close()   
 
 def process_raw_data(base_path, prefix_in, prefix_out):
     """
@@ -287,6 +313,7 @@ def join_processed_data(base_path, prefix_in, prefix_out, static_sample_dates=No
 
     # 1. Merge user metadata info.
     user_metadata_dw_df = load_dataframe(prefix_in, "user_metadata_dw", base_path)
+    user_metadata_dw_df.columns = user_metadata_dw_df.columns.str.lower()
 
     user_metadata_dw_cols = [
         "borrower_id",
@@ -412,8 +439,8 @@ def join_processed_data(base_path, prefix_in, prefix_out, static_sample_dates=No
     # 5. Join GIACT data
     giact_df = load_dataframe(prefix_in, "giact", base_path)
     giact_df = giact_df.sort_values(by=["giact_created_date"])
-
-    giact_cols = [
+    
+    giact_cols = [        
         "business_account_number",
         "giact_created_date",
         "giact_first_link_date",
@@ -431,8 +458,9 @@ def join_processed_data(base_path, prefix_in, prefix_out, static_sample_dates=No
         giact_df[giact_cols],
         left_on="sample_date",
         right_on="giact_created_date",
-        by="business_account_number",
+        by="business_account_number"        
     )
+    
     print("3", len(base_df))
     del giact_df
     gc.collect()
@@ -457,7 +485,7 @@ def join_processed_data(base_path, prefix_in, prefix_out, static_sample_dates=No
     # 7. Join socure data
     socure_df = load_dataframe(prefix_in, "socure", base_path)
     socure_df = socure_df.sort_values(by=["created_dt"])
-
+    socure_df['user_id'] = socure_df['user_id'].astype('int32')
     socure_cols = [
         "user_id",
         "created_dt",
@@ -505,6 +533,7 @@ def join_processed_data(base_path, prefix_in, prefix_out, static_sample_dates=No
     #     gc.collect()
 
     save_dataframes({"base": base_df}, base_path, prefix_out, timestamp_str)
+
 
 
 def add_feature(df, fts, colname, default=None):
@@ -731,6 +760,7 @@ def get_labels(df_sampled, transactions_df):
 
     sampled_df = sampled_df.sort_values(by=["sample_date"])
     transactions_df = transactions_df.sort_values(by=["transaction_datetime"])
+    transactions_df['business_account_number'] = transactions_df['business_account_number'].astype('int64')
     sampled_df = pd.merge_asof(
         sampled_df,
         transactions_df[
