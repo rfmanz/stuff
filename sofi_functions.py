@@ -20,14 +20,6 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-rmh_m = "tdm_risk_mgmt_hub.modeled"
-rmh_c = "tdm_risk_mgmt_hub.cleansed"
-tdm_bank_m = "tdm_bank.modeled"
-tdm_bank_c = "tdm_bank.cleansed"
-tdm_risk_c = "TDM_RISK.CLEANSED"
-tdm_risk_m = "TDM_RISK.modeled"
-
-s3_bucket = "s3://sofi-data-science/rarevalo/"
 
 # pl_guardinex = pd.read_parquet(os.path.join(s3_bucket,'guardinex_data_pull/pl_guardinex.parquet'))
 
@@ -59,6 +51,16 @@ s3_bucket = "s3://sofi-data-science/rarevalo/"
 # df = pd.read_parquet(
 #     os.path.join("C:/Users/rfrancis/Downloads/", "df_final2.parquet.gzip")
 # )
+
+
+rmh_m = "tdm_risk_mgmt_hub.modeled"
+rmh_c = "tdm_risk_mgmt_hub.cleansed"
+tdm_bank_m = "tdm_bank.modeled"
+tdm_bank_c = "tdm_bank.cleansed"
+tdm_risk_c = "TDM_RISK.CLEANSED"
+tdm_risk_m = "TDM_RISK.modeled"
+
+s3_bucket = "s3://sofi-data-science/rarevalo/"
 
 
 def peek(df, rows=3):
@@ -112,6 +114,9 @@ def run_query(sql):
 
 
 def show_tables(dw=None, like_tbl_name: str = None):
+    """i.e. show_tables(dw=tdm_bank_m,like_tbl_name="%profile%") 
+    '%' indicates relative location of the name of interest in relation to full name    
+    """
     with get_snowflake_connection() as ctx:
         with ctx.cursor() as cs:
             if like_tbl_name is None:
