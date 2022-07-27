@@ -36,7 +36,7 @@ warnings.filterwarnings("ignore")
 # git commit -a -m '.'
 
 # import sys
-# sys.path.insert(1, '/home/ec2-user/SageMaker/Rafael/pyutils/pyutils/')
+# sys.path.insert(1, '/home/ec2-user/SageMaker/Rafael/pyutils/')
 # from sofi_functions import *
 
 # Reload kernal
