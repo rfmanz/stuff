@@ -9,7 +9,7 @@ from tabulate import tabulate
 from IPython.core.interactiveshell import InteractiveShell
 
 InteractiveShell.ast_node_interactivity = "all"
-InteractiveShell.ast_node_interactivity = "last_expr_or_assign"
+# InteractiveShell.ast_node_interactivity = "last_expr_or_assign"
 
 # desired_width = 300
 # pd.set_option('display.width', desired_width)
