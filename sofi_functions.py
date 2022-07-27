@@ -53,8 +53,8 @@ warnings.filterwarnings("ignore")
 # )
 
 
-rmh_m = "tdm_risk_mgmt_hub.modeled"
-rmh_c = "tdm_risk_mgmt_hub.cleansed"
+tdm_rmh_m = "tdm_risk_mgmt_hub.modeled"
+tdm_rmh_c = "tdm_risk_mgmt_hub.cleansed"
 tdm_bank_m = "tdm_bank.modeled"
 tdm_bank_c = "tdm_bank.cleansed"
 tdm_risk_c = "TDM_RISK.CLEANSED"
@@ -113,16 +113,16 @@ def run_query(sql):
             return allthedata
 
 
-def show_tables(dw=None, like_tbl_name: str = None):
-    """i.e. show_tables(dw=tdm_bank_m,like_tbl_name="%profile%") 
+def view_tables(dw=None, tables_or_views = 'views', like_tbl_name = None ):
+    """i.e. view_tables(dw=tdm_bank_m,like_tbl_name="%profile%") 
     '%' indicates relative location of the name of interest in relation to full name    
     """
     with get_snowflake_connection() as ctx:
         with ctx.cursor() as cs:
-            if like_tbl_name is None:
-                cs.execute(f"show tables in {dw}")
+            if like_tbl_name is None:                
+                cs.execute(f"show {tables_or_views} in {dw}")
             else:
-                cs.execute(f"show tables like '{like_tbl_name}' in {dw}")
+                cs.execute(f"show {tables_or_views} like '{like_tbl_name}' in {dw}")
             allthedata = cs.fetchall()
             return f"{dw}", [allthedata[i][1] for i in range(len(allthedata))]
 
@@ -151,15 +151,6 @@ def pandas_df_to_s3(
             getattr(df, f"to_{file_format}")(f, **kwargs)
     else:
         raise NotImplemented
-
-
-def pd_options():
-    desired_width = 300
-    pd.set_option("display.width", desired_width)
-    pd.set_option("display.max_columns", None)
-    import warnings
-
-    warnings.filterwarnings("ignore")
 
 
 def plot_single_numerical(df):
