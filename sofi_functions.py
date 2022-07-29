@@ -55,6 +55,7 @@ warnings.filterwarnings("ignore")
 
 tdm_rmh_m = "tdm_risk_mgmt_hub.modeled"
 tdm_rmh_c = "tdm_risk_mgmt_hub.cleansed"
+tdm_rmh_c = "tdm_risk_mgmt_hub.summarized"
 tdm_bank_m = "tdm_bank.modeled"
 tdm_bank_c = "tdm_bank.cleansed"
 tdm_risk_c = "TDM_RISK.CLEANSED"
