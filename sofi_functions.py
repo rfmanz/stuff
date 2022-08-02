@@ -15,7 +15,7 @@ InteractiveShell.ast_node_interactivity = "all"
 # pd.set_option('display.width', desired_width)
 pd.set_option("display.max_colwidth", 50)
 pd.set_option("display.max_columns", None)
-pd.set_option("display.max_rows", 500)
+pd.set_option("display.max_rows", 500)sd
 import warnings
 
 warnings.filterwarnings("ignore")
