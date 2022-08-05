@@ -4,7 +4,7 @@ import numpy as np
 import time
 import snowflake.connector
 import sys
-from typing import Optional, Tuple, NamedTuple, Union, Any, List, Dict, Type
+from typing import Optional, Tuple, NamedTuple, Union, Any, List, Dict, Type, Callable
 from tabulate import tabulate
 from IPython.core.interactiveshell import InteractiveShell
 
@@ -15,7 +15,7 @@ InteractiveShell.ast_node_interactivity = "all"
 # pd.set_option('display.width', desired_width)
 pd.set_option("display.max_colwidth", 50)
 pd.set_option("display.max_columns", None)
-pd.set_option("display.max_rows", 500)sd
+pd.set_option("display.max_rows", 500)
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -60,8 +60,37 @@ tdm_bank_m = "tdm_bank.modeled"
 tdm_bank_c = "tdm_bank.cleansed"
 tdm_risk_c = "TDM_RISK.CLEANSED"
 tdm_risk_m = "TDM_RISK.modeled"
+raf_dev_c = "tdm_risk_mgmt_hub_clone_raf_dev.cleansed"
 
 s3_bucket = "s3://sofi-data-science/rarevalo/"
+
+
+def run_query_sso(
+    sql: str = None,
+    warehouse: str = "tdm_risk_mgmt_hub_clone",
+    database: str = "tdm_risk_mgmt_hub_clone_raf_dev",
+    schema: str = "cleansed",
+) -> pd.DataFrame:
+
+    connection_parameters = {
+        "account": "sofi",
+        "authenticator": "oauth",
+        "user": credentials.user,
+        "role": credentials.role,
+        "token": credentials.access_token,
+        "warehouse": "tdm_risk_mgmt_hub_clone",
+        "database": "tdm_risk_mgmt_hub_clone_raf_dev",
+        "schema": "cleansed",
+    }
+
+    conn = snowflake.connector.connect(**connection_parameters)
+    cursor = conn.cursor()
+
+    cursor.execute(sql)
+
+    df = cursor.fetch_pandas_all()
+
+    return df
 
 
 def peek(df, rows=3):
@@ -70,12 +99,18 @@ def peek(df, rows=3):
     return concat1
 
 
+# TODO: Can we use a decorator here. Idea came because we're doing functions and parameter inputs.
+# Great expectations - this is more for data quality
+# pydantic - this is data validation, t
+
+
 def check_table(
     data_source: object = None,
     table_name: str = None,
     cols: List[Optional[str]] = None,
     t=True,
     print_sql=False,
+    sso_sdm: Callable = run_query_sso,
 ) -> str:
     """'select {cols} from {data_source}.{table_name} limit 5"""
     if cols:
@@ -85,7 +120,7 @@ def check_table(
     else:
         _tbl = f"select * from {data_source}.{table_name} limit 5;"
 
-    return print(_tbl) if print_sql else peek(run_query(_tbl)) if t else run_query(_tbl)
+    return print(_tbl) if print_sql else peek(sso_sdm(_tbl)) if t else sso_sdm(_tbl)
 
 
 def size_in_memory(df):
@@ -114,13 +149,13 @@ def run_query(sql):
             return allthedata
 
 
-def view_tables(dw=None, tables_or_views = 'views', like_tbl_name = None ):
-    """i.e. view_tables(dw=tdm_bank_m,like_tbl_name="%profile%") 
-    '%' indicates relative location of the name of interest in relation to full name    
+def view_tables(dw=None, tables_or_views="views", like_tbl_name=None):
+    """i.e. view_tables(dw=tdm_bank_m,like_tbl_name="%profile%")
+    '%' indicates relative location of the name of interest in relation to full name
     """
     with get_snowflake_connection() as ctx:
         with ctx.cursor() as cs:
-            if like_tbl_name is None:                
+            if like_tbl_name is None:
                 cs.execute(f"show {tables_or_views} in {dw}")
             else:
                 cs.execute(f"show {tables_or_views} like '{like_tbl_name}' in {dw}")
@@ -128,7 +163,44 @@ def view_tables(dw=None, tables_or_views = 'views', like_tbl_name = None ):
             return f"{dw}", [allthedata[i][1] for i in range(len(allthedata))]
 
 
-def pandas_df_to_s3(
+def view_s3_files(
+    file_name: str = None,
+    view_files=False,
+    bucket: str = "sofi-data-science",
+    s3_path: str = "rarevalo",
+):
+
+    """
+    Example:
+
+    view_s3('money_customer_model_v1/data/',view_files=False)
+
+    """
+    import s3fs, boto3, pathlib
+
+    boto3.setup_default_session()
+    s3 = s3fs.S3FileSystem(anon=False)
+    file_list = []
+    names = []
+    if file_name is not None:
+        path = os.path.join("sofi-data-science", "rarevalo", file_name)
+    else:
+        path = os.path.join("sofi-data-science", "rarevalo")
+    for root, dirs, files in s3.walk(path, topdown=False):
+        if view_files:
+            for name in files:
+                # print(os.path.join(root, name))
+                file_list.append(os.path.join(root, name))
+                names.append(name)
+            for name in dirs:
+                print(os.path.join(root, name))
+        else:
+            for name in dirs:
+                print(os.path.join(root, name))
+    return file_list, names
+
+
+def _to_s3(
     df,
     bucket: str = "sofi-data-science",
     s3_path: str = "rarevalo",
@@ -137,7 +209,7 @@ def pandas_df_to_s3(
     **kwargs,
 ):
     """
-    pandas_df_to_s3(df=df, file_name ='guardinex_data_pull/pl_guardinex.parquet')
+    df=df, file_name ='guardinex_data_pull/pl_guardinex.parquet'
     """
     import s3fs, boto3
 
