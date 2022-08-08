@@ -1,0 +1,14 @@
+var report_info = '{"title1":"Toy-model Demo","title2":"Mortgages scoring model (Spain)","title3":"Madrid - 12th July 2018"}';
+var user_info = '{"user_id":"e051636","user_domain":"ADBBVA","user_machine":"MP006714","datetime":"2018-07-12 08:57:06.977182"}';
+var json_items = new Array();
+json_items.push('{"item_id":"0001","item_info":0,"step_id":"00","title":"Data Preprocessing","type":"preprocessing"}');
+json_items.push('{"item_id":"0001","step_id":"01","title":"Analysis","type":"analysis"}');
+json_items.push('{"item_id":"0001","step_id":"02","title":"Apply","type":"apply"}');
+json_items.push('{"item_id":"0002","item_info":0,"step_id":"00","title":"Univariate Analysis","type":"univariate"}');
+json_items.push('{"item_id":"0002","step_id":"01","title":"Analysis","type":"analysis"}');
+json_items.push('{"item_id":"0002","step_id":"02","title":"Apply","type":"apply"}');
+json_items.push('{"item_id":"0003","item_info":0,"step_id":"00","title":"Pre-Binning","type":"prebinning"}');
+json_items.push('{"item_id":"0003","step_id":"01","title":"Analysis","type":"analysis"}');
+json_items.push('{"item_id":"0003","step_id":"02","title":"Apply","type":"apply"}');
+json_items.push('{"item_id":"0004","item_info":0,"step_id":"00","title":"Toy Model","type":"toymodelselection"}');
+json_items.push('{"item_id":"0004","step_id":"01","title":"Analysis","type":"analysis"}');

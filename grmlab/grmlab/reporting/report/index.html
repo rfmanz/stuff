@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>GRMlab Report</title>
+        <link rel="stylesheet" href="./metadata/src/css/style.css">
+
+
+        <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.2.6/css/fixedColumns.dataTables.min.css">
+
+
+        <link rel="stylesheet" href="./metadata/src/css/main.css">
+        <link rel="icon" href="./metadata/src/img/favicon.ico" type="image/x-icon"/>
+		<link rel="shortcut icon" href="./metadata/src/img/favicon.ico" type="image/x-icon"/>
+    </head>
+    <body>
+
+
+    	<div class="wrapper">
+    	 	<div id="particles"><div id="particles-js"></div></div>
+
+    		<nav id="sidebar">
+          <div style=""><button type="button" id="sidebarCollapse" class="icon_left"><span></span></button></div>
+    			<div class="sidebar-header"><a href="#"><img style="width:85%;" src="./metadata/src/img/GRMlab_logo_dark.png"/></a></div>
+    			<ul class="sidebar_full list-scrollable-1 list-unstyled components" id="toc">
+            		<!-- ... CONTENTS .... -->
+          		</ul>
+    			<ul class="sidebar_icons list-scrollable-1 list-unstyled components" id="toc_icons">
+            		<!-- ... CONTENTS .... -->
+          		</ul>
+    		</nav>
+
+    		<div id="content">
+    	        <div id="main_content">
+    		         <div id="main">
+    		         	<img style="float:right;width:190px;" src='./metadata/src/img/BBVA_logo.png'/>
+    		         	<img style="position:absolute;bottom:10px;right:35px;width:100px;" src='./metadata/src/img/trusted_dark.png'/>
+    		        </div>
+
+                <div id="modal_div" class="modal" tabindex="-1">
+                  <div class="modal_box">
+                    <div class="modal_utils">
+                    	<span id="modal_close"></span>
+                    </div>
+                    <div class="modal_main_contents">
+                      <div class="modal_nav_panel"></div>
+                      <div class="modal_contents"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="cont_item" id="loading" style="position: absolute;width: calc(100% - 40px);display:none;">
+                  <div style="position: absolute;top: calc(50% - 32px);left: calc(50% - 32px);"><div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div><div>Loading...</div></div>
+                </div>
+                <!-- ... CONTENTS .... -->
+    	        </div>
+    		</div>
+    	</div>
+
+      <script src="./metadata/src/js/jquery-3.3.1.min.js"></script>
+      <script src="./metadata/src/js/jquery.dataTables.js"></script>
+      <script src="./metadata/src/js/dataTables.scroller.js"></script>
+      <script src="./metadata/src/js/dataTables.buttons.js"></script>
+      <script src="./metadata/src/js/buttons.html5.js"></script>
+      <scripta src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+      <scripta src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.js"></script>
+
+      <scripta src="https://cdn.datatables.net/scroller/1.5.1/js/dataTables.scroller.min.js"></script>
+      <script src="https://cdn.datatables.net/fixedcolumns/3.2.6/js/dataTables.fixedColumns.min.js"></script>
+
+
+      <script src="./metadata/src/js/echarts.common.min.js"></script>
+      <script src="./metadata/src/js/particles.js"></script>
+      <script src="./metadata/contents.json"></script>
+      <script src="./metadata/src/js/main.js"></script>
+    	<script src="./metadata/data.json"></script>
+    </body>
+</html>
+

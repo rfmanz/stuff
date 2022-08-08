@@ -52,10 +52,6 @@ warnings.filterwarnings("ignore")
 #     os.path.join("C:/Users/rfrancis/Downloads/", "df_final2.parquet.gzip")
 # )
 
-# dbt-generator generate -s ./models/cleansed/tdm_bank/__sources.yml -o ./models/cleansed/tdm_bank/ -c 'bank_'
-# dbt run --models cleansed.tdm_bank.*
-
-
 
 tdm_rmh_m = "tdm_risk_mgmt_hub.modeled"
 tdm_rmh_c = "tdm_risk_mgmt_hub.cleansed"
@@ -74,18 +70,17 @@ def run_query_sso(
     warehouse: str = "tdm_risk_mgmt_hub_clone",
     database: str = "tdm_risk_mgmt_hub_clone_raf_dev",
     schema: str = "cleansed",
-    _credentials=None,
 ) -> pd.DataFrame:
 
     connection_parameters = {
         "account": "sofi",
         "authenticator": "oauth",
-        "user": _credentials.user,
-        "role": _credentials.role,
-        "token": _credentials.access_token,
-        "warehouse": warehouse,
-        "database": database,
-        "schema": schema,
+        "user": credentials.user,
+        "role": credentials.role,
+        "token": credentials.access_token,
+        "warehouse": "tdm_risk_mgmt_hub_clone",
+        "database": "tdm_risk_mgmt_hub_clone_raf_dev",
+        "schema": "cleansed",
     }
 
     conn = snowflake.connector.connect(**connection_parameters)
@@ -104,13 +99,9 @@ def peek(df, rows=3):
     return concat1
 
 
-# TODO:
-#  Can we use a decorator here. Idea came because we're doing functions and parameter inputs?
-
-# What should be obvious is that we should make a data class. Maybe start small just a class that inherits for the check_table and view_tables methods, but then this could be extended, to also be a data loader class.
-
+# TODO: Can we use a decorator here. Idea came because we're doing functions and parameter inputs.
 # Great expectations - this is more for data quality
-# pydantic - this is data validation
+# pydantic - this is data validation, t
 
 
 def check_table(
@@ -120,11 +111,8 @@ def check_table(
     t=True,
     print_sql=False,
     sso_sdm: Callable = run_query_sso,
-    _credentials=None,
 ) -> str:
-    """'select {cols} from {data_source}.{table_name} limit 5
-    Example:
-        check_table(raf_dev_c,"bank_profile_daily_transaction_journal")"""
+    """'select {cols} from {data_source}.{table_name} limit 5"""
     if cols:
         if isinstance(cols, list):
             cols = ",".join(cols).replace(",", ",\n")
@@ -132,13 +120,7 @@ def check_table(
     else:
         _tbl = f"select * from {data_source}.{table_name} limit 5;"
 
-    return (
-        print(_tbl)
-        if print_sql
-        else peek(sso_sdm(_tbl, _credentials=_credentials))
-        if t
-        else sso_sdm(_tbl, _credentials=_credentials)
-    )
+    return print(_tbl) if print_sql else peek(sso_sdm(_tbl)) if t else sso_sdm(_tbl)
 
 
 def size_in_memory(df):
@@ -167,40 +149,12 @@ def run_query(sql):
             return allthedata
 
 
-def view_tables(
-    dw=None,
-    tables_or_views="views",
-    like_tbl_name=None,
-    sdm=False,
-    _credentials=None,
-):
+def view_tables(dw=None, tables_or_views="views", like_tbl_name=None):
     """i.e. view_tables(dw=tdm_bank_m,like_tbl_name="%profile%")
     '%' indicates relative location of the name of interest in relation to full name
     """
-    if sdm:
-        with get_snowflake_connection() as ctx:
-            with ctx.cursor() as cs:
-                if like_tbl_name is None:
-                    cs.execute(f"show {tables_or_views} in {dw}")
-                else:
-                    cs.execute(f"show {tables_or_views} like '{like_tbl_name}' in {dw}")
-                allthedata = cs.fetchall()
-                return f"{dw}", [allthedata[i][1] for i in range(len(allthedata))]
-    else:
-
-        connection_parameters = {
-            "account": "sofi",
-            "authenticator": "oauth",
-            "user": _credentials.user,
-            "role": _credentials.role,
-            "token": _credentials.access_token,
-            "warehouse": "tdm_risk_mgmt_hub_clone",
-            "database": "tdm_risk_mgmt_hub_clone_raf_dev",
-            "schema": "cleansed",
-        }
-
-        conn = snowflake.connector.connect(**connection_parameters)
-        with conn.cursor() as cs:
+    with get_snowflake_connection() as ctx:
+        with ctx.cursor() as cs:
             if like_tbl_name is None:
                 cs.execute(f"show {tables_or_views} in {dw}")
             else:
@@ -405,7 +359,7 @@ def describe_df(df, return_df=False, floatfmt=".3f"):
 
         for col in categorical:
             series = categorical.loc[categorical[col].notnull(), col]
-            n_unique = series.nunique()
+            n_unique = series.nunique(
             if n_unique > max_unique:
                 u_strs.append(str(n_unique) + " unique values")
             else:
