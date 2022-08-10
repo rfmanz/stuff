@@ -6,7 +6,7 @@ Data preprocessing with spark.
 # BBVA - Copyright 2019.
 
 import time
-
+                
 import numpy as np
 import pandas as pd
 import pyspark.sql.functions as F
@@ -106,7 +106,7 @@ def _update_status(dict_column):
             STATUS_ID, STATUS_DATE, STATUS_NUMERIC_CONVERSION]]
 
 
-class PreprocessingSpark(Preprocessing):
+class PreprocessingSpark(Preprocessing):    
     """
     Data preprocessing using pyspark.
 
