@@ -474,3 +474,18 @@ def database_col_aggregator(data_sources):
     df.columns = df.columns.str.upper()
     # df = df.apply(lambda x: x.astype(str).str.lower())
     return df
+
+
+# data_sources = {
+#     "ds": {
+#         "tdm_risk_mgmt_hub": {
+#             "modeled": ["THREAT_METRIX_PULL", "socure_pull", "borrowers"]
+#         },
+#         "tdm_money": {
+#             "modeled": ["FACT_DAILY_TRANSACTIONS"],
+#             "money_stage": ["profile_transactions"],
+#             "cleansed": ["PLAID_ENHANCED_AUTH_BYPASS_REASON"],
+
+#         },
+#     }
+# }
