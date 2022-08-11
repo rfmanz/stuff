@@ -13,6 +13,7 @@ InteractiveShell.ast_node_interactivity = "all"
 
 # desired_width = 300
 # pd.set_option('display.width', desired_width)
+# pd.set_option("display.max_colwidth", None)
 pd.set_option("display.max_colwidth", 50)
 pd.set_option("display.max_columns", None)
 pd.set_option("display.max_rows", 500)
@@ -53,10 +54,11 @@ warnings.filterwarnings("ignore")
 # )
 
 # dbt-generator generate -s ./models/cleansed/tdm_bank/__sources.yml -o ./models/cleansed/tdm_bank/ -c 'bank_'
-# dbt-generator generate -s ./models/cleansed/tdm_money/__sources.yml -o ./models/cleansed/tdm_money/ -c 'money_'
+
+# python /home/ec2-user/SageMaker/tdm-risk-mgmt-hub/dbt/dbt_packages/dbt-generator/dbt_generator/dbt_generator.py generate -s /home/ec2-user/SageMaker/tdm-risk-mgmt-hub/dbt/models/cleansed/tdm_bank/__sources.yml -o /home/ec2-user/SageMaker/tdm-risk-mgmt-hub/dbt/models/cleansed/tdm_bank/ -c 'bank_'
+
 
 # dbt run --models cleansed.tdm_bank.*
-# dbt run --models cleansed.tdm_money.*
 
 
 tdm_rmh_m = "tdm_risk_mgmt_hub.modeled"
@@ -435,3 +437,40 @@ def describe_df(df, return_df=False, floatfmt=".3f"):
         )
 
     return (concatenated_numerical, concatenated_categorical) if return_df else None
+
+
+def database_col_aggregator(data_sources):
+
+    sources = {}
+    res = {}
+
+    for key in data_sources["ds"].keys():
+        val = data_sources["ds"][key]
+        p = [key + "." + str(v) for v in val]
+        for old_key, n_key in zip(list(val.keys()), p):
+            val[n_key] = val.pop(old_key)
+            res.update(val)
+
+    for k in list(res.keys()):
+        if k.find(".") == -1:
+            del res[k]
+
+    for i in list(res.keys()):
+        for j in res[i]:
+
+            sources[f"{j}"] = list(
+                check_table(
+                    data_source=f"{i}",
+                    table_name=f"{j}",
+                    cols=None,
+                    t=False,
+                    print_sql=False,
+                    _credentials=None,
+                    sso_sdm=run_query,
+                )
+            )
+
+    df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in sources.items()]))
+    df.columns = df.columns.str.upper()
+    # df = df.apply(lambda x: x.astype(str).str.lower())
+    return df
