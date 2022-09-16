@@ -301,6 +301,7 @@ qgrid_widget
 jt -t monokai -cellw 97% -f roboto -fs 11 -ofs 11 -T
 
 ## Logistic Regression
+
 <http://www.science.smith.edu/~jcrouser/SDS293/labs/lab4-py.html>
 
 ```python
@@ -628,6 +629,7 @@ StandardScaler().fit(X).transform(X)
            [ 1., -1.]])
 
 ### Scatter plots
+
 <https://jakevdp.github.io/PythonDataScienceHandbook/04.02-simple-scatter-plots.html>
 
 ### DF.plot()
@@ -780,3 +782,11 @@ while True:
 ```
 
 <https://cheatography.com/weidadeyue/cheat-sheets/jupyter-notebook/pdf/>
+
+<br>
+
+Use list to filter dictionary
+
+```python
+dictfilt = lambda x, y: dict([ (i,x[i]) for i in x if i in set(y) ])
+```

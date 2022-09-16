@@ -100,7 +100,7 @@ class CountCalls:
 ###########################################################
 
 
-def singleton(cls):
+def singleton   (cls):
     """Make a class a Singleton class (only one instance)"""
 
     @functools.wraps(cls)
@@ -132,11 +132,20 @@ def cache(func):
     return wrapper_cache
 
 
-# @cache
-# def fibonacci(num):
-#     if num < 2:
-#         return num
-#     return fibonacci(num - 1) + fibonacci(num - 2)
+@cache
+def fibonacci(num):
+    if num < 2:
+        return num
+    return fibonacci(num - 1) + fibonacci(num - 2)
+
+@cache
+@count_calls
+def fibonacci(num):
+    if num < 2:
+        return num
+    return fibonacci(num - 1) + fibonacci(num - 2)
+
+fibonacci(10)
 
 
 ###########################################################

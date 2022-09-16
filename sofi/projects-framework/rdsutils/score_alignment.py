@@ -1,7 +1,7 @@
 import pandas as pd
 
 ################################################
-#   align model score/predictions by bad rate
+#   align model score/predictions by bad ratek
 ################################################
 
 def get_bad_rate(df, pred_col, target_col):
