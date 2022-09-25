@@ -1,0 +1,77 @@
+target_col: target_v1
+weight_col: weight
+Preprocessing... generating iv and shaps
+prepping woe...
+Attrs removed--missing pct>99%:   ['p13_all8162', 'p13_all8163', 'p13_all8380', 'p13_all8723', 'p13_all9222', 'p13_all9223', 'p13_all9230', 'p13_all9239', 'p13_all9240', 'p13_all9249', 'p13_all9260', 'p13_all9280', 'p13_aua8162', 'p13_aua8163', 'p13_bca0401', 'p13_bca5021', 'p13_bca6201', 'p13_col8194', 'p13_hlc5021', 'p13_hlc7117', 'p13_iln0403', 'p13_mtf8169', 'p13_mtf8656', 'p13_mts8151', 'p13_rpm5020', 'p13_rpm5320', 'p13_rpm5820', 'p13_rpm6160', 'p13_rpm7110', 'p13_rti5020', 'p13_rti5320', 'p13_rti5820', 'p13_uti5030', 'p13_uti5530', 'p13_uti8151', 't11_tall1412', 't11_tall1413', 't11_tall2412', 't11_tcol2556', 't11_tcol2567', 't11_tcol3581', 't11_tmti0451', 't11_tmti0452', 't11_tmti0453', 't11_tmti0454', 't11_tmti0455', 't11_tmti0456', 't11_tmti0457', 't11_tmti0458', 't11_tstu0909']
+processed  4155  num attributes
+
+100%|██████████| 7/7 [00:01<00:00,  5.07it/s]
+prepping lgbm shap
+100%|██████████| 7/7 [00:01<00:00,  4.72it/s]
+prepping lgbm mc shap
+p13_all9130 1 no monotonic direction - probably should filter out
+p13_all9134 1 no monotonic direction - probably should filter out
+p13_all9135 1 no monotonic direction - probably should filter out
+p13_all9138 1 no monotonic direction - probably should filter out
+p13_all9139 1 no monotonic direction - probably should filter out
+p13_all9140 1 no monotonic direction - probably should filter out
+p13_all9141 1 no monotonic direction - probably should filter out
+p13_all9144 1 no monotonic direction - probably should filter out
+p13_all9145 1 no monotonic direction - probably should filter out
+p13_all9148 1 no monotonic direction - probably should filter out
+p13_all9149 1 no monotonic direction - probably should filter out
+p13_all9171 1 no monotonic direction - probably should filter out
+p13_all9177 1 no monotonic direction - probably should filter out
+p13_all9178 1 no monotonic direction - probably should filter out
+p13_all9180 1 no monotonic direction - probably should filter out
+p13_all9187 1 no monotonic direction - probably should filter out
+p13_all9188 1 no monotonic direction - probably should filter out
+p13_all9189 1 no monotonic direction - probably should filter out
+p13_all9330 1 no monotonic direction - probably should filter out
+p13_all9340 1 no monotonic direction - probably should filter out
+p13_all9380 1 no monotonic direction - probably should filter out
+[LightGBM] [Warning] min_data_in_leaf is set=300, min_child_samples=20 will be ignored. Current value: min_data_in_leaf=300
+[LightGBM] [Warning] boosting is set=gbdt, boosting_type=gbdt will be ignored. Current value: boosting=gbdt
+100%|██████████| 7/7 [00:01<00:00,  4.94it/s]
+filtering features by logic - experian
+dropping 530 features : kept 3675 features
+    reason:  not AA
+160 features with greater than                 0.95 missing values
+dropping 160 features : kept 3515 features
+    reason:  too many missing
+dropping 647 features : kept 2868 features
+    reason:  low_iv
+running many to few
+100%|██████████| 200/200 [09:27<00:00,  2.84s/it]
+100%|██████████| 200/200 [11:20<00:00,  3.40s/it]
+100%|██████████| 200/200 [22:44<00:00,  6.82s/it]
+100%|██████████| 7/7 [00:01<00:00,  4.93it/s]
+saving ranking.csv
+running fsel on few
+[LightGBM] [Warning] min_data_in_leaf is set=300, min_child_samples=20 will be ignored. Current value: min_data_in_leaf=300
+[LightGBM] [Warning] boosting is set=gbdt, boosting_type=gbdt will be ignored. Current value: boosting=gbdt
+p13_all9130 1 no monotonic direction - probably should filter out
+p13_all9134 1 no monotonic direction - probably should filter out
+p13_all9135 1 no monotonic direction - probably should filter out
+p13_all9138 1 no monotonic direction - probably should filter out
+p13_all9139 1 no monotonic direction - probably should filter out
+p13_all9140 1 no monotonic direction - probably should filter out
+p13_all9141 1 no monotonic direction - probably should filter out
+p13_all9144 1 no monotonic direction - probably should filter out
+p13_all9145 1 no monotonic direction - probably should filter out
+p13_all9148 1 no monotonic direction - probably should filter out
+p13_all9149 1 no monotonic direction - probably should filter out
+p13_all9171 1 no monotonic direction - probably should filter out
+p13_all9177 1 no monotonic direction - probably should filter out
+p13_all9178 1 no monotonic direction - probably should filter out
+p13_all9180 1 no monotonic direction - probably should filter out
+p13_all9187 1 no monotonic direction - probably should filter out
+p13_all9188 1 no monotonic direction - probably should filter out
+p13_all9189 1 no monotonic direction - probably should filter out
+p13_all9330 1 no monotonic direction - probably should filter out
+p13_all9340 1 no monotonic direction - probably should filter out
+p13_all9380 1 no monotonic direction - probably should filter out
+100%|██████████| 7/7 [00:00<00:00,  8.98it/s]
+saving ranking.csv
+CPU times: user 1h 42min 43s, sys: 19min 58s, total: 2h 2min 41s
+Wall time: 1h 3min 1s

@@ -790,3 +790,11 @@ Use list to filter dictionary
 ```python
 dictfilt = lambda x, y: dict([ (i,x[i]) for i in x if i in set(y) ])
 ```
+
+<br>
+
+Use @object to use it in query
+
+```python
+train = full_aggregated.query("START_PERF_WIND in @valid")
+```

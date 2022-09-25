@@ -28,3 +28,30 @@ def get_monitoring_dates(start, end="today"):
     dates = list(map(lambda d: str(d).split(" ")[0], dates))
     
     return dates
+
+result = list(pd.date_range('20210101', '20220501', freq='M'))
+result
+result = list(map(lambda d: str(d).split(" ")[0], result))
+
+result[0].strftime('%Y%m%d')
+
+type(result[0])
+str(result[0]).split(" ")
+
+
+
+
+
+
+
+
+
+stringy = "Timestamp('2021-01-31 00:00:00', freq='M'))"
+("Timestamp('2021-01-31 00:00:00', freq='M'))").apply(lambda d: str(d).split(" ")[0])
+
+str(stringy).split(" ")[0]
+
+get_sampling_dates('20210101','20220501','M')
+
+
+print(pd.date_range.__doc__)
