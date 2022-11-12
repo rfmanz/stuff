@@ -19,6 +19,7 @@ WITH
             LEFT JOIN tdm_bank.cleansed.profile_utility_closeout_reason_codes cldr ON cldr.closeout_reason_code = dep.account_closeout_reason_code
                 AND cldr.product_class = dep.product_class
             LEFT JOIN
+
             (SELECT rc.account_number
                 , cif.sofi_user_id_reference
                 , rc.customer_number
@@ -29,8 +30,12 @@ WITH
  rel ON rel.product_group = dep.product_group
                     AND rel.relationship_code  = dep.account_relationship_code
                     AND rc.role_code_for_relationship=2) joint ON joint.account_number = dep.account_number
+
+                    
         WHERE dep.product_type=410
     ),
+
+
     joint_account_holders
     AS
     (
